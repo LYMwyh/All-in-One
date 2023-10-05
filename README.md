@@ -1,12 +1,13 @@
-# All in One 
+# All in One
+
 c++
 
 python
 
 Writer is chinese.
 
-## 小项目
+## Project
 
-- 二十四点
+- 24(puzzle)
 
-  （正在准备中……）
+  (Preparing)
