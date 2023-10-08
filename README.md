@@ -10,4 +10,4 @@ Writer is chinese.
 
 - 24(puzzle)
 
-  (Preparing)
+  in Python (Finished)
