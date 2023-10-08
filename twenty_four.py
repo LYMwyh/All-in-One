@@ -1,11 +1,24 @@
+from tkinter import *
 import random
+import time
 
-print("Here is a game:")
-print("I will give you 4 integer,you need to use these four integer to calculate 24.")
+root = Tk()
+root.title("Twenty Four")
+root.geometry("800x400+100+100")
+
+print_frame_border = Frame(root, bg="white", bd=1)
+print_text = Text(print_frame_border, bg="black", fg="white")
+input_frame_border = Frame(root, bg="white", bd=1)
+input_frame = Frame(input_frame_border, bg="black")
+button_close = Button(input_frame, text="closed", command=root.quit)
 
 Operators = ['+', '-', '*', '/']
 answer = []
 complete_answer = []
+
+Whole_Answers = []
+the_Selected_Operators = []
+Four_Numbers = []
 
 
 def before_or_after_one(index_of_one, before):
@@ -407,36 +420,110 @@ def calculate_the_whole_answers():
 		Four_Numbers[0], Four_Numbers[first_element] = Four_Numbers[first_element], Four_Numbers[0]
 
 
-if input("Do you want to play it with me?(YES/NO)") == "YES":
-	Answer_of_Whether_Play = True
-else:
-	Answer_of_Whether_Play = False
-print("OK!")
-while Answer_of_Whether_Play:
+def printer(content):
+	for char in content:
+		print_text.insert('end', char)
+		root.update()
+		time.sleep(0)
+	print_text.insert('end', '\n')
+
+
+def whole_answers(yes):
+	global Whole_Answers, the_Selected_Operators, Four_Numbers
+	button_yes_whole_answers.configure(state=DISABLED)
+	button_yes_whole_answers.place_forget()
+	button_no_whole_answers.configure(state=DISABLED)
+	button_no_whole_answers.place_forget()
+	print_text.configure(state=NORMAL)
+	printer('\n')
+	printer("OK!")
+	time.sleep(1.0)
+	print_text.delete('1.0', 'end')
+	if yes is True:
+		calculate_the_whole_answers()
+		if len(Whole_Answers) == 0:
+			printer("There is no any answers!")
+		else:
+			for Each_Answer in Whole_Answers:
+				printer(Each_Answer + "=24")
+	printer("Do you want to play it again?")
+	print_text.configure(state=DISABLED)
+	button_yes.configure(state=NORMAL)
+	button_no.configure(state=NORMAL)
+	button_yes.place(anchor='center', relx=0.5, rely=0.3)
+	button_no.place(anchor='center', relx=0.5, rely=0.7)
+
+
+button_yes_whole_answers = Button(input_frame, text="YES", command=lambda: whole_answers(True))
+button_no_whole_answers = Button(input_frame, text="NO", command=lambda: whole_answers(False))
+
+
+def clicked_yes():
+	global Whole_Answers, the_Selected_Operators, Four_Numbers
+	button_yes.configure(state=DISABLED)
+	button_yes.place_forget()
+	button_no.configure(state=DISABLED)
+	button_no.place_forget()
+	
 	Whole_Answers = []
 	the_Selected_Operators = []
 	Four_Numbers = []
 	for _ in range(4):
 		Four_Numbers.append(float(random.randint(1, 13)))
-	print("Here is four numbers: %d , %d , %d , %d ." % (
-		Four_Numbers[0], Four_Numbers[1], Four_Numbers[2], Four_Numbers[3]))
-	print("Did you find the answer(s)?")
-	Answer_of_Whether_Want_to_Know_the_Whole_Answers = input("Do you want to know the whole answer(s)?(YES/NO)")
-	if Answer_of_Whether_Want_to_Know_the_Whole_Answers == "YES":
-		print("OK!")
-		calculate_the_whole_answers()
-		if len(Whole_Answers) == 0:
-			print("There is no any answers!")
-		else:
-			for Each_Answer in Whole_Answers:
-				print(Each_Answer + "=24")
 	
-	elif Answer_of_Whether_Want_to_Know_the_Whole_Answers == "NO":
-		print("OK!")
-	if input("Do you want to play it again?(YES/NO)") == "YES":
-		Answer_of_Whether_Play = True
-	else:
-		Answer_of_Whether_Play = False
-	print("OK!")
+	print_text.configure(state=NORMAL)
+	printer('\n')
+	printer('OK!')
+	time.sleep(0.2)
+	print_text.delete('1.0', 'end')
+	printer("Here is four numbers: %d , %d , %d , %d ." % (
+		Four_Numbers[0], Four_Numbers[1], Four_Numbers[2], Four_Numbers[3]))
+	time.sleep(1)
+	printer("Did you find the answer(s)?")
+	printer('\n')
+	printer("Do you want to know the whole answer(s)?")
+	print_text.configure(state=DISABLED)
+	button_yes_whole_answers.configure(state=NORMAL)
+	button_no_whole_answers.configure(state=NORMAL)
+	button_yes_whole_answers.place(anchor='center', relx=0.5, rely=0.3)
+	button_no_whole_answers.place(anchor='center', relx=0.5, rely=0.7)
 
-print("See you next time!")
+
+def clicked_no():
+	button_yes.configure(state=DISABLED)
+	button_yes.place_forget()
+	button_no.configure(state=DISABLED)
+	button_no.place_forget()
+	
+	print_text.configure(state=NORMAL)
+	printer('\n')
+	printer("OK!")
+	printer("See you next time!")
+	button_close.place(anchor='center', relx=0.5, rely=0.5)
+
+
+button_yes = Button(input_frame, text="YES", command=clicked_yes)
+button_no = Button(input_frame, text="NO", command=clicked_no)
+
+
+def start():
+	Start.configure(state=DISABLED)
+	Start.place_forget()
+	print_frame_border.place(relx=0, rely=0, relwidth=0.5, relheight=1)
+	print_text.place(x=0, y=0, relwidth=1, relheight=1)
+	input_frame_border.place(relx=0.5, rely=0, relwidth=0.5, relheight=1)
+	input_frame.place(relwidth=1, relheight=1)
+	printer("Here is a game:")
+	printer("I will give you 4 integer,you need to use these four integer to calculate 24.")
+	printer("\n")
+	printer("Do you want to play it with me?")
+	print_text.configure(state=DISABLED)
+	
+	button_yes.place(anchor='center', relx=0.5, rely=0.3)
+	button_no.place(anchor='center', relx=0.5, rely=0.7)
+
+
+Start = Button(root, text="Start", command=start)
+Start.place(relx=0.5, rely=0.5, anchor='center')
+
+root.mainloop()
