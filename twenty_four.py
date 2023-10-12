@@ -6,11 +6,14 @@ root = Tk()
 root.title("Twenty Four")
 root.geometry("800x400+100+100")
 
+size = '10'
+
 print_frame_border = Frame(root, bg="white", bd=1)
-print_text = Text(print_frame_border, bg="black", fg="white")
+print_text = Text(print_frame_border, bg="black", fg="white", font=size)
+
 input_frame_border = Frame(root, bg="white", bd=1)
 input_frame = Frame(input_frame_border, bg="black")
-button_close = Button(input_frame, text="closed", command=root.quit)
+button_close = Button(input_frame, text="closed", font=size, command=root.quit)
 
 Operators = ['+', '-', '*', '/']
 answer = []
@@ -20,6 +23,21 @@ Whole_Answers = []
 the_Selected_Operators = []
 Four_Numbers = []
 
+
+def add_font_size():
+	global size
+	size = int(size)
+	size += 1
+
+
+def reduce_font_size():
+	global size
+	size = int(size)
+	size += 1
+	
+
+increase_font_size = Button(input_frame_border, text="font size +", command=add_font_size, font=size)
+decrease_font_size = Button(input_frame_border, text="font size -", command=reduce_font_size, font=size)
 
 def before_or_after_one(index_of_one, before):
 	global complete_answer
@@ -434,7 +452,7 @@ def whole_answers(yes):
 	button_yes_whole_answers.place_forget()
 	button_no_whole_answers.configure(state=DISABLED)
 	button_no_whole_answers.place_forget()
-	print_text.configure(state=NORMAL)
+	print_text.configure(state=NORMAL, font=size)
 	printer('\n')
 	printer("OK!")
 	time.sleep(1.0)
@@ -448,14 +466,14 @@ def whole_answers(yes):
 				printer(Each_Answer + "=24")
 	printer("Do you want to play it again?")
 	print_text.configure(state=DISABLED)
-	button_yes.configure(state=NORMAL)
-	button_no.configure(state=NORMAL)
+	button_yes.configure(state=NORMAL, font=size)
+	button_no.configure(state=NORMAL, font=size)
 	button_yes.place(anchor='center', relx=0.5, rely=0.3)
 	button_no.place(anchor='center', relx=0.5, rely=0.7)
 
 
-button_yes_whole_answers = Button(input_frame, text="YES", command=lambda: whole_answers(True))
-button_no_whole_answers = Button(input_frame, text="NO", command=lambda: whole_answers(False))
+button_yes_whole_answers = Button(input_frame, text="YES", command=lambda: whole_answers(True), font=size)
+button_no_whole_answers = Button(input_frame, text="NO", command=lambda: whole_answers(False), font=size)
 
 
 def clicked_yes():
@@ -471,7 +489,7 @@ def clicked_yes():
 	for _ in range(4):
 		Four_Numbers.append(float(random.randint(1, 13)))
 	
-	print_text.configure(state=NORMAL)
+	print_text.configure(state=NORMAL, font=size)
 	printer('\n')
 	printer('OK!')
 	time.sleep(0.2)
@@ -483,8 +501,8 @@ def clicked_yes():
 	printer('\n')
 	printer("Do you want to know the whole answer(s)?")
 	print_text.configure(state=DISABLED)
-	button_yes_whole_answers.configure(state=NORMAL)
-	button_no_whole_answers.configure(state=NORMAL)
+	button_yes_whole_answers.configure(state=NORMAL, font=size)
+	button_no_whole_answers.configure(state=NORMAL, font=size)
 	button_yes_whole_answers.place(anchor='center', relx=0.5, rely=0.3)
 	button_no_whole_answers.place(anchor='center', relx=0.5, rely=0.7)
 
@@ -502,8 +520,8 @@ def clicked_no():
 	button_close.place(anchor='center', relx=0.5, rely=0.5)
 
 
-button_yes = Button(input_frame, text="YES", command=clicked_yes)
-button_no = Button(input_frame, text="NO", command=clicked_no)
+button_yes = Button(input_frame, text="YES", command=clicked_yes, font=size)
+button_no = Button(input_frame, text="NO", command=clicked_no, font=size)
 
 
 def start():
@@ -512,9 +530,11 @@ def start():
 	print_frame_border.place(relx=0, rely=0, relwidth=0.5, relheight=1)
 	print_text.place(x=0, y=0, relwidth=1, relheight=1)
 	input_frame_border.place(relx=0.5, rely=0, relwidth=0.5, relheight=1)
-	input_frame.place(relwidth=1, relheight=1)
+	input_frame.place(relx=0, rely=0.1, relwidth=1, relheight=0.8)
+	increase_font_size.place(relx=0, rely=0, relwidth=1, relheight=0.1)
+	decrease_font_size.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
 	printer("Here is a game:")
-	printer("I will give you 4 integer,you need to use these four integer to calculate 24.")
+	printer("I will give you 4 integers,you need to use these four integer to calculate 24.")
 	printer("\n")
 	printer("Do you want to play it with me?")
 	print_text.configure(state=DISABLED)
@@ -523,7 +543,7 @@ def start():
 	button_no.place(anchor='center', relx=0.5, rely=0.7)
 
 
-Start = Button(root, text="Start", command=start)
+Start = Button(root, text="Start", command=start, font=size)
 Start.place(relx=0.5, rely=0.5, anchor='center')
 
 root.mainloop()
