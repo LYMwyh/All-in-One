@@ -6,7 +6,7 @@ root = Tk()
 root.title("Twenty Four")
 root.geometry("800x400+100+100")
 
-size = '10'
+size = 10
 
 print_frame_border = Frame(root, bg="white", bd=1)
 print_text = Text(print_frame_border, bg="black", fg="white", font=size)
@@ -26,14 +26,26 @@ Four_Numbers = []
 
 def add_font_size():
 	global size
-	size = int(size)
 	size += 1
+	if print_text['state'] == DISABLED:
+		print_text.configure(state=NORMAL)
+		print_text.configure(font=size)
+		print_text.configure(state=NORMAL)
+	else:
+		print_text.configure(font=size)
+	root.update()
 
 
 def reduce_font_size():
 	global size
-	size = int(size)
-	size += 1
+	size -= 1
+	if print_text['state'] == DISABLED:
+		print_text.configure(state=NORMAL)
+		print_text.configure(font=size)
+		print_text.configure(state=NORMAL)
+	else:
+		print_text.configure(font=size)
+	root.update()
 	
 
 increase_font_size = Button(input_frame_border, text="font size +", command=add_font_size, font=size)
@@ -452,7 +464,7 @@ def whole_answers(yes):
 	button_yes_whole_answers.place_forget()
 	button_no_whole_answers.configure(state=DISABLED)
 	button_no_whole_answers.place_forget()
-	print_text.configure(state=NORMAL, font=size)
+	print_text.configure(state=NORMAL)
 	printer('\n')
 	printer("OK!")
 	time.sleep(1.0)
@@ -466,8 +478,8 @@ def whole_answers(yes):
 				printer(Each_Answer + "=24")
 	printer("Do you want to play it again?")
 	print_text.configure(state=DISABLED)
-	button_yes.configure(state=NORMAL, font=size)
-	button_no.configure(state=NORMAL, font=size)
+	button_yes.configure(state=NORMAL)
+	button_no.configure(state=NORMAL)
 	button_yes.place(anchor='center', relx=0.5, rely=0.3)
 	button_no.place(anchor='center', relx=0.5, rely=0.7)
 
@@ -489,7 +501,7 @@ def clicked_yes():
 	for _ in range(4):
 		Four_Numbers.append(float(random.randint(1, 13)))
 	
-	print_text.configure(state=NORMAL, font=size)
+	print_text.configure(state=NORMAL)
 	printer('\n')
 	printer('OK!')
 	time.sleep(0.2)
@@ -501,8 +513,8 @@ def clicked_yes():
 	printer('\n')
 	printer("Do you want to know the whole answer(s)?")
 	print_text.configure(state=DISABLED)
-	button_yes_whole_answers.configure(state=NORMAL, font=size)
-	button_no_whole_answers.configure(state=NORMAL, font=size)
+	button_yes_whole_answers.configure(state=NORMAL)
+	button_no_whole_answers.configure(state=NORMAL)
 	button_yes_whole_answers.place(anchor='center', relx=0.5, rely=0.3)
 	button_no_whole_answers.place(anchor='center', relx=0.5, rely=0.7)
 
