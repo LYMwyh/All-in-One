@@ -163,24 +163,6 @@ def simplify_formula_first_part():
 		step += 1
 
 
-def representative_of_the_formula(whole_list):
-	if type(whole_list) is list:
-		for part_of_list in whole_list:
-			if type(part_of_list) is list:
-				first_number = representative_of_the_formula(part_of_list)
-				if first_number is False:
-					continue
-				else:
-					return first_number
-			elif type(part_of_list) is float:
-				return part_of_list
-		return False
-	elif type(whole_list) is float:
-		return whole_list
-	elif type(whole_list) is chr:
-		return False
-
-
 def simplify_formula_third_part(part_of_group):
 	# ['+', 121.0, '/', 11.0, '*', 4.0]
 	if len(part_of_group) < 3:
@@ -191,19 +173,19 @@ def simplify_formula_third_part(part_of_group):
 		symbol = part_of_group[step]
 		if type(symbol) is not str:
 			sort_list.append(
-				{"num": representative_of_the_formula(symbol), "operator": part_of_group[step - 1], "index": step})
+				{"representative": str(part_of_group[step]), "operator": part_of_group[step - 1], "index": step})
 	min_number = 0
 	for step in range(len(sort_list)):
 		element = sort_list[step]
-		if element["operator"] == '*' and sort_list[min_number]["num"] > element["num"]:
+		if element["operator"] == '*' and sort_list[min_number]["representative"] > element["representative"]:
 			min_number = step
 	if min_number != 0:
 		part_of_group[sort_list[0]["index"]], part_of_group[sort_list[min_number]["index"]] = part_of_group[
 			sort_list[min_number]["index"]], part_of_group[sort_list[0]["index"]]
-		sort_list[min_number]["num"] = sort_list[0]["num"]
+		sort_list[min_number]["representative"] = sort_list[0]["representative"]
 	first_number = sort_list[0]["index"] + 1
 	del sort_list[0]
-	sort_list.sort(reverse=False, key=lambda sort_num: sort_num["num"])
+	sort_list.sort(reverse=False, key=lambda sort_num: sort_num["representative"])
 	new_list = [_ for _ in part_of_group[0:first_number]]
 	index_of_sort_list = 0
 	for step in range(first_number, len(part_of_group), 2):
@@ -233,9 +215,8 @@ def simplify_formula_forth_part(group):
 	compare_nums = []
 	for step in range(len(group)):
 		part_of_group = group[step]
-		first_number = representative_of_the_formula(part_of_group)
-		compare_nums.append({"num": first_number, "operator": part_of_group[0], "index": step})
-	compare_nums.sort(reverse=False, key=lambda sort_num: sort_num["num"])
+		compare_nums.append({"representative": str(part_of_group[1:]), "operator": part_of_group[0], "index": step})
+	compare_nums.sort(reverse=False, key=lambda sort_num: sort_num["representative"])
 	for step in range(len(compare_nums)):
 		element = compare_nums[step]
 		if element["operator"] == '+':
