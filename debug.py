@@ -1,6 +1,6 @@
 Operators = ['+', '-', '*', '/']
 answer = []
-complete_answer = []
+complete_answer = ['(', 8.0, '+', 8.0, '-', 13.0, ')', '*', 8.0]
 
 Whole_Answers = []
 the_Selected_Operators = []
@@ -162,8 +162,8 @@ def simplify_formula_third_part(part_of_group):
 		if element["operator"] == '*':
 			if sort_list[min_number]["num"] > element["num"]:
 				min_number = step
-			# elif sort_list[min_number]["num"] == element["num"] and sort_list[min_number]["operator"] == '(':
-			# 	min_number = step
+			elif sort_list[min_number]["num"] == element["num"]:
+				min_number = step
 	if min_number != 0:
 		part_of_group[sort_list[0]["index"]], part_of_group[sort_list[min_number]["index"]] = part_of_group[
 			sort_list[min_number]["index"]], part_of_group[sort_list[0]["index"]]
@@ -249,87 +249,6 @@ def simplify_formula_second_part(first):
 	return group, step
 
 
-def calculate_the_answer():
-	global answer
-	step = 0
-	layer = 0
-	whether_use_addition_and_subtraction = [False]
-	whether_use_multiplication_and_division = [True]
-	whether_found_multiplication_or_division = [False]
-	while len(answer) != 1:
-		# print(answer)
-		if step == len(answer):
-			step = 0
-			whether_use_addition_and_subtraction = [not i for i in whether_found_multiplication_or_division]
-			whether_use_multiplication_and_division = [True for _ in whether_use_multiplication_and_division]
-			whether_found_multiplication_or_division = [False for _ in whether_found_multiplication_or_division]
-		symbol = answer[step]
-		if symbol == '(':
-			if len(whether_found_multiplication_or_division) - 1 == layer:
-				whether_found_multiplication_or_division.append(False)
-				whether_use_multiplication_and_division.append(True)
-				whether_use_addition_and_subtraction.append(False)
-			layer += 1
-			step += 1
-			continue
-		if symbol == ')':
-			layer -= 1
-			if answer[step - 2] == '(':
-				answer.pop(step - 2)
-				answer.pop(step - 1)
-				step -= 1
-			else:
-				step += 1
-			continue
-		if whether_use_addition_and_subtraction[layer]:
-			if symbol == '+':
-				if answer[step - 1] == '(' or answer[step - 1] == ')' or answer[step + 1] == '(' or answer[
-					step + 1] == ')':
-					pass
-				else:
-					if answer[step - 2] != '-':
-						answer[step - 1] += answer[step + 1]
-					else:
-						answer[step - 1] -= answer[step + 1]
-					del answer[step: step + 2]
-					continue
-			elif symbol == '-':
-				if answer[step - 1] == '(' or answer[step - 1] == ')' or answer[step + 1] == '(' or answer[
-					step + 1] == ')':
-					pass
-				else:
-					if answer[step - 2] != '-':
-						answer[step - 1] -= answer[step + 1]
-					else:
-						answer[step - 1] += answer[step + 1]
-					del answer[step: step + 2]
-					continue
-		if whether_use_multiplication_and_division[layer]:
-			if symbol == '*':
-				whether_found_multiplication_or_division[layer] = True
-				if answer[step - 1] == '(' or answer[step - 1] == ')' or answer[step + 1] == '(' or answer[
-					step + 1] == ')':
-					whether_use_multiplication_and_division[layer] = False
-				else:
-					answer[step - 1] *= answer[step + 1]
-					del answer[step: step + 2]
-					continue
-			elif symbol == '/':
-				whether_found_multiplication_or_division[layer] = True
-				if answer[step - 1] == '(' or answer[step - 1] == ')' or answer[step + 1] == '(' or answer[
-					step + 1] == ')':
-					whether_use_multiplication_and_division[layer] = False
-				else:
-					if answer[step + 1] == 0:
-						answer = [0]
-						break
-					answer[step - 1] /= answer[step + 1]
-					del answer[step: step + 2]
-					continue
-		step += 1
-
-
-complete_answer = ['(', 8.0, '+', 8.0, '-', 13.0, ')', '*', 8.0]
 simplify_formula_first_part()
-complete_answer, n = simplify_formula_second_part(complete_answer)
+complete_answer, n = simplify_formula_second_part(0)
 print(complete_answer)
