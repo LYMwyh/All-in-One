@@ -1,6 +1,6 @@
 Operators = ['+', '-', '*', '/']
 answer = []
-complete_answer = ['(', 8.0, '+', 8.0, '-', 13.0, ')', '*', 8.0]
+complete_answer = ['(', 8.0, '*', 8.0, '-', 13.0, ')', '*', 8.0]
 
 Whole_Answers = []
 the_Selected_Operators = []
@@ -155,22 +155,19 @@ def simplify_formula_third_part(part_of_group):
 		symbol = part_of_group[step]
 		if type(symbol) is not str:
 			sort_list.append(
-				{"num": representative_of_the_formula(symbol), "operator": part_of_group[step - 1], "index": step})
+				{"representative": str(part_of_group[step]), "operator": part_of_group[step - 1], "index": step})
 	min_number = 0
 	for step in range(len(sort_list)):
 		element = sort_list[step]
-		if element["operator"] == '*':
-			if sort_list[min_number]["num"] > element["num"]:
-				min_number = step
-			elif sort_list[min_number]["num"] == element["num"]:
-				min_number = step
+		if element["operator"] == '*' and sort_list[min_number]["representative"] > element["representative"]:
+			min_number = step
 	if min_number != 0:
 		part_of_group[sort_list[0]["index"]], part_of_group[sort_list[min_number]["index"]] = part_of_group[
 			sort_list[min_number]["index"]], part_of_group[sort_list[0]["index"]]
-		sort_list[min_number]["num"] = sort_list[0]["num"]
+		sort_list[min_number]["representative"] = sort_list[0]["representative"]
 	first_number = sort_list[0]["index"] + 1
 	del sort_list[0]
-	sort_list.sort(reverse=False, key=lambda sort_num: sort_num["num"])
+	sort_list.sort(reverse=False, key=lambda sort_num: sort_num["representative"])
 	new_list = [_ for _ in part_of_group[0:first_number]]
 	index_of_sort_list = 0
 	for step in range(first_number, len(part_of_group), 2):
