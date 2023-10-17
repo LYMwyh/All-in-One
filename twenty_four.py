@@ -6,14 +6,14 @@ root = Tk()
 root.title("Twenty Four")
 root.geometry("800x400+100+100")
 
-size = 10
+size = 14
 
 print_frame_border = Frame(root, bg="white", bd=1)
-print_text = Text(print_frame_border, bg="black", fg="white", font=size)
+print_text = Text(print_frame_border, bg="black", fg="white", font=('Arial', size))
 
 input_frame_border = Frame(root, bg="white", bd=1)
 input_frame = Frame(input_frame_border, bg="black")
-button_close = Button(input_frame, text="closed", font=size, command=root.quit)
+button_close = Button(input_frame, text="closed", font=('Arial', size), command=root.quit)
 
 Operators = ['+', '-', '*', '/']
 answer = []
@@ -24,32 +24,24 @@ the_Selected_Operators = []
 Four_Numbers = []
 
 
-def add_font_size():
+def add_or_reduce_font_size(yes):
 	global size
-	size += 1
+	if yes:
+		size += 1
+	else:
+		size -= 1
 	if print_text['state'] == DISABLED:
 		print_text.configure(state=NORMAL)
-		print_text.configure(font=size)
+		print_text.configure(font=('Arial', size))
 		print_text.configure(state=NORMAL)
 	else:
-		print_text.configure(font=size)
+		print_text.configure(font=('Arial', size))
 	root.update()
 
 
-def reduce_font_size():
-	global size
-	size -= 1
-	if print_text['state'] == DISABLED:
-		print_text.configure(state=NORMAL)
-		print_text.configure(font=size)
-		print_text.configure(state=NORMAL)
-	else:
-		print_text.configure(font=size)
-	root.update()
-	
+increase_font_size = Button(input_frame_border, text="font size +", command=lambda: add_or_reduce_font_size(True), font=('Arial', size))
+decrease_font_size = Button(input_frame_border, text="font size -", command=lambda: add_or_reduce_font_size(False), font=('Arial', size))
 
-increase_font_size = Button(input_frame_border, text="font size +", command=add_font_size, font=size)
-decrease_font_size = Button(input_frame_border, text="font size -", command=reduce_font_size, font=size)
 
 def before_or_after_one(index_of_one, before):
 	global complete_answer
@@ -480,12 +472,12 @@ def whole_answers(yes):
 	print_text.configure(state=DISABLED)
 	button_yes.configure(state=NORMAL)
 	button_no.configure(state=NORMAL)
-	button_yes.place(anchor='center', relx=0.5, rely=0.3)
-	button_no.place(anchor='center', relx=0.5, rely=0.7)
+	button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
+	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
 
 
-button_yes_whole_answers = Button(input_frame, text="YES", command=lambda: whole_answers(True), font=size)
-button_no_whole_answers = Button(input_frame, text="NO", command=lambda: whole_answers(False), font=size)
+button_yes_whole_answers = Button(input_frame, text="YES", command=lambda: whole_answers(True), font=('Arial', size))
+button_no_whole_answers = Button(input_frame, text="NO", command=lambda: whole_answers(False), font=('Arial', size))
 
 
 def clicked_yes():
@@ -515,8 +507,8 @@ def clicked_yes():
 	print_text.configure(state=DISABLED)
 	button_yes_whole_answers.configure(state=NORMAL)
 	button_no_whole_answers.configure(state=NORMAL)
-	button_yes_whole_answers.place(anchor='center', relx=0.5, rely=0.3)
-	button_no_whole_answers.place(anchor='center', relx=0.5, rely=0.7)
+	button_yes_whole_answers.place(relx=0, rely=0, relwidth=1, relheight=0.5)
+	button_no_whole_answers.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
 
 
 def clicked_no():
@@ -529,7 +521,7 @@ def clicked_no():
 	printer('\n')
 	printer("OK!")
 	printer("See you next time!")
-	button_close.place(anchor='center', relx=0.5, rely=0.5)
+	button_close.place(relx=0, rely=0, relwidth=1, relheight=1)
 
 
 button_yes = Button(input_frame, text="YES", command=clicked_yes, font=size)
@@ -551,11 +543,11 @@ def start():
 	printer("Do you want to play it with me?")
 	print_text.configure(state=DISABLED)
 	
-	button_yes.place(anchor='center', relx=0.5, rely=0.3)
-	button_no.place(anchor='center', relx=0.5, rely=0.7)
+	button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
+	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
 
 
-Start = Button(root, text="Start", command=start, font=size)
+Start = Button(root, text="Start", command=start, font=('Arial', size))
 Start.place(relx=0.5, rely=0.5, anchor='center')
 
 root.mainloop()
