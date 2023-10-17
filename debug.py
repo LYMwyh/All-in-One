@@ -1,10 +1,48 @@
+from tkinter import *
+import random
+import time
+
+root = Tk()
+root.title("Twenty Four")
+root.geometry("800x400+100+100")
+
+size = 14
+
+print_frame_border = Frame(root, bg="white", bd=1)
+print_text = Text(print_frame_border, bg="black", fg="white", font=('Arial', size))
+
+input_frame_border = Frame(root, bg="white", bd=1)
+input_frame = Frame(input_frame_border, bg="black")
+button_close = Button(input_frame, text="closed", font=('Arial', size), command=root.quit)
+
 Operators = ['+', '-', '*', '/']
 answer = []
-complete_answer = ['(', 8.0, '*', 8.0, '-', 13.0, ')', '*', 8.0]
+complete_answer = []
 
 Whole_Answers = []
 the_Selected_Operators = []
 Four_Numbers = []
+
+
+def add_or_reduce_font_size(yes):
+	global size
+	if yes:
+		size += 1
+	else:
+		size -= 1
+	if print_text['state'] == DISABLED:
+		print_text.configure(state=NORMAL)
+		print_text.configure(font=('Arial', size))
+		print_text.configure(state=NORMAL)
+	else:
+		print_text.configure(font=('Arial', size))
+	root.update()
+
+
+increase_font_size = Button(input_frame_border, text="font size +", command=lambda: add_or_reduce_font_size(True),
+                            font=('Arial', size))
+decrease_font_size = Button(input_frame_border, text="font size -", command=lambda: add_or_reduce_font_size(False),
+                            font=('Arial', size))
 
 
 def before_or_after_one(index_of_one, before):
@@ -155,19 +193,19 @@ def simplify_formula_third_part(part_of_group):
 		symbol = part_of_group[step]
 		if type(symbol) is not str:
 			sort_list.append(
-				{"representative": str(part_of_group[step]), "operator": part_of_group[step - 1], "index": step})
+				{"num": representative_of_the_formula(symbol), "operator": part_of_group[step - 1], "index": step})
 	min_number = 0
 	for step in range(len(sort_list)):
 		element = sort_list[step]
-		if element["operator"] == '*' and sort_list[min_number]["representative"] > element["representative"]:
+		if element["operator"] == '*' and sort_list[min_number]["num"] > element["num"]:
 			min_number = step
 	if min_number != 0:
 		part_of_group[sort_list[0]["index"]], part_of_group[sort_list[min_number]["index"]] = part_of_group[
 			sort_list[min_number]["index"]], part_of_group[sort_list[0]["index"]]
-		sort_list[min_number]["representative"] = sort_list[0]["representative"]
+		sort_list[min_number]["num"] = sort_list[0]["num"]
 	first_number = sort_list[0]["index"] + 1
 	del sort_list[0]
-	sort_list.sort(reverse=False, key=lambda sort_num: sort_num["representative"])
+	sort_list.sort(reverse=False, key=lambda sort_num: sort_num["num"])
 	new_list = [_ for _ in part_of_group[0:first_number]]
 	index_of_sort_list = 0
 	for step in range(first_number, len(part_of_group), 2):
@@ -246,6 +284,272 @@ def simplify_formula_second_part(first):
 	return group, step
 
 
-simplify_formula_first_part()
-complete_answer, n = simplify_formula_second_part(0)
-print(complete_answer)
+def calculate_the_answer():
+	global answer
+	step = 0
+	layer = 0
+	whether_use_addition_and_subtraction = [False]
+	whether_use_multiplication_and_division = [True]
+	whether_found_multiplication_or_division = [False]
+	while len(answer) != 1:
+		# print(answer)
+		if step == len(answer):
+			step = 0
+			whether_use_addition_and_subtraction = [not i for i in whether_found_multiplication_or_division]
+			whether_use_multiplication_and_division = [True for _ in whether_use_multiplication_and_division]
+			whether_found_multiplication_or_division = [False for _ in whether_found_multiplication_or_division]
+		symbol = answer[step]
+		if symbol == '(':
+			if len(whether_found_multiplication_or_division) - 1 == layer:
+				whether_found_multiplication_or_division.append(False)
+				whether_use_multiplication_and_division.append(True)
+				whether_use_addition_and_subtraction.append(False)
+			layer += 1
+			step += 1
+			continue
+		if symbol == ')':
+			layer -= 1
+			if answer[step - 2] == '(':
+				answer.pop(step - 2)
+				answer.pop(step - 1)
+				step -= 1
+			else:
+				step += 1
+			continue
+		if whether_use_addition_and_subtraction[layer]:
+			if symbol == '+':
+				if answer[step - 1] == '(' or answer[step - 1] == ')' or answer[step + 1] == '(' or answer[
+					step + 1] == ')':
+					pass
+				else:
+					if answer[step - 2] != '-':
+						answer[step - 1] += answer[step + 1]
+					else:
+						answer[step - 1] -= answer[step + 1]
+					del answer[step: step + 2]
+					continue
+			elif symbol == '-':
+				if answer[step - 1] == '(' or answer[step - 1] == ')' or answer[step + 1] == '(' or answer[
+					step + 1] == ')':
+					pass
+				else:
+					if answer[step - 2] != '-':
+						answer[step - 1] -= answer[step + 1]
+					else:
+						answer[step - 1] += answer[step + 1]
+					del answer[step: step + 2]
+					continue
+		if whether_use_multiplication_and_division[layer]:
+			if symbol == '*':
+				whether_found_multiplication_or_division[layer] = True
+				if answer[step - 1] == '(' or answer[step - 1] == ')' or answer[step + 1] == '(' or answer[
+					step + 1] == ')':
+					whether_use_multiplication_and_division[layer] = False
+				else:
+					answer[step - 1] *= answer[step + 1]
+					del answer[step: step + 2]
+					continue
+			elif symbol == '/':
+				whether_found_multiplication_or_division[layer] = True
+				if answer[step - 1] == '(' or answer[step - 1] == ')' or answer[step + 1] == '(' or answer[
+					step + 1] == ')':
+					whether_use_multiplication_and_division[layer] = False
+				else:
+					if answer[step + 1] == 0:
+						answer = [0]
+						break
+					answer[step - 1] /= answer[step + 1]
+					del answer[step: step + 2]
+					continue
+		step += 1
+
+
+def calculate_the_whole_answers():
+	global answer, Four_Numbers, Operators, the_Selected_Operators, complete_answer
+	for first_element in range(0, 4):
+		Four_Numbers[0], Four_Numbers[first_element] = Four_Numbers[first_element], Four_Numbers[0]
+		for second_element in range(1, 4):
+			Four_Numbers[1], Four_Numbers[second_element] = Four_Numbers[second_element], Four_Numbers[1]
+			for third_element in range(2, 4):
+				Four_Numbers[2], Four_Numbers[third_element] = Four_Numbers[third_element], Four_Numbers[2]
+				
+				for the_First_Operator in Operators:
+					the_Selected_Operators.append(the_First_Operator)
+					for the_Second_Operator in Operators:
+						the_Selected_Operators.append(the_Second_Operator)
+						for the_third_Operator in Operators:
+							the_Selected_Operators.append(the_third_Operator)
+							for Type_of_Brackets in range(7):
+								# a = Four_Numbers[0]
+								# b = Four_Numbers[1]
+								# c = Four_Numbers[2]
+								# d = Four_Numbers[3]
+								answer.clear()
+								for Create_the_Answer in range(4):
+									# 0. (a b) c d
+									# 1. a (b c) d
+									# 2. a b (c d)
+									# 3. (a b c) d
+									# 4. a (b c d)
+									# 5. (a b)(c d)
+									# 6. a b c d
+									if Create_the_Answer == 0 and (
+											Type_of_Brackets == 0 or Type_of_Brackets == 3 or Type_of_Brackets == 5):
+										answer.append("(")
+									elif Create_the_Answer == 1 and (
+											Type_of_Brackets == 1 or Type_of_Brackets == 4):
+										answer.append("(")
+									elif Create_the_Answer == 2 and (
+											Type_of_Brackets == 2 or Type_of_Brackets == 5):
+										answer.append("(")
+									
+									answer.append(Four_Numbers[Create_the_Answer])
+									
+									if Create_the_Answer == 1 and (Type_of_Brackets == 0 or Type_of_Brackets == 5):
+										answer.append(")")
+									elif Create_the_Answer == 2 and (
+											Type_of_Brackets == 1 or Type_of_Brackets == 3):
+										answer.append(")")
+									elif Create_the_Answer == 3 and (
+											Type_of_Brackets == 2 or Type_of_Brackets == 4 or Type_of_Brackets == 5):
+										answer.append(")")
+									
+									if Create_the_Answer < 3:  # 0 , 1 , 2
+										answer.append(the_Selected_Operators[Create_the_Answer])
+								complete_answer = [_ for _ in answer]
+								calculate_the_answer()
+								
+								if answer == [24]:
+									simplify_formula_first_part()
+									complete_answer, temporary_number = simplify_formula_second_part(0)
+									for step in range(len(complete_answer)):
+										if type(complete_answer[step]) is float:
+											complete_answer[step] = int(complete_answer[step])
+									#
+									answer = [_ for _ in complete_answer]
+									calculate_the_answer()
+									if answer != [24]:
+										print("error!")
+									#
+									complete_answer = ''.join(list(map(str, complete_answer)))
+									if complete_answer not in Whole_Answers:
+										Whole_Answers.append(complete_answer)
+							
+							the_Selected_Operators.pop()
+						the_Selected_Operators.pop()
+					the_Selected_Operators.pop()
+				
+				Four_Numbers[2], Four_Numbers[third_element] = Four_Numbers[third_element], Four_Numbers[2]
+			Four_Numbers[1], Four_Numbers[second_element] = Four_Numbers[second_element], Four_Numbers[1]
+		Four_Numbers[0], Four_Numbers[first_element] = Four_Numbers[first_element], Four_Numbers[0]
+
+
+def printer(content):
+	for char in content:
+		print_text.insert('end', char)
+		root.update()
+		time.sleep(0)
+	print_text.insert('end', '\n')
+
+
+def whole_answers(yes):
+	global Whole_Answers, the_Selected_Operators, Four_Numbers
+	button_yes_whole_answers.configure(state=DISABLED)
+	button_yes_whole_answers.place_forget()
+	button_no_whole_answers.configure(state=DISABLED)
+	button_no_whole_answers.place_forget()
+	print_text.configure(state=NORMAL)
+	printer('\n')
+	printer("OK!")
+	time.sleep(1.0)
+	print_text.delete('1.0', 'end')
+	if yes is True:
+		calculate_the_whole_answers()
+		if len(Whole_Answers) == 0:
+			printer("There is no any answers!")
+		else:
+			for Each_Answer in Whole_Answers:
+				printer(Each_Answer + "=24")
+	printer("Do you want to play it again?")
+	print_text.configure(state=DISABLED)
+	button_yes.configure(state=NORMAL)
+	button_no.configure(state=NORMAL)
+	button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
+	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
+
+
+button_yes_whole_answers = Button(input_frame, text="YES", command=lambda: whole_answers(True), font=('Arial', size))
+button_no_whole_answers = Button(input_frame, text="NO", command=lambda: whole_answers(False), font=('Arial', size))
+
+
+def clicked_yes():
+	global Whole_Answers, the_Selected_Operators, Four_Numbers
+	button_yes.configure(state=DISABLED)
+	button_yes.place_forget()
+	button_no.configure(state=DISABLED)
+	button_no.place_forget()
+	
+	Whole_Answers = []
+	the_Selected_Operators = []
+	Four_Numbers = []
+	for _ in range(4):
+		Four_Numbers.append(float(random.randint(1, 13)))
+	
+	print_text.configure(state=NORMAL)
+	printer('\n')
+	printer('OK!')
+	time.sleep(0.2)
+	print_text.delete('1.0', 'end')
+	printer("Here is four numbers: %d , %d , %d , %d ." % (
+		Four_Numbers[0], Four_Numbers[1], Four_Numbers[2], Four_Numbers[3]))
+	time.sleep(1)
+	printer("Did you find the answer(s)?")
+	printer('\n')
+	printer("Do you want to know the whole answer(s)?")
+	print_text.configure(state=DISABLED)
+	button_yes_whole_answers.configure(state=NORMAL)
+	button_no_whole_answers.configure(state=NORMAL)
+	button_yes_whole_answers.place(relx=0, rely=0, relwidth=1, relheight=0.5)
+	button_no_whole_answers.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
+
+
+def clicked_no():
+	button_yes.configure(state=DISABLED)
+	button_yes.place_forget()
+	button_no.configure(state=DISABLED)
+	button_no.place_forget()
+	
+	print_text.configure(state=NORMAL)
+	printer('\n')
+	printer("OK!")
+	printer("See you next time!")
+	button_close.place(relx=0, rely=0, relwidth=1, relheight=1)
+
+
+button_yes = Button(input_frame, text="YES", command=clicked_yes, font=size)
+button_no = Button(input_frame, text="NO", command=clicked_no, font=size)
+
+
+def start():
+	Start.configure(state=DISABLED)
+	Start.place_forget()
+	print_frame_border.place(relx=0, rely=0, relwidth=0.5, relheight=1)
+	print_text.place(x=0, y=0, relwidth=1, relheight=1)
+	input_frame_border.place(relx=0.5, rely=0, relwidth=0.5, relheight=1)
+	input_frame.place(relx=0, rely=0.1, relwidth=1, relheight=0.8)
+	increase_font_size.place(relx=0, rely=0, relwidth=1, relheight=0.1)
+	decrease_font_size.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
+	printer("Here is a game:")
+	printer("I will give you 4 integers,you need to use these four integer to calculate 24.")
+	printer("\n")
+	printer("Do you want to play it with me?")
+	print_text.configure(state=DISABLED)
+	
+	button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
+	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
+
+
+Start = Button(root, text="Start", command=start, font=('Arial', size))
+Start.place(relx=0.5, rely=0.5, anchor='center')
+
+root.mainloop()
