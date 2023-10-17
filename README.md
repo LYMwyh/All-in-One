@@ -1,8 +1,6 @@
 # All in One
 
-c++
-
-python
+c++, python ...
 
 Writer is chinese.
 
@@ -10,4 +8,4 @@ Writer is chinese.
 
 - 24(puzzle)
 
-  in Python (Finished)
+  in Python - Tkinter (Finished)
