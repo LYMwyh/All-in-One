@@ -18,7 +18,8 @@ button_close = Button(input_frame, text="closed", font=('Arial', size), command=
 button_yes = Button(input_frame, text="YES", font=size)
 button_no = Button(input_frame, text="NO", font=size)
 
-input_frame_hint = Label(input_frame, text="Input Frame", font=('Arial', size))
+input_frame_hint = Label(input_frame, text="Input Frame", bg="black", fg="white", font=('Arial', size))
+input_text = Text(input_frame, bg="black", fg="white", font=('Arial', size))
 
 Operators = ['+', '-', '*', '/']
 answer = []
@@ -78,6 +79,12 @@ def add_or_reduce_font_size(yes):
 		input_frame_hint.configure(state=DISABLED)
 	else:
 		input_frame_hint.configure(font=('Arial', size))
+	if input_text['state'] == DISABLED:
+		input_text.configure(state=NORMAL)
+		input_text.configure(font=('Arial', size))
+		input_text.configure(state=DISABLED)
+	else:
+		input_text.configure(font=('Arial', size))
 	root.update()
 
 
@@ -85,8 +92,7 @@ increase_font_size = Button(input_frame_border, text="font size +", command=lamb
 decrease_font_size = Button(input_frame_border, text="font size -", command=lambda: add_or_reduce_font_size(False), font=('Arial', size))
 
 
-def before_or_after_one(index_of_one, before):
-	global complete_answer
+def before_or_after_one(index_of_one, before, complete_answer):
 	if before is True:
 		if complete_answer[index_of_one + 1] == '/':
 			return False
@@ -112,8 +118,7 @@ def before_or_after_one(index_of_one, before):
 			return False
 
 
-def simplify_formula_first_part():
-	global complete_answer
+def simplify_formula_first_part(complete_answer):
 	layer = 0
 	whether_found_addition_or_subtraction = [False]
 	whether_found_multiplication_or_division = [False]
@@ -156,7 +161,7 @@ def simplify_formula_first_part():
 					if (complete_answer[brackets[layer - 1] - 1] != '*' and complete_answer[
 						brackets[layer - 1] - 1] != '/') or (
 							complete_answer[brackets[layer - 1] - 2] == 1 and before_or_after_one(
-						brackets[layer - 1] - 2, True)):
+						brackets[layer - 1] - 2, True, complete_answer)):
 						decision_front = True
 						if complete_answer[brackets[layer - 1] - 1] == '-':
 							change_symbol_from_subtraction = True
@@ -164,7 +169,7 @@ def simplify_formula_first_part():
 					decision_front = True
 				if step != len(complete_answer) - 1:
 					if (complete_answer[step + 1] != '*' and complete_answer[step + 1] != '/') or (
-							complete_answer[step + 2] == 1 and before_or_after_one(step + 2, False)):
+							complete_answer[step + 2] == 1 and before_or_after_one(step + 2, False, complete_answer)):
 						decision_back = True
 				else:
 					decision_back = True
@@ -273,8 +278,7 @@ def simplify_formula_forth_part(group):
 	return new_group
 
 
-def simplify_formula_second_part(first):
-	global complete_answer
+def simplify_formula_second_part(first, complete_answer):
 	group = []
 	temporary_group = ['+']
 	step = first
@@ -287,7 +291,7 @@ def simplify_formula_second_part(first):
 			temporary_group.clear()
 		
 		if symbol == '(':
-			temporary_list, step = simplify_formula_second_part(step + 1)
+			temporary_list, step = simplify_formula_second_part(step + 1, complete_answer)
 			temporary_list.insert(0, '(')
 			temporary_list.append(')')
 			temporary_group.append([_ for _ in temporary_list])
@@ -441,8 +445,8 @@ def calculate_the_whole_answers():
 								calculate_the_answer()
 								
 								if answer == [24]:
-									simplify_formula_first_part()
-									complete_answer, temporary_number = simplify_formula_second_part(0)
+									simplify_formula_first_part(complete_answer)
+									complete_answer, temporary_number = simplify_formula_second_part(0, complete_answer)
 									for step in range(len(complete_answer)):
 										if type(complete_answer[step]) is float:
 											complete_answer[step] = int(complete_answer[step])
@@ -465,48 +469,143 @@ def calculate_the_whole_answers():
 		Four_Numbers[0], Four_Numbers[first_element] = Four_Numbers[first_element], Four_Numbers[0]
 
 
-def printer(content):
+def printer(content, text=print_text):
 	for char in content:
-		print_text.insert('end', char)
+		text.insert('end', char)
 		root.update()
 		time.sleep(0)
-	print_text.insert('end', '\n')
+	text.insert('end', '\n')
+
+
+def whether_know_whole_answer():
+	input_text.place_forget()
+	button_yes.configure(state=DISABLED)
+	button_yes.place_forget()
+	button_yes.configure(text="YES")
+	input_frame_hint.place(relx=0.5, rely=0.5, anchor='center')
+	print_text.configure(state=NORMAL)
+	printer("Do you want to know the whole answer(s)?")
+	print_text.configure(state=DISABLED)
+	input_frame_hint.place_forget()
+	input_frame_hint.configure(state=DISABLED)
+	button_yes.configure(command=lambda: whole_answers(True))
+	button_no.configure(command=lambda: whole_answers(False))
+	button_yes.configure(state=NORMAL)
+	button_no.configure(state=NORMAL)
+	button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
+	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
+
+
+def submit_answers():
+	global Whole_Answers
+	submit.configure(state=DISABLED)
+	input_text.configure(state=DISABLED)
+	print_text.configure(state=NORMAL)
+	print_text.delete('1.0', 'end')
+	answers = input_text.get('2.0', 'end')
+	answers = answers.split('\n')
+	answers.pop()
+	for answer_in_str in answers:
+		num = False
+		answer = []
+		for char in answer_in_str:
+			try:
+				temporary_num = int(char)
+				if num:
+					answer[-1] *= 10
+					answer[-1] += temporary_num
+				else:
+					num = True
+					answer.append(temporary_num)
+			except ValueError:
+				num = False
+				answer.append(char)
+		for step in range(len(answer)):
+			if type(answer[step]) is int:
+				answer[step] = float(answer[step])
+		simplify_formula_first_part(answer)
+		answer, temporary_num = simplify_formula_second_part(0, answer)
+		for step in range(len(answer)):
+			if type(answer[step]) is float:
+				answer[step] = int(answer[step])
+		answer.append("=24")
+		answer = ''.join(list(map(str, answer)))
+		
+		if answer in Whole_Answers:
+			printer("True")
+		else:
+			printer("False")
+	print_text.configure(state=DISABLED)
+	submit.place_forget()
+	button_yes.configure(text="Next")
+	button_yes.configure(command=lambda: whether_know_whole_answer())
+	button_yes.configure(state=NORMAL)
+	button_yes.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
+
+
+submit = Button(input_frame, text="Submit", command=lambda: submit_answers())
 
 
 def check_answer(yes):
-	button_yes.configure(state=DISABLED)
+	global Four_Numbers
 	button_yes.place_forget()
-	button_no.configure(state=DISABLED)
+	button_yes.configure(state=DISABLED)
 	button_no.place_forget()
+	button_no.configure(state=DISABLED)
+	
+	input_frame_hint.configure(state=NORMAL)
+	input_frame_hint.place(relx=0.5, rely=0.5, anchor='center')
+	
 	print_text.configure(state=NORMAL)
 	printer("OK!")
 	time.sleep(1.0)
 	print_text.delete('1.0', 'end')
 	if yes is True:
+		printer(
+			"Four numbers: %d , %d , %d , %d ." % (Four_Numbers[0], Four_Numbers[1], Four_Numbers[2], Four_Numbers[3]))
 		printer("Please input your answer(s) in the input frame.")
+		printer("Each line write one answer.You don't need to write '=24' in the end.")
+		print_text.configure(state=DISABLED)
 		
-	printer("")
+		input_text.configure(state=NORMAL)
+		input_text.delete('1.0', 'end')
+		input_text.place(relx=0, rely=0, relwidth=1, relheight=0.9)
+		submit.configure(state=NORMAL)
+		submit.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
+		printer("Example: a+b+c+d", input_text)
+	else:
+		input_frame_hint.place_forget()
+		input_frame_hint.configure(state=DISABLED)
+		whether_know_whole_answer()
 
 
 def whole_answers(yes):
 	global Whole_Answers, the_Selected_Operators, Four_Numbers
-	button_yes.configure(state=DISABLED)
 	button_yes.place_forget()
-	button_no.configure(state=DISABLED)
+	button_yes.configure(state=DISABLED)
 	button_no.place_forget()
+	button_no.configure(state=DISABLED)
+	
+	input_frame_hint.configure(state=NORMAL)
+	input_frame_hint.place(relx=0.5, rely=0.5, anchor='center')
+	
 	print_text.configure(state=NORMAL)
 	printer('\n')
 	printer("OK!")
 	time.sleep(1.0)
 	print_text.delete('1.0', 'end')
 	if yes is True:
-		calculate_the_whole_answers()
+		
 		if len(Whole_Answers) == 0:
 			printer("There is no any answers!")
 		else:
 			for Each_Answer in Whole_Answers:
 				printer(Each_Answer + "=24")
 	printer("Do you want to play it again?")
+	
+	input_frame_hint.place_forget()
+	input_frame_hint.configure(state=NORMAL)
+	
 	print_text.configure(state=DISABLED)
 	button_yes.configure(command=lambda: clicked_yes())
 	button_no.configure(command=lambda: clicked_no())
@@ -518,10 +617,13 @@ def whole_answers(yes):
 
 def clicked_yes():
 	global Whole_Answers, the_Selected_Operators, Four_Numbers
-	button_yes.configure(state=DISABLED)
 	button_yes.place_forget()
-	button_no.configure(state=DISABLED)
+	button_yes.configure(state=DISABLED)
 	button_no.place_forget()
+	button_no.configure(state=DISABLED)
+	
+	input_frame_hint.configure(state=NORMAL)
+	input_frame_hint.place(relx=0.5, rely=0.5, anchor='center')
 	
 	Whole_Answers = []
 	the_Selected_Operators = []
@@ -537,8 +639,15 @@ def clicked_yes():
 	printer("Here is four numbers: %d , %d , %d , %d ." % (
 		Four_Numbers[0], Four_Numbers[1], Four_Numbers[2], Four_Numbers[3]))
 	time.sleep(1)
+	
+	calculate_the_whole_answers()
+	
 	printer("Did you find the answer(s)?")
 	printer("If yes, do you want to check your answer(s)?")
+	
+	input_frame_hint.place_forget()
+	input_frame_hint.configure(state=DISABLED)
+	
 	print_text.configure(state=DISABLED)
 	button_yes.configure(command=lambda: check_answer(True))
 	button_no.configure(command=lambda: check_answer(False))
@@ -546,29 +655,23 @@ def clicked_yes():
 	button_no.configure(state=NORMAL)
 	button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
 	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
-	# printer('\n')
-	#
-	# printer("Do you want to know the whole answer(s)?")
-	#
-	# print_text.configure(state=DISABLED)
-	# button_yes.configure(command=lambda: whole_answers(True))
-	# button_no.configure(command=lambda: whole_answers(False))
-	# button_yes.configure(state=NORMAL)
-	# button_no.configure(state=NORMAL)
-	# button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
-	# button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
 
 
 def clicked_no():
-	button_yes.configure(state=DISABLED)
+	
 	button_yes.place_forget()
-	button_no.configure(state=DISABLED)
+	button_yes.configure(state=DISABLED)
 	button_no.place_forget()
+	button_no.configure(state=DISABLED)
+	
+	input_frame_hint.configure(state=NORMAL)
+	input_frame_hint.place(relx=0.5, rely=0.5, anchor='center')
 	
 	print_text.configure(state=NORMAL)
 	printer('\n')
 	printer("OK!")
 	printer("See you next time!")
+	print_text.configure(state=DISABLED)
 	button_close.place(relx=0, rely=0, relwidth=1, relheight=1)
 
 
@@ -581,14 +684,17 @@ def start():
 	input_frame.place(relx=0, rely=0.1, relwidth=1, relheight=0.8)
 	increase_font_size.place(relx=0, rely=0, relwidth=1, relheight=0.1)
 	decrease_font_size.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
+	input_frame_hint.place(relx=0.5, rely=0.5, anchor='center')
 	printer("Here is a game:")
 	printer("There will have four random numbers from 1 to 13, you need to use these four numbers calculate 24.")
 	printer("Each number must and can only be used once.")
 	printer("Sometimes, there is no solutions for figuring out 24.")
 	printer("\n")
+	
 	printer("Do you want to play it with me?")
 	print_text.configure(state=DISABLED)
-	
+	input_frame_hint.place_forget()
+	input_frame_hint.configure(state=DISABLED)
 	button_yes.configure(command=lambda: clicked_yes())
 	button_no.configure(command=lambda: clicked_no())
 	button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
