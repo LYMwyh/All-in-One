@@ -473,6 +473,25 @@ def printer(content):
 	print_text.insert('end', '\n')
 
 
+def check_answer(yes):
+	global print_text, check_answer_yes, check_answer_no
+	check_answer_yes.configure(state=DISABLED)
+	check_answer_yes.place_forget()
+	check_answer_no.configure(state=DISABLED)
+	check_answer_no.place_forget()
+	
+	printer("OK!")
+	time.sleep(1.0)
+	print_text.delete('1.0', 'end')
+	if yes is True:
+	
+	printer("")
+
+
+check_answer_yes = Button(input_frame, text="YES", command=lambda :check_answer(True))
+check_answer_no = Button(input_frame, text="NO", command=lambda :check_answer(False))
+
+
 def whole_answers(yes):
 	global Whole_Answers, the_Selected_Operators, Four_Numbers
 	button_yes_whole_answers.configure(state=DISABLED)
@@ -527,11 +546,14 @@ def clicked_yes():
 	printer("Did you find the answer(s)?")
 	printer('\n')
 	printer("Do you want to know the whole answer(s)?")
+	
 	print_text.configure(state=DISABLED)
-	button_yes_whole_answers.configure(state=NORMAL)
-	button_no_whole_answers.configure(state=NORMAL)
-	button_yes_whole_answers.place(relx=0, rely=0, relwidth=1, relheight=0.5)
-	button_no_whole_answers.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
+	button_yes.configure(command=lambda :whole_answers(True))
+	button_no.configure(command=lambda :whole_answers(False))
+	button_yes.configure(state=NORMAL)
+	button_no.configure(state=NORMAL)
+	button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
+	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
 
 
 def clicked_no():
@@ -547,8 +569,8 @@ def clicked_no():
 	button_close.place(relx=0, rely=0, relwidth=1, relheight=1)
 
 
-button_yes = Button(input_frame, text="YES", command=clicked_yes, font=size)
-button_no = Button(input_frame, text="NO", command=clicked_no, font=size)
+button_yes = Button(input_frame, text="YES", font=size)
+button_no = Button(input_frame, text="NO", font=size)
 
 
 def start():
@@ -568,6 +590,8 @@ def start():
 	printer("Do you want to play it with me?")
 	print_text.configure(state=DISABLED)
 	
+	button_yes.configure(command=lambda :clicked_yes())
+	button_no.configure(command=lambda :clicked_no())
 	button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
 	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
 
