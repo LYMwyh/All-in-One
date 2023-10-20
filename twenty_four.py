@@ -15,6 +15,11 @@ input_frame_border = Frame(root, bg="white", bd=1)
 input_frame = Frame(input_frame_border, bg="black")
 button_close = Button(input_frame, text="closed", font=('Arial', size), command=root.quit)
 
+button_yes = Button(input_frame, text="YES", font=size)
+button_no = Button(input_frame, text="NO", font=size)
+
+input_frame_hint = Label(input_frame, text="Input Frame", font=('Arial', size))
+
 Operators = ['+', '-', '*', '/']
 answer = []
 complete_answer = []
@@ -48,18 +53,7 @@ def add_or_reduce_font_size(yes):
 		button_no.configure(state=DISABLED)
 	else:
 		button_no.configure(font=('Arial', size))
-	if button_yes_whole_answers['state'] == DISABLED:
-		button_yes_whole_answers.configure(state=NORMAL)
-		button_yes_whole_answers.configure(font=('Arial', size))
-		button_yes_whole_answers.configure(state=DISABLED)
-	else:
-		button_yes_whole_answers.configure(font=('Arial', size))
-	if button_no_whole_answers['state'] == DISABLED:
-		button_no_whole_answers.configure(state=NORMAL)
-		button_no_whole_answers.configure(font=('Arial', size))
-		button_no_whole_answers.configure(state=DISABLED)
-	else:
-		button_no_whole_answers.configure(font=('Arial', size))
+	
 	if increase_font_size['state'] == DISABLED:
 		increase_font_size.configure(state=NORMAL)
 		increase_font_size.configure(font=('Arial', size))
@@ -78,6 +72,12 @@ def add_or_reduce_font_size(yes):
 		button_close.configure(state=DISABLED)
 	else:
 		button_close.configure(font=('Arial', size))
+	if input_frame_hint['state'] == DISABLED:
+		input_frame_hint.configure(state=NORMAL)
+		input_frame_hint.configure(font=('Arial', size))
+		input_frame_hint.configure(state=DISABLED)
+	else:
+		input_frame_hint.configure(font=('Arial', size))
 	root.update()
 
 
@@ -474,30 +474,26 @@ def printer(content):
 
 
 def check_answer(yes):
-	global print_text, check_answer_yes, check_answer_no
-	check_answer_yes.configure(state=DISABLED)
-	check_answer_yes.place_forget()
-	check_answer_no.configure(state=DISABLED)
-	check_answer_no.place_forget()
-	
+	button_yes.configure(state=DISABLED)
+	button_yes.place_forget()
+	button_no.configure(state=DISABLED)
+	button_no.place_forget()
+	print_text.configure(state=NORMAL)
 	printer("OK!")
 	time.sleep(1.0)
 	print_text.delete('1.0', 'end')
 	if yes is True:
-	
+		printer("Please input your answer(s) in the input frame.")
+		
 	printer("")
-
-
-check_answer_yes = Button(input_frame, text="YES", command=lambda :check_answer(True))
-check_answer_no = Button(input_frame, text="NO", command=lambda :check_answer(False))
 
 
 def whole_answers(yes):
 	global Whole_Answers, the_Selected_Operators, Four_Numbers
-	button_yes_whole_answers.configure(state=DISABLED)
-	button_yes_whole_answers.place_forget()
-	button_no_whole_answers.configure(state=DISABLED)
-	button_no_whole_answers.place_forget()
+	button_yes.configure(state=DISABLED)
+	button_yes.place_forget()
+	button_no.configure(state=DISABLED)
+	button_no.place_forget()
 	print_text.configure(state=NORMAL)
 	printer('\n')
 	printer("OK!")
@@ -512,14 +508,12 @@ def whole_answers(yes):
 				printer(Each_Answer + "=24")
 	printer("Do you want to play it again?")
 	print_text.configure(state=DISABLED)
+	button_yes.configure(command=lambda: clicked_yes())
+	button_no.configure(command=lambda: clicked_no())
 	button_yes.configure(state=NORMAL)
 	button_no.configure(state=NORMAL)
 	button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
 	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
-
-
-button_yes_whole_answers = Button(input_frame, text="YES", command=lambda: whole_answers(True), font=('Arial', size))
-button_no_whole_answers = Button(input_frame, text="NO", command=lambda: whole_answers(False), font=('Arial', size))
 
 
 def clicked_yes():
@@ -544,16 +538,25 @@ def clicked_yes():
 		Four_Numbers[0], Four_Numbers[1], Four_Numbers[2], Four_Numbers[3]))
 	time.sleep(1)
 	printer("Did you find the answer(s)?")
-	printer('\n')
-	printer("Do you want to know the whole answer(s)?")
-	
+	printer("If yes, do you want to check your answer(s)?")
 	print_text.configure(state=DISABLED)
-	button_yes.configure(command=lambda :whole_answers(True))
-	button_no.configure(command=lambda :whole_answers(False))
+	button_yes.configure(command=lambda: check_answer(True))
+	button_no.configure(command=lambda: check_answer(False))
 	button_yes.configure(state=NORMAL)
 	button_no.configure(state=NORMAL)
 	button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
 	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
+	# printer('\n')
+	#
+	# printer("Do you want to know the whole answer(s)?")
+	#
+	# print_text.configure(state=DISABLED)
+	# button_yes.configure(command=lambda: whole_answers(True))
+	# button_no.configure(command=lambda: whole_answers(False))
+	# button_yes.configure(state=NORMAL)
+	# button_no.configure(state=NORMAL)
+	# button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
+	# button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
 
 
 def clicked_no():
@@ -567,10 +570,6 @@ def clicked_no():
 	printer("OK!")
 	printer("See you next time!")
 	button_close.place(relx=0, rely=0, relwidth=1, relheight=1)
-
-
-button_yes = Button(input_frame, text="YES", font=size)
-button_no = Button(input_frame, text="NO", font=size)
 
 
 def start():
@@ -590,8 +589,8 @@ def start():
 	printer("Do you want to play it with me?")
 	print_text.configure(state=DISABLED)
 	
-	button_yes.configure(command=lambda :clicked_yes())
-	button_no.configure(command=lambda :clicked_no())
+	button_yes.configure(command=lambda: clicked_yes())
+	button_no.configure(command=lambda: clicked_no())
 	button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
 	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
 
