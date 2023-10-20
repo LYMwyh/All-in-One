@@ -33,9 +33,51 @@ def add_or_reduce_font_size(yes):
 	if print_text['state'] == DISABLED:
 		print_text.configure(state=NORMAL)
 		print_text.configure(font=('Arial', size))
-		print_text.configure(state=NORMAL)
+		print_text.configure(state=DISABLED)
 	else:
 		print_text.configure(font=('Arial', size))
+	if button_yes['state'] == DISABLED:
+		button_yes.configure(state=NORMAL)
+		button_yes.configure(font=('Arial', size))
+		button_yes.configure(state=DISABLED)
+	else:
+		button_yes.configure(font=('Arial', size))
+	if button_no['state'] == DISABLED:
+		button_no.configure(state=NORMAL)
+		button_no.configure(font=('Arial', size))
+		button_no.configure(state=DISABLED)
+	else:
+		button_no.configure(font=('Arial', size))
+	if button_yes_whole_answers['state'] == DISABLED:
+		button_yes_whole_answers.configure(state=NORMAL)
+		button_yes_whole_answers.configure(font=('Arial', size))
+		button_yes_whole_answers.configure(state=DISABLED)
+	else:
+		button_yes_whole_answers.configure(font=('Arial', size))
+	if button_no_whole_answers['state'] == DISABLED:
+		button_no_whole_answers.configure(state=NORMAL)
+		button_no_whole_answers.configure(font=('Arial', size))
+		button_no_whole_answers.configure(state=DISABLED)
+	else:
+		button_no_whole_answers.configure(font=('Arial', size))
+	if increase_font_size['state'] == DISABLED:
+		increase_font_size.configure(state=NORMAL)
+		increase_font_size.configure(font=('Arial', size))
+		increase_font_size.configure(state=DISABLED)
+	else:
+		increase_font_size.configure(font=('Arial', size))
+	if decrease_font_size['state'] == DISABLED:
+		decrease_font_size.configure(state=NORMAL)
+		decrease_font_size.configure(font=('Arial', size))
+		decrease_font_size.configure(state=DISABLED)
+	else:
+		decrease_font_size.configure(font=('Arial', size))
+	if button_close['state'] == DISABLED:
+		button_close.configure(state=NORMAL)
+		button_close.configure(font=('Arial', size))
+		button_close.configure(state=DISABLED)
+	else:
+		button_close.configure(font=('Arial', size))
 	root.update()
 
 
@@ -519,7 +561,9 @@ def start():
 	increase_font_size.place(relx=0, rely=0, relwidth=1, relheight=0.1)
 	decrease_font_size.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
 	printer("Here is a game:")
-	printer("I will give you 4 integers,you need to use these four integer to calculate 24.")
+	printer("There will have four random numbers from 1 to 13, you need to use these four numbers calculate 24.")
+	printer("Each number must and can only be used once.")
+	printer("Sometimes, there is no solutions for figuring out 24.")
 	printer("\n")
 	printer("Do you want to play it with me?")
 	print_text.configure(state=DISABLED)
