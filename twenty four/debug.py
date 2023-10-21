@@ -1,31 +1,47 @@
+# import tkinter as tk
+#
+# root__ = tk.Tk()
+#
+# # 创建一个 Canvas 控件
+# canvas = tk.Canvas(root__, width=800, height=600)
+# canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+#
+# # 创建一个 Label 控件
+# label = tk.Label(root__, text="Hello, world!")
+# label.pack()
+#
+# # 创建一个 Radiobutton 控件
+# radio = tk.Radiobutton(canvas, text="Option 1", variable=tk.IntVar(), value=1)
+#
+# # 计算 Radiobutton 控件的坐标
+# canvas_x = canvas.canvasx(canvas.winfo_rooty())
+# canvas_y = canvas.canvasy(canvas.winfo_rooty())
+# radio_x = canvas_x + (canvas.winfo_width() - radio.winfo_reqwidth()) / 2
+# radio_y = canvas_y + (canvas.winfo_height() - radio.winfo_reqheight()) / 2
+#
+# # 将 Radiobutton 控件放置在屏幕中央
+# canvas.create_window(radio_x, radio_y, anchor=tk.CENTER, window=radio)
+#
+# # 运行主事件循环
+# root.mainloop()
 import tkinter as tk
-import tkinter.font as font
 
 root = tk.Tk()
 
-# 创建一个字体列表
-fonts = ["Helvetica", "Arial", "Times New Roman", "Courier New"]
+# 创建一个 Canvas 控件
+canvas = tk.Canvas(root, width=300, height=200)
+canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-# 创建一个变量对象，并将其赋值为一个空字符串
-var = tk.StringVar(value="")
+# 创建一个 Scrollbar 控件
+scrollbar = tk.Scrollbar(root, orient=tk.VERTICAL, command=canvas.yview)
+scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-# 创建一个 radiobutton 控件列表
-font_buttons = []
-for font_name in fonts:
-    font_button = tk.Radiobutton(root, text=font_name, variable=var, value=font_name)
-    font_button.pack()
-    font_buttons.append(font_button)
+# 将 Scrollbar 控件绑定到 Canvas 控件上
+canvas.configure(yscrollcommand=scrollbar.set)
 
-# 创建一个 Label 控件，用于显示当前选中的字体
-font_label = tk.Label(root, textvariable=var)
-font_label.pack()
+# 向 Canvas 控件中添加一些示例内容
+for i in range(100):
+    canvas.create_line(i, 0, i, 50)
 
-# 定义回调函数，用于更新 Label 控件的文本
-def update_font():
-    font_label.config(text=var.get())
-
-# 绑定回调函数，使得当用户点击 radiobutton 控件时，能够更新 Label 控件的文本
-for font_button in font_buttons:
-    font_button.config(command=update_font)
-
+# 运行主事件循环
 root.mainloop()
