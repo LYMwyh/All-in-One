@@ -28,26 +28,42 @@ font = ""
 
 
 def open_font_window():
-	global fonts, font
+	global fonts, font, size
 	font_window = Toplevel(root)
-	font_box = Frame(font_window, bg="black", bd=1)
-	font_box.place(relx=0, rely=0, relwidth=1, relheight=0.8)
+	font_window.title("Font Window")
+	font_box_frame = Frame(font_window)
+	font_box_frame.place(relx=0, rely=0, relwidth=1, relheight=0.8)
+	font_box = Canvas(font_box_frame, bg="black")
+	font_box.place(relx=0, rely=0, relwidth=0.9, relheight=1)
+	
+	scrollbar_y = Scrollbar(font_box_frame, orient=VERTICAL, command=font_box.yview)
+	scrollbar_y.place(relx=0.9, rely=0, relwidth=0.1, relheight=1)
+	font_box.configure(yscrollcommand=scrollbar_y.set)
+	
 	var = StringVar(value="")
 	font_label = Label(font_window, textvariable=var)
 	font_label.place(relx=0, rely=0.8, relwidth=1, relheight=0.1)
 	
-	def update_font_name():
+	def update_font():
 		global font
+		nonlocal var
 		font = var.get()
 	
-	confirm = Button(font_window, text="Confirm", command=lambda: update_font_name())
-	confirm.place(relx=0, rely=0.9, relwidth=1, relheigth=0.1)
-	font_buttons = []
+	def update_font_name():
+		nonlocal font_label, var
+		font_label.configure(text=var.get())
+		font_label.configure(font=(var.get(), size))
+	
+	confirm = Button(font_window, text="Confirm", command=lambda: update_font())
+	confirm.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
+	
+	# radio_x =
+	
 	for font_name in fonts:
-		font_button = Radiobutton(font_box, text=font_name, variable=var, value=font_name, fg="white")
-		font_button.configure(command=lambda: font_label.configure(text=var.get()))
-		font_button.pack()
-		font_buttons.append(font_button)
+		font_button = Radiobutton(font_box, text=font_name, variable=var, value=font_name, bg="black", fg="white")
+		font_button.configure(font=(font_name, size))
+		font_button.configure(command=lambda: update_font_name())
+		font_box.create_window(1000, 100, anchor='center', window=font_button)
 
 
 def add_or_reduce_font_size(yes):
@@ -325,17 +341,7 @@ def start():
 	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
 
 
-def identify_font():
-	pass
-
-
-def select_font():
-	Start.place_forget()
-	Start.configure(command=lambda: identify_font())
-	Start.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
-
-
-Start = Button(root, text="Start", command=lambda: select_font(), font=('Arial', size))
+Start = Button(root, text="Start", command=lambda: open_font_window(), font=('Arial', size))
 Start.place(relx=0.5, rely=0.5, anchor='center')
 
 root.mainloop()
