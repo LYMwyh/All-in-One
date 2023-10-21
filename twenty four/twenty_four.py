@@ -1,7 +1,7 @@
 from tkinter import *
 import random
 import time
-from algorithm import *
+import algorithm
 
 root = Tk()
 root.title("Twenty Four")
@@ -21,14 +21,6 @@ button_no = Button(input_frame, text="NO", font=size)
 
 input_frame_hint = Label(input_frame, text="Input Frame", bg="black", fg="white", font=('Arial', size))
 input_text = Text(input_frame, bg="black", fg="white", font=('Arial', size))
-
-# Operators = ['+', '-', '*', '/']
-# answer = []
-# complete_answer = []
-#
-# Whole_Answers = []
-# the_Selected_Operators = []
-# Four_Numbers = []
 
 
 def add_or_reduce_font_size(yes):
@@ -86,13 +78,17 @@ def add_or_reduce_font_size(yes):
 		input_text.configure(state=DISABLED)
 	else:
 		input_text.configure(font=('Arial', size))
+	if submit['state'] == DISABLED:
+		submit.configure(state=NORMAL)
+		submit.configure(font=('Arial', size))
+		submit.configure(font=DISABLED)
+	else:
+		submit.configure(font=('Arial', size))
 	root.update()
 
 
 increase_font_size = Button(input_frame_border, text="font size +", command=lambda: add_or_reduce_font_size(True), font=('Arial', size))
 decrease_font_size = Button(input_frame_border, text="font size -", command=lambda: add_or_reduce_font_size(False), font=('Arial', size))
-
-
 
 
 def printer(content, text=print_text):
@@ -119,7 +115,6 @@ def whether_know_whole_answer():
 
 
 def submit_answers():
-	global Whole_Answers
 	submit.configure(state=DISABLED)
 	input_text.configure(state=DISABLED)
 	print_text.configure(state=NORMAL)
@@ -146,14 +141,14 @@ def submit_answers():
 		for step in range(len(answer)):
 			if type(answer[step]) is int:
 				answer[step] = float(answer[step])
-		simplify_formula_first_part(answer)
-		answer, temporary_num = simplify_formula_second_part(0, answer)
+		algorithm.simplify_formula_first_part(answer)
+		answer, temporary_num = algorithm.simplify_formula_second_part(0, answer)
 		for step in range(len(answer)):
 			if type(answer[step]) is float:
 				answer[step] = int(answer[step])
 		answer = ''.join(list(map(str, answer)))
 		# print(answer)
-		if answer in Whole_Answers:
+		if answer in algorithm.Whole_Answers:
 			printer("True")
 		else:
 			printer("False")
@@ -168,7 +163,6 @@ submit = Button(input_frame, text="Submit", command=lambda: submit_answers())
 
 
 def check_answer(yes):
-	global Four_Numbers
 	button_yes.place_forget()
 	button_no.place_forget()
 	
@@ -180,7 +174,9 @@ def check_answer(yes):
 	print_text.delete('1.0', 'end')
 	if yes is True:
 		printer(
-			"Four numbers: %d , %d , %d , %d ." % (Four_Numbers[0], Four_Numbers[1], Four_Numbers[2], Four_Numbers[3]))
+			"Four numbers: %d , %d , %d , %d ." % (
+				algorithm.Four_Numbers[0], algorithm.Four_Numbers[1], algorithm.Four_Numbers[2],
+				algorithm.Four_Numbers[3]))
 		printer("Please input your answer(s) in the input frame.")
 		printer("Each line write one answer.You don't need to write '=24' in the end.")
 		print_text.configure(state=DISABLED)
@@ -198,7 +194,6 @@ def check_answer(yes):
 
 
 def whole_answers(yes):
-	global Whole_Answers, the_Selected_Operators, Four_Numbers
 	button_yes.place_forget()
 	button_no.place_forget()
 	
@@ -210,10 +205,10 @@ def whole_answers(yes):
 	time.sleep(1.0)
 	print_text.delete('1.0', 'end')
 	if yes is True:
-		if len(Whole_Answers) == 0:
+		if len(algorithm.Whole_Answers) == 0:
 			printer("There is no any answers!")
 		else:
-			for Each_Answer in Whole_Answers:
+			for Each_Answer in algorithm.Whole_Answers:
 				printer(Each_Answer + "=24")
 	printer("Do you want to play it again?")
 	
@@ -227,17 +222,16 @@ def whole_answers(yes):
 
 
 def clicked_yes():
-	global Whole_Answers, the_Selected_Operators, Four_Numbers
 	button_yes.place_forget()
 	button_no.place_forget()
 	
 	input_frame_hint.place(relx=0.5, rely=0.5, anchor='center')
 	
-	Whole_Answers = []
-	the_Selected_Operators = []
-	Four_Numbers = []
+	algorithm.Whole_Answers = []
+	algorithm.the_Selected_Operators = []
+	algorithm.Four_Numbers = []
 	for _ in range(4):
-		Four_Numbers.append(float(random.randint(1, 13)))
+		algorithm.Four_Numbers.append(float(random.randint(1, 13)))
 	
 	print_text.configure(state=NORMAL)
 	printer('\n')
@@ -245,10 +239,10 @@ def clicked_yes():
 	time.sleep(0.2)
 	print_text.delete('1.0', 'end')
 	printer("Here is four numbers: %d , %d , %d , %d ." % (
-		Four_Numbers[0], Four_Numbers[1], Four_Numbers[2], Four_Numbers[3]))
+		algorithm.Four_Numbers[0], algorithm.Four_Numbers[1], algorithm.Four_Numbers[2], algorithm.Four_Numbers[3]))
 	time.sleep(1)
 	
-	calculate_the_whole_answers()
+	algorithm.calculate_the_whole_answers()
 	
 	printer("Did you find the answer(s)?")
 	printer("If yes, do you want to check your answer(s)?")
@@ -263,7 +257,6 @@ def clicked_yes():
 
 
 def clicked_no():
-	
 	button_yes.place_forget()
 	button_no.place_forget()
 	
