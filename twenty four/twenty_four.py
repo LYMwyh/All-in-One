@@ -1,3 +1,4 @@
+import tkinter.font
 from tkinter import *
 import random
 import time
@@ -21,6 +22,32 @@ button_no = Button(input_frame, text="NO", font=size)
 
 input_frame_hint = Label(input_frame, text="Input Frame", bg="black", fg="white", font=('Arial', size))
 input_text = Text(input_frame, bg="black", fg="white", font=('Arial', size))
+
+fonts = tkinter.font.families()
+font = ""
+
+
+def open_font_window():
+	global fonts, font
+	font_window = Toplevel(root)
+	font_box = Frame(font_window, bg="black", bd=1)
+	font_box.place(relx=0, rely=0, relwidth=1, relheight=0.8)
+	var = StringVar(value="")
+	font_label = Label(font_window, textvariable=var)
+	font_label.place(relx=0, rely=0.8, relwidth=1, relheight=0.1)
+	
+	def update_font_name():
+		global font
+		font = var.get()
+	
+	confirm = Button(font_window, text="Confirm", command=lambda: update_font_name())
+	confirm.place(relx=0, rely=0.9, relwidth=1, relheigth=0.1)
+	font_buttons = []
+	for font_name in fonts:
+		font_button = Radiobutton(font_box, text=font_name, variable=var, value=font_name, fg="white")
+		font_button.configure(command=lambda: font_label.configure(text=var.get()))
+		font_button.pack()
+		font_buttons.append(font_button)
 
 
 def add_or_reduce_font_size(yes):
@@ -87,8 +114,10 @@ def add_or_reduce_font_size(yes):
 	root.update()
 
 
-increase_font_size = Button(input_frame_border, text="font size +", command=lambda: add_or_reduce_font_size(True), font=('Arial', size))
-decrease_font_size = Button(input_frame_border, text="font size -", command=lambda: add_or_reduce_font_size(False), font=('Arial', size))
+increase_font_size = Button(input_frame_border, text="font size +", command=lambda: add_or_reduce_font_size(True),
+                            font=('Arial', size))
+decrease_font_size = Button(input_frame_border, text="font size -", command=lambda: add_or_reduce_font_size(False),
+                            font=('Arial', size))
 
 
 def printer(content, text=print_text):
@@ -296,7 +325,17 @@ def start():
 	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
 
 
-Start = Button(root, text="Start", command=start, font=('Arial', size))
+def identify_font():
+	pass
+
+
+def select_font():
+	Start.place_forget()
+	Start.configure(command=lambda: identify_font())
+	Start.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
+
+
+Start = Button(root, text="Start", command=lambda: select_font(), font=('Arial', size))
 Start.place(relx=0.5, rely=0.5, anchor='center')
 
 root.mainloop()
