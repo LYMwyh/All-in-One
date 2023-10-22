@@ -31,38 +31,14 @@ def open_font_window():
 	global fonts, font, size
 	font_window = Toplevel(root)
 	font_window.title("Font Window")
-	
-	font_box = Canvas(font_window, bg="black")
-	font_box.place(relx=0, rely=0, relwidth=0.9, relheight=0.8)
-	font_box_frame = Frame(font_box, bg="black")
-	
-	scrollbar_y = Scrollbar(font_window, orient=VERTICAL, command=font_box.yview)
-	scrollbar_y.place(relx=0.9, rely=0, relwidth=0.1, relheight=0.8)
-	font_box.configure(yscrollcommand=scrollbar_y.set)
-	
-	var = StringVar(value="")
-	font_label = Label(font_window, textvariable=var)
-	font_label.place(relx=0, rely=0.8, relwidth=1, relheight=0.1)
-	
-	def update_font():
-		global font
-		nonlocal var
-		font = var.get()
-	
-	def update_font_name():
-		nonlocal font_label, var
-		font_label.configure(text=var.get())
-		font_label.configure(font=(var.get(), size))
-	
-	confirm = Button(font_window, text="Confirm", command=lambda: update_font())
+	var = StringVar()
+	font_box = Listbox(font_window, selectmode=SINGLE)
+	for each_font in fonts:
+		font_box.insert('end', each_font)
+		font_box.itemconfigure('end', anchor='center')
+	font_box.place(relx=0, rely=0, relwidth=1, relheight=0.9)
+	confirm = Button(font_window, text="Confirm", command=lambda: print(var.get()))
 	confirm.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
-	
-	for font_name in fonts:
-		font_button = Radiobutton(font_box_frame, text=font_name, variable=var, value=font_name, bg="black", fg="white")
-		font_button.configure(font=(font_name, size))
-		font_button.configure(command=lambda: update_font_name())
-		font_button.pack()
-	font_box_frame.place(relx=0.5, rely=0.5, anchor='center')
 
 
 def add_or_reduce_font_size(yes):
