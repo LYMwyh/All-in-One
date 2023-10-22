@@ -23,92 +23,85 @@ button_no = Button(input_frame, text="NO", font=size)
 input_frame_hint = Label(input_frame, text="Input Frame", bg="black", fg="white", font=('Arial', size))
 input_text = Text(input_frame, bg="black", fg="white", font=('Arial', size))
 
+setting_frame = Frame(root, bg="black")
+
 fonts = tkinter.font.families()
-font = ""
+font = fonts[0]
+
+font_menu_button = Menubutton(setting_frame, text="Font")
+font_menu = Menu(font_menu_button)
+for each_font in fonts:
+	font_menu.add_command(label=each_font, command=lambda: update_font_style_and_font_size(each_font, None, None))
 
 
-def open_font_window():
-	global fonts, font, size
-	font_window = Toplevel(root)
-	font_window.title("Font Window")
-	var = StringVar()
-	font_box = Listbox(font_window, selectmode=SINGLE)
-	for each_font in fonts:
-		font_box.insert('end', each_font)
-		font_box.itemconfigure('end', anchor='center')
-	font_box.place(relx=0, rely=0, relwidth=1, relheight=0.9)
-	confirm = Button(font_window, text="Confirm", command=lambda: print(var.get()))
-	confirm.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
-
-
-def add_or_reduce_font_size(yes):
-	global size
-	if yes:
+def update_font_style_and_font_size(font_style, font_size_add, font_size_subtract):
+	global size, font
+	if font_style:
+		font = font_style
+	if font_size_add:
 		size += 1
-	else:
+	elif font_size_subtract:
 		size -= 1
 	if print_text['state'] == DISABLED:
 		print_text.configure(state=NORMAL)
-		print_text.configure(font=('Arial', size))
+		print_text.configure(font=(font, size))
 		print_text.configure(state=DISABLED)
 	else:
-		print_text.configure(font=('Arial', size))
+		print_text.configure(font=(font, size))
 	if button_yes['state'] == DISABLED:
 		button_yes.configure(state=NORMAL)
-		button_yes.configure(font=('Arial', size))
+		button_yes.configure(font=(font, size))
 		button_yes.configure(state=DISABLED)
 	else:
-		button_yes.configure(font=('Arial', size))
+		button_yes.configure(font=(font, size))
 	if button_no['state'] == DISABLED:
 		button_no.configure(state=NORMAL)
-		button_no.configure(font=('Arial', size))
+		button_no.configure(font=(font, size))
 		button_no.configure(state=DISABLED)
 	else:
-		button_no.configure(font=('Arial', size))
+		button_no.configure(font=(font, size))
 	
 	if increase_font_size['state'] == DISABLED:
 		increase_font_size.configure(state=NORMAL)
-		increase_font_size.configure(font=('Arial', size))
+		increase_font_size.configure(font=(font, size))
 		increase_font_size.configure(state=DISABLED)
 	else:
-		increase_font_size.configure(font=('Arial', size))
+		increase_font_size.configure(font=(font, size))
 	if decrease_font_size['state'] == DISABLED:
 		decrease_font_size.configure(state=NORMAL)
-		decrease_font_size.configure(font=('Arial', size))
+		decrease_font_size.configure(font=(font, size))
 		decrease_font_size.configure(state=DISABLED)
 	else:
-		decrease_font_size.configure(font=('Arial', size))
+		decrease_font_size.configure(font=(font, size))
 	if button_close['state'] == DISABLED:
 		button_close.configure(state=NORMAL)
-		button_close.configure(font=('Arial', size))
+		button_close.configure(font=(font, size))
 		button_close.configure(state=DISABLED)
 	else:
-		button_close.configure(font=('Arial', size))
+		button_close.configure(font=(font, size))
 	if input_frame_hint['state'] == DISABLED:
 		input_frame_hint.configure(state=NORMAL)
-		input_frame_hint.configure(font=('Arial', size))
+		input_frame_hint.configure(font=(font, size))
 		input_frame_hint.configure(state=DISABLED)
 	else:
-		input_frame_hint.configure(font=('Arial', size))
+		input_frame_hint.configure(font=(font, size))
 	if input_text['state'] == DISABLED:
 		input_text.configure(state=NORMAL)
-		input_text.configure(font=('Arial', size))
+		input_text.configure(font=(font, size))
 		input_text.configure(state=DISABLED)
 	else:
-		input_text.configure(font=('Arial', size))
+		input_text.configure(font=(font, size))
 	if submit['state'] == DISABLED:
 		submit.configure(state=NORMAL)
-		submit.configure(font=('Arial', size))
+		submit.configure(font=(font, size))
 		submit.configure(font=DISABLED)
 	else:
-		submit.configure(font=('Arial', size))
+		submit.configure(font=(font, size))
 	root.update()
 
 
-increase_font_size = Button(input_frame_border, text="font size +", command=lambda: add_or_reduce_font_size(True),
-                            font=('Arial', size))
-decrease_font_size = Button(input_frame_border, text="font size -", command=lambda: add_or_reduce_font_size(False),
-                            font=('Arial', size))
+increase_font_size = Button(root, text="font size +", command=lambda: update_font_style_and_font_size(None, True, None), font=('Arial', size))
+decrease_font_size = Button(root, text="font size -", command=lambda: update_font_style_and_font_size(None, None, True), font=('Arial', size))
 
 
 def printer(content, text=print_text):
@@ -294,13 +287,14 @@ def clicked_no():
 
 def start():
 	Start.place_forget()
-	print_frame_border.place(relx=0, rely=0, relwidth=0.5, relheight=1)
-	print_text.place(x=0, y=0, relwidth=1, relheight=1)
-	input_frame_border.place(relx=0.5, rely=0, relwidth=0.5, relheight=1)
-	input_frame.place(relx=0, rely=0.1, relwidth=1, relheight=0.8)
-	increase_font_size.place(relx=0, rely=0, relwidth=1, relheight=0.1)
-	decrease_font_size.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
+	print_frame_border.place(relx=0, rely=0.1, relwidth=0.45, relheight=0.9)
+	print_text.place(relx=0, rely=0, relwidth=1, relheight=1)
+	input_frame_border.place(relx=0.45, rely=0.1, relwidth=0.45, relheight=0.9)
+	input_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 	input_frame_hint.place(relx=0.5, rely=0.5, anchor='center')
+	increase_font_size.place(relx=0.9, rely=0.1, relwidth=0.1, relheight=0.45)
+	decrease_font_size.place(relx=0.9, rely=0.55, relwidth=0.1, relheight=0.45)
+	setting_frame.place(relx=0, rely=0, relwidth=1, relheight=0.1)
 	printer("Here is a game:")
 	printer("There will have four random numbers from 1 to 13, you need to use these four numbers calculate 24.")
 	printer("Each number must and can only be used once.")
@@ -316,7 +310,7 @@ def start():
 	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
 
 
-Start = Button(root, text="Start", command=lambda: open_font_window(), font=('Arial', size))
+Start = Button(root, text="Start", command=lambda: start(), font=('Arial', size))
 Start.place(relx=0.5, rely=0.5, anchor='center')
 
 root.mainloop()
