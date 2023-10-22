@@ -25,17 +25,39 @@ button_no = Button(input_frame, text="NO", font=(font, size))
 input_frame_hint = Label(input_frame, text="Input Frame", bg="black", fg="white", font=(font, size))
 input_text = Text(input_frame, bg="black", fg="white", font=(font, size))
 
-setting = Button(root, bg="black")
+setting = Button(root, text="Setting")
+size_in_setting_window = 10
+font_in_setting_window = fonts[0]
 
 
 def open_setting_window():
+	global font, size, font_in_setting_window, size_in_setting_window
 	setting_window = Toplevel(root)
-	font_menu_button = Menubutton(text="Font")
-	font_menu = Menu(font_menu_button)
+	
+	font_menu_button = Menubutton(setting_window, text="Font")
+	font_menu = Menu()
 	for each_font in fonts:
 		font_menu.add_command(label=each_font, font=(each_font, size))
-	font_menu_button['menu'] = font_menu
+	font_menu_button.configure(menu=font_menu)
 	
+	
+	def update_font_in_setting_window(add):
+		global size_in_setting_window
+		if add:
+			size_in_setting_window += 1
+		else:
+			size_in_setting_window -= 1
+	
+	size_add = Button(setting_window, text="font size +", command=lambda: update_font_in_setting_window(True), height=1)
+	size_subtract = Button(setting_window, text="font size -", command=lambda: update_font_in_setting_window(False), height=1)
+	
+	size_add.master = setting_window
+	size_subtract.master = setting_window
+	size_add.place(relx=0, rely=0, relwidth=0.5)
+	size_subtract.place(relx=0.5, rely=0, relwidth=0.5)
+	
+	label = Label(setting_window, text="Hello", font=(font_in_setting_window, size_in_setting_window))
+	label.place(relx=)
 
 setting.configure(command=lambda: open_setting_window())
 
@@ -292,14 +314,12 @@ def clicked_no():
 
 def start():
 	Start.place_forget()
-	print_frame_border.place(relx=0, rely=0.1, relwidth=0.45, relheight=0.9)
+	print_frame_border.place(relx=0, rely=0.1, relwidth=0.5, relheight=0.9)
 	print_text.place(relx=0, rely=0, relwidth=1, relheight=1)
-	input_frame_border.place(relx=0.45, rely=0.1, relwidth=0.45, relheight=0.9)
+	input_frame_border.place(relx=0.5, rely=0.1, relwidth=0.5, relheight=0.9)
 	input_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 	input_frame_hint.place(relx=0.5, rely=0.5, anchor='center')
-	increase_font_size.place(relx=0.9, rely=0.1, relwidth=0.1, relheight=0.45)
-	decrease_font_size.place(relx=0.9, rely=0.55, relwidth=0.1, relheight=0.45)
-	setting_frame.place(relx=0, rely=0, relwidth=1, relheight=0.1)
+	setting.place(relx=0, rely=0, relwidth=1, relheight=0.1)
 	printer("Here is a game:")
 	printer("There will have four random numbers from 1 to 13, you need to use these four numbers calculate 24.")
 	printer("Each number must and can only be used once.")
