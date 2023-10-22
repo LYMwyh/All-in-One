@@ -1,5 +1,6 @@
 import inspect
 from tkinter import *
+from tkinter import Text
 
 root = Tk()
 
@@ -17,7 +18,7 @@ root = Tk()
 # text = Text(listbox, font=('Arial', 12))
 # listbox.itemconfig('end', text)
 
-print(inspect.getsource())
+# print(inspect.getsource())
 # print(inspect.getsource(Listbox))
 
 # def _configure(self, cmd, cnf, kw):
@@ -31,6 +32,8 @@ print(inspect.getsource())
 #     if isinstance(cnf, str):
 #         return self._getconfigure1(_flatten((self._w, cmd, '-' + cnf)))
 #     self.tk.call(_flatten((self._w, cmd)) + self._options(cnf))
+
+
 # # These used to be defined in Widget:
 #
 # def configure(self, cnf=None, **kw):
@@ -42,15 +45,34 @@ print(inspect.getsource())
 #     """
 #     return self._configure('configure', cnf, kw)
 #
-def itemconfigure(self, index, cnf=None, **kw):
-    """Configure resources of an ITEM.
-
-    The values for resources are specified as keyword arguments.
-    To get an overview about the allowed keyword arguments
-    call the method without arguments.
-    Valid resource names: background, bg, foreground, fg,
-    selectbackground, selectforeground."""
-    return self._configure(('itemconfigure', index), cnf, kw)
 
 
-itemconfig = itemconfigure
+# def itemconfigure(self, index, cnf=None, **kw):
+#     """Configure resources of an ITEM.
+#
+#     The values for resources are specified as keyword arguments.
+#     To get an overview about the allowed keyword arguments
+#     call the method without arguments.
+#     Valid resource names: background, bg, foreground, fg,
+#     selectbackground, selectforeground."""
+#     return self._configure(('itemconfigure', index), cnf, kw)
+
+
+# itemconfig = itemconfigure
+
+# def insert(self, index, *elements):
+#     """Insert ELEMENTS at INDEX."""
+#     self.tk.call((self._w, 'insert', index) + elements)
+
+listbox = Listbox(root)
+text = Label(listbox, text="hello", font=('Impact', 13))
+listbox.insert('end', text['text'])
+listbox.pack()
+
+root.mainloop()
+
+# def index(self, index):
+#     """Return index of item identified with INDEX."""
+#     i = self.tk.call(self._w, 'index', index)
+#     if i == 'none': return None
+#     return self.tk.getint(i)
