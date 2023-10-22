@@ -9,38 +9,43 @@ root.title("Twenty Four")
 root.geometry("800x400+100+100")
 
 size = 14
-
-print_frame_border = Frame(root, bg="white", bd=1)
-print_text = Text(print_frame_border, bg="black", fg="white", font=('Arial', size))
-
-input_frame_border = Frame(root, bg="white", bd=1)
-input_frame = Frame(input_frame_border, bg="black")
-button_close = Button(input_frame, text="closed", font=('Arial', size), command=root.quit)
-
-button_yes = Button(input_frame, text="YES", font=size)
-button_no = Button(input_frame, text="NO", font=size)
-
-input_frame_hint = Label(input_frame, text="Input Frame", bg="black", fg="white", font=('Arial', size))
-input_text = Text(input_frame, bg="black", fg="white", font=('Arial', size))
-
-setting_frame = Frame(root, bg="black")
-
 fonts = tkinter.font.families()
 font = fonts[0]
 
-font_menu_button = Menubutton(setting_frame, text="Font")
-font_menu = Menu(font_menu_button)
-for each_font in fonts:
-	font_menu.add_command(label=each_font, command=lambda: update_font_style_and_font_size(each_font, None, None))
+print_frame_border = Frame(root, bg="white", bd=1)
+print_text = Text(print_frame_border, bg="black", fg="white", font=(font, size))
+
+input_frame_border = Frame(root, bg="white", bd=1)
+input_frame = Frame(input_frame_border, bg="black")
+button_close = Button(input_frame, text="closed", font=(font, size), command=root.quit)
+
+button_yes = Button(input_frame, text="YES", font=(font, size))
+button_no = Button(input_frame, text="NO", font=(font, size))
+
+input_frame_hint = Label(input_frame, text="Input Frame", bg="black", fg="white", font=(font, size))
+input_text = Text(input_frame, bg="black", fg="white", font=(font, size))
+
+setting = Button(root, bg="black")
 
 
-def update_font_style_and_font_size(font_style, font_size_add, font_size_subtract):
+def open_setting_window():
+	setting_window = Toplevel(root)
+	font_menu_button = Menubutton(text="Font")
+	font_menu = Menu(font_menu_button)
+	for each_font in fonts:
+		font_menu.add_command(label=each_font, font=(each_font, size))
+	font_menu_button['menu'] = font_menu
+	
+
+setting.configure(command=lambda: open_setting_window())
+
+def update_font_style_and_font_size(**kwargs):
 	global size, font
-	if font_style:
-		font = font_style
-	if font_size_add:
+	if kwargs['font_style']:
+		font = kwargs['font_style']
+	if kwargs['font_size_add']:
 		size += 1
-	elif font_size_subtract:
+	elif kwargs['font_size_subtract']:
 		size -= 1
 	if print_text['state'] == DISABLED:
 		print_text.configure(state=NORMAL)
@@ -100,8 +105,8 @@ def update_font_style_and_font_size(font_style, font_size_add, font_size_subtrac
 	root.update()
 
 
-increase_font_size = Button(root, text="font size +", command=lambda: update_font_style_and_font_size(None, True, None), font=('Arial', size))
-decrease_font_size = Button(root, text="font size -", command=lambda: update_font_style_and_font_size(None, None, True), font=('Arial', size))
+increase_font_size = Button(root, text="font size +", command=lambda: update_font_style_and_font_size(font_style=False, font_size_add=True, font_size_subtract=False), font=(font, size))
+decrease_font_size = Button(root, text="font size -", command=lambda: update_font_style_and_font_size(font_style=False, font_size_add=None, font_size_subtract=True), font=(font, size))
 
 
 def printer(content, text=print_text):
