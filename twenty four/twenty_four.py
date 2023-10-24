@@ -51,7 +51,7 @@ fonts = tkinter.font.families()
 
 font_family = {}
 for content_name in setting_content:
-	font_family[content_name] = tkinter.font.Font(family=fonts[0], size=10)
+	font_family[content_name] = tkinter.font.Font(family=fonts[0], size=13)
 	if type(content_name) != str:
 		content_name.configure(font=font_family[content_name])
 
@@ -82,6 +82,14 @@ def open_setting_window():
 			font_size = setting_entry[widget].get()
 			if font_size != "":
 				font_family[widget]['size'] = int(font_size)
+		if 'add_size' in kwargs:
+			font_family[widget]['size'] += 1
+			setting_entry[widget].delete(0, 'end')
+			setting_entry[widget].insert('end', str(font_family[widget]['size']))
+		if 'subtract_size' in kwargs:
+			font_family[widget]['size'] -= 1
+			setting_entry[widget].delete(0, 'end')
+			setting_entry[widget].insert('end', str(font_family[widget]['size']))
 		
 		if widget['state'] == DISABLED:
 			widget.configure(state=NORMAL)
@@ -127,6 +135,18 @@ def open_setting_window():
 		setting_entry_button[detail[0]].config(
 			command=lambda widget=detail[0], new_size=True: update_font_print(widget, font_size=new_size))
 	
+	setting_font_size_frame = {}
+	setting_font_size_button = {}
+	# icon_up = PhotoImage(file="icon-up.png")
+	# icon_down = PhotoImage(file="icon-down.png")
+	for detail in setting_content_detail.values():
+		if detail[0] == 'setting_window':
+			continue
+		setting_font_size_frame[detail[0]] = Frame(setting_frame[detail[0]])
+		setting_font_size_button[detail[0]] = []
+		setting_font_size_button[detail[0]].append(Button(setting_font_size_frame[detail[0]], text='up', command=lambda widget=detail[0]: update_font_print(widget, add_size=True)))
+		setting_font_size_button[detail[0]].append(Button(setting_font_size_frame[detail[0]], text='down', command=lambda widget=detail[0]: update_font_print(widget, subtract_size=True)))
+	
 	setting_widget_hint = {}
 	for key, element in setting_content_detail.items():
 		setting_widget_hint[element[0]] = []
@@ -149,6 +169,7 @@ def open_setting_window():
 			font_family['setting_window']['size'] += 1
 		if 'subtract_size' in kwargs and kwargs['subtract_size']:
 			font_family['setting_window']['size'] -= 1
+		
 		size_add.configure(font=font_family['setting_window'])
 		size_subtract.configure(font=font_family['setting_window'])
 		for ordinal_number in range(9):
@@ -196,7 +217,12 @@ def open_setting_window():
 		setting_menu_button[setting_content_detail[ordinal_number][0]].grid(row=1, column=1)
 		setting_widget_hint[setting_content_detail[ordinal_number][0]][2].grid(row=2, column=0)
 		setting_entry[setting_content_detail[ordinal_number][0]].grid(row=2, column=1)
-		setting_entry_button[setting_content_detail[ordinal_number][0]].grid(row=2, column=2)
+		
+		setting_font_size_button[setting_content_detail[ordinal_number][0]][0].pack(side='top', fill='x', expand=True)
+		setting_font_size_button[setting_content_detail[ordinal_number][0]][1].pack(side='bottom', fill='x', expand=True)
+		setting_font_size_frame[setting_content_detail[ordinal_number][0]].grid(row=2, column=2)
+		
+		setting_entry_button[setting_content_detail[ordinal_number][0]].grid(row=2, column=3)
 		setting_frame[setting_content_detail[ordinal_number][0]].pack(anchor='center')
 	close = Button(setting_window, text="Closed", font=font_family['setting_window'], command=setting_window.destroy)
 	close.pack(anchor='center')
