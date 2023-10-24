@@ -226,7 +226,7 @@ def whether_know_whole_answer():
 	print_text.delete('1.0', 'end')
 	print_text.configure(state=DISABLED)
 	
-	printer("Do you want to know the whole answer(s)?")
+	printer("Do you want to know the all the answers?")
 	
 	button_yes.configure(command=lambda: whole_answers(True))
 	button_no.configure(command=lambda: whole_answers(False))
@@ -247,6 +247,8 @@ def submit_answers():
 	for answer_in_str in answers:
 		num = False
 		answer = []
+		if len(answer_in_str) == 0:
+			continue
 		for char in answer_in_str:
 			try:
 				temporary_num = int(char)
@@ -274,6 +276,8 @@ def submit_answers():
 		else:
 			printer("False")
 	
+	if answers == ['']:
+		printer("You did not input any answers!")
 	submit.place_forget()
 	button_next.configure(command=lambda: whether_know_whole_answer())
 	button_next.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
@@ -297,7 +301,7 @@ def check_answer(yes):
 				algorithm.Four_Numbers[0], algorithm.Four_Numbers[1], algorithm.Four_Numbers[2],
 				algorithm.Four_Numbers[3]))
 		printer("Please input your answer(s) in the input frame.")
-		printer("Each line write one answer.You don't need to write '=24' in the end.")
+		printer("Each line write one answer.You don't need to write '=24' in the end of each line.")
 		
 		example.configure(state=DISABLED)
 		example.place(relx=0, rely=0, relwidth=1, relheight=0.1)
@@ -357,7 +361,7 @@ def clicked_yes():
 	
 	algorithm.calculate_the_whole_answers()
 	
-	printer("Did you find the answer(s)?")
+	printer("Did you find any answers?")
 	printer("If yes, do you want to check your answer(s)?")
 	
 	button_yes.configure(command=lambda: check_answer(True))
@@ -386,8 +390,8 @@ def start():
 	input_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 	setting.place(relx=0, rely=0, relwidth=1, relheight=0.1)
 	printer("Here is a game:")
-	printer("There will have four random numbers from 1 to 13, you need to use these four numbers calculate 24.")
-	printer("Each number must and can only be used once.")
+	printer("There will have four random integers from 1 to 13, you need to use these four integers calculate 24.")
+	printer("Each integer must and can only be used once.")
 	printer("Sometimes, there is no solutions for figuring out 24.")
 	printer("\n")
 	
