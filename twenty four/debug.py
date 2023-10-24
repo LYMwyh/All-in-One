@@ -1,23 +1,22 @@
-import tkinter as tk
+from PIL import Image
 
-def print_text(i=0):
-    # 如果所有的文本都已经打印完毕，就返回
-    if i >= len(message):
-        return
-    # 否则，向Text控件中添加下一个字符
-    text.insert(tk.END, message[i])
-    # 100毫秒后再次调用这个函数
-    root.after(100, print_text, i+1)
+def split_image(image_path):
+    # 打开图片
+    img = Image.open(image_path)
 
-root = tk.Tk()
-text = tk.Text(root)
-text.pack()
+    # 获取图片的宽度和高度
+    width, height = img.size
 
-# 设置Text控件为只读
-text.config(state='normal')
+    # 计算分割线的位置
+    middle = height // 2
 
-message = "Hello, world!"
-# 开始打印文本
-print_text()
+    # 分割图片
+    top_img = img.crop((0, 0, width, middle))
+    bottom_img = img.crop((0, middle, width, height))
 
-root.mainloop()
+    # 保存分割后的图片
+    top_img.save("icon-up.png")
+    bottom_img.save("icon-down.png")
+
+# 调用函数
+split_image("sort-arrows-couple-pointing-up-and-down.png")  # 请将"your_image_file.png"替换为你的图片文件路径
