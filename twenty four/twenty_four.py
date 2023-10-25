@@ -3,6 +3,7 @@ from tkinter import *
 import random
 import time
 import algorithm
+import platform
 
 root = Tk()
 root.title("Twenty Four")
@@ -60,9 +61,42 @@ def open_setting_window():
 	global font_family, setting_content_detail, setting_content
 	setting_window = Toplevel(root)
 	
+	setting_window_canvas = Canvas(setting_window)
+	setting_window_canvas_scrollbar = Scrollbar(setting_window, orient="vertical", command=setting_window_canvas.yview)
+	setting_window_canvas.pack(side='left', fill='both', expand=True)
+	setting_window_canvas_scrollbar.pack(side='right', fill='y')
+	
+	setting_window_frame = Frame(setting_window_canvas)
+	
+	setting_window_canvas.create_window((0, 0), window=setting_window_frame, anchor='nw')
+	
+	def update_scroll_region_and_canvas_size(event):
+		setting_window_canvas.configure(scrollregion=setting_window_canvas.bbox('all'))
+		setting_window_canvas.configure(yscrollcommand=setting_window_canvas_scrollbar.set)
+		setting_window_canvas.configure(width=setting_window_frame.winfo_width(), height=setting_window_frame.winfo_height())
+	
+	setting_window_canvas.bind('<Configure>', update_scroll_region_and_canvas_size)
+	
+	def on_mousewheel(event):
+		if platform.system() == 'Windows':
+			setting_window_canvas.yview_scroll(int(-1*event.delta/120), 'units')
+		elif platform.system() == 'Darwin':
+			setting_window_canvas.yview_scroll(int(-1*event.delta), 'units')
+		else:
+			if event.num == 4:
+				setting_window_canvas.yview_scroll(-1, 'units')
+			elif event.num == 5:
+				setting_window_canvas.yview_scroll(1, 'units')
+	
+	if platform.system() == 'Windows' or platform.system() == 'Darwin':
+		setting_window_canvas.bind_all("<MouseWheel>", on_mousewheel)
+	else:
+		setting_window_canvas.bind_all("<Button-4", on_mousewheel)
+		setting_window_canvas.bind_all("<Button-5>", on_mousewheel)
+	
 	setting_frame = {}
 	for content_name in setting_content:
-		setting_frame[content_name] = Frame(setting_window)
+		setting_frame[content_name] = Frame(setting_window_frame)
 	
 	setting_menu_button = {}
 	font_style_vars = []
@@ -126,7 +160,7 @@ def open_setting_window():
 	setting_entry_button = {}
 	for content_name in setting_content:
 		setting_entry[content_name] = Entry(setting_frame[content_name], validate="key",
-		                                 validatecommand=(setting_window.register(only_int_input), '%P'))
+		                                 validatecommand=(setting_window_frame.register(only_int_input), '%P'))
 		setting_entry[content_name].insert('end', str(font_family[content_name]['size']))
 		setting_entry[content_name].bind('<FocusOut>',
 		                              lambda event, entry=setting_entry[content_name], widget=content_name: on_focus_out(
@@ -207,7 +241,7 @@ def open_setting_window():
 	for ordinal_number in range(10):
 		if ordinal_number == 1:
 			continue
-		dividing_line.append(Canvas(setting_window, height=1))
+		dividing_line.append(Canvas(setting_window_frame, height=1))
 		dividing_line[-1].pack(fill='x')
 		dividing_line[-1].bind("<Configure>", lambda event, canvas=dividing_line[-1]: draw_line(canvas))
 		if ordinal_number == 9:
@@ -224,7 +258,7 @@ def open_setting_window():
 		
 		setting_entry_button[setting_content[ordinal_number]].grid(row=2, column=3)
 		setting_frame[setting_content[ordinal_number]].pack(anchor='center')
-	close = Button(setting_window, text="Closed", font=font_family['setting_window'], command=setting_window.destroy)
+	close = Button(setting_window_frame, text="Closed", font=font_family['setting_window'], command=setting_window.destroy)
 	close.pack(anchor='center')
 
 
