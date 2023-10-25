@@ -61,21 +61,26 @@ def open_setting_window():
 	global font_family, setting_content_detail, setting_content
 	setting_window = Toplevel(root)
 	
-	setting_window_canvas = Canvas(setting_window)
+	setting_window_canvas = Canvas(setting_window, bg="blue")
 	setting_window_canvas_scrollbar = Scrollbar(setting_window, orient="vertical", command=setting_window_canvas.yview)
 	setting_window_canvas.pack(side='left', fill='both', expand=True)
 	setting_window_canvas_scrollbar.pack(side='right', fill='y')
+	setting_window_frame = Frame(setting_window_canvas, bg="black")
 	
-	setting_window_frame = Frame(setting_window_canvas)
-	
-	setting_window_canvas.create_window((0, 0), window=setting_window_frame, anchor='nw')
+	setting_window_canvas.create_window((0, 0), window=setting_window_frame, anchor='center', tags='frame')
 	
 	def update_scroll_region_and_canvas_size(event):
 		setting_window_canvas.configure(scrollregion=setting_window_canvas.bbox('all'))
 		setting_window_canvas.configure(yscrollcommand=setting_window_canvas_scrollbar.set)
-		setting_window_canvas.configure(width=setting_window_frame.winfo_width(), height=setting_window_frame.winfo_height())
+		
 	
-	setting_window_canvas.bind('<Configure>', update_scroll_region_and_canvas_size)
+	setting_window_frame.bind('<Configure>', update_scroll_region_and_canvas_size)
+	
+	def canvas_size(event):
+		# setting_window_canvas.configure(width=setting_window_frame.winfo_width(), height=setting_window_frame.winfo_height())
+		setting_window_canvas.itemconfig('frame', width=setting_window_canvas.winfo_width(), height=setting_window_canvas.winfo_height())
+	
+	setting_window_canvas.bind('<Configure>', canvas_size)
 	
 	def on_mousewheel(event):
 		if platform.system() == 'Windows':
@@ -178,8 +183,8 @@ def open_setting_window():
 			continue
 		setting_font_size_frame[content_name] = Frame(setting_frame[content_name])
 		setting_font_size_button[content_name] = []
-		setting_font_size_button[content_name].append(Button(setting_font_size_frame[content_name], text='up', command=lambda widget=content_name: update_font_print(widget, add_size=True)))
-		setting_font_size_button[content_name].append(Button(setting_font_size_frame[content_name], text='down', command=lambda widget=content_name: update_font_print(widget, subtract_size=True)))
+		setting_font_size_button[content_name].append(Button(setting_font_size_frame[content_name], text='+', command=lambda widget=content_name: update_font_print(widget, add_size=True)))
+		setting_font_size_button[content_name].append(Button(setting_font_size_frame[content_name], text='-', command=lambda widget=content_name: update_font_print(widget, subtract_size=True)))
 	
 	setting_widget_hint = {}
 	for key, element in setting_content_detail.items():
@@ -201,8 +206,14 @@ def open_setting_window():
 			setting_menu_button['setting_window'].configure(text=font_style, font=(font_style, 13))
 		if 'add_size' in kwargs and kwargs['add_size']:
 			font_family['setting_window']['size'] += 1
+			setting_window_canvas.configure(width=setting_window_frame.winfo_width(), height=setting_window_frame.winfo_height())
+			setting_window.configure(width=setting_window_canvas.winfo_width(), height=setting_window_canvas.winfo_height())
+			setting_window.update()
 		if 'subtract_size' in kwargs and kwargs['subtract_size']:
 			font_family['setting_window']['size'] -= 1
+			setting_window_canvas.configure(width=setting_window_frame.winfo_width(), height=setting_window_frame.winfo_height())
+			setting_window.configure(width=setting_window_canvas.winfo_width(), height=setting_window_canvas.winfo_height())
+			setting_window.update()
 		
 		size_add.configure(font=font_family['setting_window'])
 		size_subtract.configure(font=font_family['setting_window'])
