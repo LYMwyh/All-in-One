@@ -5,6 +5,7 @@ complete_answer = []
 Whole_Answers = []
 the_Selected_Operators = []
 Four_Numbers = []
+# Four_Numbers = [10.0, 12.0, 2.0, 1.0]
 
 
 def before_or_after_one(index_of_one, before, complete_answer):
@@ -83,8 +84,10 @@ def simplify_formula_first_part(complete_answer):
 				else:
 					decision_front = True
 				if step != len(complete_answer) - 1:
-					if (complete_answer[step + 1] != '*' and complete_answer[step + 1] != '/') or (
-							complete_answer[step + 2] == 1 and before_or_after_one(step + 2, False, complete_answer)):
+					if complete_answer[step + 1] != '*' and complete_answer[step + 1] != '/':
+						decision_back = True
+					elif complete_answer[step + 2] == 1 and before_or_after_one(step + 2, False, complete_answer):
+						complete_answer[step + 1] = '*'
 						decision_back = True
 				else:
 					decision_back = True
@@ -362,6 +365,8 @@ def calculate_the_whole_answers():
 								if answer == [24]:
 									simplify_formula_first_part(complete_answer)
 									complete_answer, temporary_number = simplify_formula_second_part(0, complete_answer)
+									# simplify_formula_first_part(complete_answer)
+									# a = [_ for _ in complete_answer]
 									for step in range(len(complete_answer)):
 										if type(complete_answer[step]) is float:
 											complete_answer[step] = int(complete_answer[step])
@@ -373,6 +378,7 @@ def calculate_the_whole_answers():
 									#
 									complete_answer = ''.join(list(map(str, complete_answer)))
 									if complete_answer not in Whole_Answers:
+										# print(a)
 										Whole_Answers.append(complete_answer)
 							
 							the_Selected_Operators.pop()
@@ -382,3 +388,5 @@ def calculate_the_whole_answers():
 				Four_Numbers[2], Four_Numbers[third_element] = Four_Numbers[third_element], Four_Numbers[2]
 			Four_Numbers[1], Four_Numbers[second_element] = Four_Numbers[second_element], Four_Numbers[1]
 		Four_Numbers[0], Four_Numbers[first_element] = Four_Numbers[first_element], Four_Numbers[0]
+
+# calculate_the_whole_answers()
