@@ -36,15 +36,15 @@ setting_content = [setting,
                    button_close]
 
 setting_content_detail = {
-	0: [setting, "Setting"],
-	1: ['setting_window', 'setting_window'],
-	2: [print_text, "Print Text"],
-	3: [button_yes, "Button Yes"],
-	4: [button_no, "Button No"],
-	5: [example, "Example"],
-	6: [input_text, "Input text"],
-	7: [button_next, "Button Next"],
-	8: [button_close, "Button Close"]
+	setting: "Setting",
+	'setting_window': 'setting_window',
+	print_text: "Print Text",
+	button_yes: "Button Yes",
+	button_no: "Button No",
+	example: "Example",
+	input_text: "Input text",
+	button_next: "Button Next",
+	button_close: "Button Close"
 }
 
 fonts = tkinter.font.families()
@@ -66,11 +66,11 @@ def open_setting_window():
 	
 	setting_menu_button = {}
 	font_style_vars = []
-	for detail in setting_content_detail.values():
-		font_style_vars.append(StringVar(setting_frame[detail[0]]))
-		font_style_vars[-1].set(font_family[detail[0]]['family'])
-		setting_menu_button[detail[0]] = Menubutton(setting_frame[detail[0]],
-		                                            font=(font_family[detail[0]]['family'], 13),
+	for key, detail in setting_content_detail.items():
+		font_style_vars.append(StringVar(setting_frame[key]))
+		font_style_vars[-1].set(font_family[key]['family'])
+		setting_menu_button[key] = Menubutton(setting_frame[key],
+		                                            font=(font_family[key]['family'], 13),
 		                                            textvariable=font_style_vars[-1])
 	
 	def update_font_print(widget, **kwargs):
@@ -125,21 +125,21 @@ def open_setting_window():
 	setting_entry = {}
 	setting_entry_button = {}
 	for key, detail in setting_content_detail.items():
-		setting_entry[detail[0]] = Entry(setting_frame[detail[0]], validate="key",
+		setting_entry[key] = Entry(setting_frame[key], validate="key",
 		                                 validatecommand=(setting_window.register(only_int_input), '%P'))
-		setting_entry[detail[0]].insert('end', str(font_family[detail[0]]['size']))
-		setting_entry[detail[0]].bind('<FocusOut>',
-		                              lambda event, entry=setting_entry[detail[0]], widget=detail[0]: on_focus_out(
+		setting_entry[key].insert('end', str(font_family[key]['size']))
+		setting_entry[key].bind('<FocusOut>',
+		                              lambda event, entry=setting_entry[key], widget=key: on_focus_out(
 			                              entry, widget))
-		setting_entry_button[detail[0]] = Button(setting_frame[detail[0]], text="Confirm")
-		setting_entry_button[detail[0]].config(
-			command=lambda widget=detail[0], new_size=True: update_font_print(widget, font_size=new_size))
+		setting_entry_button[key] = Button(setting_frame[key], text="Confirm")
+		setting_entry_button[key].config(
+			command=lambda widget=key, new_size=True: update_font_print(widget, font_size=new_size))
 	
 	setting_font_size_frame = {}
 	setting_font_size_button = {}
 	# icon_up = PhotoImage(file="icon-up.png")
 	# icon_down = PhotoImage(file="icon-down.png")
-	for detail in setting_content_detail.values():
+	for key, detail in setting_content_detail.items():
 		if detail[0] == 'setting_window':
 			continue
 		setting_font_size_frame[detail[0]] = Frame(setting_frame[detail[0]])
