@@ -4,6 +4,7 @@ import random
 import time
 import algorithm
 import platform
+import datetime
 
 root = Tk()
 root.title("Twenty Four")
@@ -20,6 +21,7 @@ input_frame_border = Frame(root, bg="white", bd=1)
 input_frame = Frame(input_frame_border, bg="black")
 example = Text(input_frame, bg="black", fg="white")
 input_text = Text(input_frame, bg="black", fg="white")
+submit = Button(input_frame, text="Submit")
 
 button_next = Button(input_frame, text="Next")
 button_yes = Button(input_frame, text="YES")
@@ -33,6 +35,7 @@ setting_content = [setting,
                    button_no,
                    example,
                    input_text,
+                   submit,
                    button_next,
                    button_close]
 
@@ -44,6 +47,7 @@ setting_content_detail = {
 	button_no: "Button No",
 	example: "Example",
 	input_text: "Input text",
+	submit: "Submit",
 	button_next: "Button Next",
 	button_close: "Button Close"
 }
@@ -53,7 +57,7 @@ fonts = tkinter.font.families()
 font_family = {}
 for content_name in setting_content:
 	font_family[content_name] = tkinter.font.Font(family=fonts[0], size=13)
-	if type(content_name) != str:
+	if type(content_name) is not str:
 		content_name.configure(font=font_family[content_name])
 
 
@@ -61,26 +65,20 @@ def open_setting_window():
 	global font_family, setting_content_detail, setting_content
 	setting_window = Toplevel(root)
 	
-	setting_window_canvas = Canvas(setting_window, bg="blue")
+	setting_window_canvas = Canvas(setting_window)
 	setting_window_canvas_scrollbar = Scrollbar(setting_window, orient="vertical", command=setting_window_canvas.yview)
 	setting_window_canvas.pack(side='left', fill='both', expand=True)
-	setting_window_canvas_scrollbar.pack(side='right', fill='y')
-	setting_window_frame = Frame(setting_window_canvas, bg="black")
+	setting_window_canvas_scrollbar.pack(side='right', fill='both')
+	setting_window_frame = Frame(setting_window_canvas)
 	
 	setting_window_canvas.create_window((0, 0), window=setting_window_frame, anchor='center', tags='frame')
 	
 	def update_scroll_region_and_canvas_size(event):
 		setting_window_canvas.configure(scrollregion=setting_window_canvas.bbox('all'))
 		setting_window_canvas.configure(yscrollcommand=setting_window_canvas_scrollbar.set)
-		
+		setting_window_canvas.configure(width=setting_window_frame.winfo_width(), height=setting_window_frame.winfo_height())
 	
 	setting_window_frame.bind('<Configure>', update_scroll_region_and_canvas_size)
-	
-	def canvas_size(event):
-		# setting_window_canvas.configure(width=setting_window_frame.winfo_width(), height=setting_window_frame.winfo_height())
-		setting_window_canvas.itemconfig('frame', width=setting_window_canvas.winfo_width(), height=setting_window_canvas.winfo_height())
-	
-	setting_window_canvas.bind('<Configure>', canvas_size)
 	
 	def on_mousewheel(event):
 		if platform.system() == 'Windows':
@@ -99,9 +97,30 @@ def open_setting_window():
 		setting_window_canvas.bind_all("<Button-4", on_mousewheel)
 		setting_window_canvas.bind_all("<Button-5>", on_mousewheel)
 	
+	def on_enter(event, widget):
+		global setting_content_detail
+		if widget.winfo_viewable():
+			widget.configure(highlightbackground='red')
+		else:
+			hint_window = Toplevel(root)
+			hint_text = Text(hint_window, height=1)
+			hint_text.insert('end', setting_content_detail[widget], 'widget')
+			hint_text.tag_config('widget', foreground='green')
+			hint_text.insert('end', " doesn't appear on the screen yet！")
+			hint_text.configure(state=DISABLED)
+			hint_text.pack()
+			Label(hint_window, text=str(datetime.datetime.now()), fg='red').pack()
+	
+	def on_leave(event, widget):
+		widget.configure(highlightbackground='systemWindowBackgroundColor')
+	
 	setting_frame = {}
 	for content_name in setting_content:
 		setting_frame[content_name] = Frame(setting_window_frame)
+		if content_name == 'setting_window':
+			continue
+		setting_frame[content_name].bind('<Enter>', lambda event, widget=content_name: on_enter(event, widget))
+		setting_frame[content_name].bind('<Leave>', lambda event, widget=content_name: on_leave(event, widget))
 	
 	setting_menu_button = {}
 	font_style_vars = []
@@ -206,18 +225,13 @@ def open_setting_window():
 			setting_menu_button['setting_window'].configure(text=font_style, font=(font_style, 13))
 		if 'add_size' in kwargs and kwargs['add_size']:
 			font_family['setting_window']['size'] += 1
-			setting_window_canvas.configure(width=setting_window_frame.winfo_width(), height=setting_window_frame.winfo_height())
-			setting_window.configure(width=setting_window_canvas.winfo_width(), height=setting_window_canvas.winfo_height())
-			setting_window.update()
+			
 		if 'subtract_size' in kwargs and kwargs['subtract_size']:
 			font_family['setting_window']['size'] -= 1
-			setting_window_canvas.configure(width=setting_window_frame.winfo_width(), height=setting_window_frame.winfo_height())
-			setting_window.configure(width=setting_window_canvas.winfo_width(), height=setting_window_canvas.winfo_height())
-			setting_window.update()
 		
 		size_add.configure(font=font_family['setting_window'])
 		size_subtract.configure(font=font_family['setting_window'])
-		for ordinal_number in range(9):
+		for ordinal_number in range(10):
 			if ordinal_number == 1:
 				continue
 			setting_widget_hint[setting_content[ordinal_number]][0].config(font=font_family['setting_window'])
@@ -249,13 +263,13 @@ def open_setting_window():
 		canvas.create_line(0, 0, canvas.winfo_width(), 0, width=canvas.winfo_height(), fill='black')
 	
 	dividing_line = []
-	for ordinal_number in range(10):
+	for ordinal_number in range(11):
 		if ordinal_number == 1:
 			continue
 		dividing_line.append(Canvas(setting_window_frame, height=1))
 		dividing_line[-1].pack(fill='x')
 		dividing_line[-1].bind("<Configure>", lambda event, canvas=dividing_line[-1]: draw_line(canvas))
-		if ordinal_number == 9:
+		if ordinal_number == 10:
 			break
 		setting_widget_hint[setting_content[ordinal_number]][0].grid(row=0, column=0)
 		setting_widget_hint[setting_content[ordinal_number]][1].grid(row=1, column=0)
@@ -288,7 +302,7 @@ def printer(content, text=print_text):
 	text.configure(state=DISABLED)
 
 
-def whether_know_whole_answer():
+def whether_want_to_know_whole_answer():
 	example.place_forget()
 	input_text.place_forget()
 	button_next.place_forget()
@@ -297,7 +311,8 @@ def whether_know_whole_answer():
 	print_text.delete('1.0', 'end')
 	print_text.configure(state=DISABLED)
 	
-	printer("Do you want to know the all the answers?")
+	printer("Do you want to know all the answers?")
+	printer("Or there is no any answers.")
 	
 	button_yes.configure(command=lambda: whole_answers(True))
 	button_no.configure(command=lambda: whole_answers(False))
@@ -350,11 +365,11 @@ def submit_answers():
 	if answers == ['']:
 		printer("You did not input any answers!")
 	submit.place_forget()
-	button_next.configure(command=lambda: whether_know_whole_answer())
+	button_next.configure(command=lambda: whether_want_to_know_whole_answer())
 	button_next.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
 
 
-submit = Button(input_frame, text="Submit", command=lambda: submit_answers())
+submit.configure(command=lambda: submit_answers())
 
 
 def check_answer(yes):
@@ -383,7 +398,7 @@ def check_answer(yes):
 		submit.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
 		printer("Example: a+b+c+d", example)
 	else:
-		whether_know_whole_answer()
+		whether_want_to_know_whole_answer()
 
 
 def whole_answers(yes):
@@ -409,6 +424,15 @@ def whole_answers(yes):
 	button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
 	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
 
+def whether_have_answers(yes):
+	printer("OK!")
+	if yes:
+		button_yes.configure(command=lambda: check_answer(True))
+		button_no.configure(command=lambda: check_answer(False))
+		printer("Did you find any answers?")
+	else:
+		whether_want_to_know_whole_answer()
+
 
 def clicked_yes():
 	button_yes.place_forget()
@@ -419,7 +443,7 @@ def clicked_yes():
 	algorithm.Four_Numbers = []
 	for _ in range(4):
 		algorithm.Four_Numbers.append(float(random.randint(1, 13)))
-	
+	# algorithm.Four_Numbers = [10.0, 12.0, 2.0, 1.0]
 	printer('\n')
 	printer('OK!')
 	time.sleep(0.2)
@@ -432,11 +456,10 @@ def clicked_yes():
 	
 	algorithm.calculate_the_whole_answers()
 	
-	printer("Did you find any answers?")
-	printer("If yes, do you want to check your answer(s)?")
+	printer("Do you think there are any answers?")
 	
-	button_yes.configure(command=lambda: check_answer(True))
-	button_no.configure(command=lambda: check_answer(False))
+	button_yes.configure(command=lambda: whether_have_answers(True))
+	button_no.configure(command=lambda: whether_have_answers(False))
 	button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
 	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
 
