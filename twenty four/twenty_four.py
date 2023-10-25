@@ -66,11 +66,11 @@ def open_setting_window():
 	
 	setting_menu_button = {}
 	font_style_vars = []
-	for key, detail in setting_content_detail.items():
-		font_style_vars.append(StringVar(setting_frame[key]))
-		font_style_vars[-1].set(font_family[key]['family'])
-		setting_menu_button[key] = Menubutton(setting_frame[key],
-		                                            font=(font_family[key]['family'], 13),
+	for content_name in setting_content:
+		font_style_vars.append(StringVar(setting_frame[content_name]))
+		font_style_vars[-1].set(font_family[content_name]['family'])
+		setting_menu_button[content_name] = Menubutton(setting_frame[content_name],
+		                                            font=(font_family[content_name]['family'], 13),
 		                                            textvariable=font_style_vars[-1])
 	
 	def update_font_print(widget, **kwargs):
@@ -105,7 +105,7 @@ def open_setting_window():
 		if key_value == "setting_window":
 			continue
 		for each_font in fonts:
-			setting_menu[key_value].add_radiobutton(label=each_font, font=(each_font, 13), variable=font_style_vars[i],
+			setting_menu[key_value].add_radiobutton(label=each_font, font=(each_font, 13), variable=font_style_vars[int(i)],
 			                                        command=lambda widget=key_value,
 			                                                       new_font=each_font: update_font_print(widget,
 			                                                                                             font_style=new_font))
@@ -124,40 +124,40 @@ def open_setting_window():
 	
 	setting_entry = {}
 	setting_entry_button = {}
-	for key, detail in setting_content_detail.items():
-		setting_entry[key] = Entry(setting_frame[key], validate="key",
+	for content_name in setting_content:
+		setting_entry[content_name] = Entry(setting_frame[content_name], validate="key",
 		                                 validatecommand=(setting_window.register(only_int_input), '%P'))
-		setting_entry[key].insert('end', str(font_family[key]['size']))
-		setting_entry[key].bind('<FocusOut>',
-		                              lambda event, entry=setting_entry[key], widget=key: on_focus_out(
+		setting_entry[content_name].insert('end', str(font_family[content_name]['size']))
+		setting_entry[content_name].bind('<FocusOut>',
+		                              lambda event, entry=setting_entry[content_name], widget=content_name: on_focus_out(
 			                              entry, widget))
-		setting_entry_button[key] = Button(setting_frame[key], text="Confirm")
-		setting_entry_button[key].config(
-			command=lambda widget=key, new_size=True: update_font_print(widget, font_size=new_size))
+		setting_entry_button[content_name] = Button(setting_frame[content_name], text="Confirm")
+		setting_entry_button[content_name].config(
+			command=lambda widget=content_name, new_size=True: update_font_print(widget, font_size=new_size))
 	
 	setting_font_size_frame = {}
 	setting_font_size_button = {}
 	# icon_up = PhotoImage(file="icon-up.png")
 	# icon_down = PhotoImage(file="icon-down.png")
-	for key, detail in setting_content_detail.items():
-		if detail[0] == 'setting_window':
+	for content_name in setting_content:
+		if content_name == 'setting_window':
 			continue
-		setting_font_size_frame[detail[0]] = Frame(setting_frame[detail[0]])
-		setting_font_size_button[detail[0]] = []
-		setting_font_size_button[detail[0]].append(Button(setting_font_size_frame[detail[0]], text='up', command=lambda widget=detail[0]: update_font_print(widget, add_size=True)))
-		setting_font_size_button[detail[0]].append(Button(setting_font_size_frame[detail[0]], text='down', command=lambda widget=detail[0]: update_font_print(widget, subtract_size=True)))
+		setting_font_size_frame[content_name] = Frame(setting_frame[content_name])
+		setting_font_size_button[content_name] = []
+		setting_font_size_button[content_name].append(Button(setting_font_size_frame[content_name], text='up', command=lambda widget=content_name: update_font_print(widget, add_size=True)))
+		setting_font_size_button[content_name].append(Button(setting_font_size_frame[content_name], text='down', command=lambda widget=content_name: update_font_print(widget, subtract_size=True)))
 	
 	setting_widget_hint = {}
 	for key, element in setting_content_detail.items():
-		setting_widget_hint[element[0]] = []
-		if element[0] == 'setting_window':
+		setting_widget_hint[key] = []
+		if key == 'setting_window':
 			continue
-		setting_widget_hint[element[0]].append(
-			Label(setting_frame[element[0]], text=element[1], font=font_family['setting_window']))
-		setting_widget_hint[element[0]].append(
-			Label(setting_frame[element[0]], text=element[1] + ' font style: ', font=font_family['setting_window']))
-		setting_widget_hint[element[0]].append(
-			Label(setting_frame[element[0]], text=element[1] + ' size: ', font=font_family['setting_window']))
+		setting_widget_hint[key].append(
+			Label(setting_frame[key], text=element, font=font_family['setting_window']))
+		setting_widget_hint[key].append(
+			Label(setting_frame[key], text=element + ' font style: ', font=font_family['setting_window']))
+		setting_widget_hint[key].append(
+			Label(setting_frame[key], text=element + ' size: ', font=font_family['setting_window']))
 	
 	def update_font_in_setting_window(**kwargs):
 		global font_family
@@ -175,9 +175,9 @@ def open_setting_window():
 		for ordinal_number in range(9):
 			if ordinal_number == 1:
 				continue
-			setting_widget_hint[setting_content_detail[ordinal_number][0]][0].config(font=font_family['setting_window'])
-			setting_widget_hint[setting_content_detail[ordinal_number][0]][1].config(font=font_family['setting_window'])
-			setting_widget_hint[setting_content_detail[ordinal_number][0]][2].config(font=font_family['setting_window'])
+			setting_widget_hint[setting_content[ordinal_number]][0].config(font=font_family['setting_window'])
+			setting_widget_hint[setting_content[ordinal_number]][1].config(font=font_family['setting_window'])
+			setting_widget_hint[setting_content[ordinal_number]][2].config(font=font_family['setting_window'])
 	
 	# 开始放置
 	for each_font in fonts:
@@ -212,18 +212,18 @@ def open_setting_window():
 		dividing_line[-1].bind("<Configure>", lambda event, canvas=dividing_line[-1]: draw_line(canvas))
 		if ordinal_number == 9:
 			break
-		setting_widget_hint[setting_content_detail[ordinal_number][0]][0].grid(row=0, column=0)
-		setting_widget_hint[setting_content_detail[ordinal_number][0]][1].grid(row=1, column=0)
-		setting_menu_button[setting_content_detail[ordinal_number][0]].grid(row=1, column=1)
-		setting_widget_hint[setting_content_detail[ordinal_number][0]][2].grid(row=2, column=0)
-		setting_entry[setting_content_detail[ordinal_number][0]].grid(row=2, column=1)
+		setting_widget_hint[setting_content[ordinal_number]][0].grid(row=0, column=0)
+		setting_widget_hint[setting_content[ordinal_number]][1].grid(row=1, column=0)
+		setting_menu_button[setting_content[ordinal_number]].grid(row=1, column=1)
+		setting_widget_hint[setting_content[ordinal_number]][2].grid(row=2, column=0)
+		setting_entry[setting_content[ordinal_number]].grid(row=2, column=1)
 		
-		setting_font_size_button[setting_content_detail[ordinal_number][0]][0].pack(side='top', fill='x', expand=True)
-		setting_font_size_button[setting_content_detail[ordinal_number][0]][1].pack(side='bottom', fill='x', expand=True)
-		setting_font_size_frame[setting_content_detail[ordinal_number][0]].grid(row=2, column=2)
+		setting_font_size_button[setting_content[ordinal_number]][0].pack(side='top', fill='x', expand=True)
+		setting_font_size_button[setting_content[ordinal_number]][1].pack(side='bottom', fill='x', expand=True)
+		setting_font_size_frame[setting_content[ordinal_number]].grid(row=2, column=2)
 		
-		setting_entry_button[setting_content_detail[ordinal_number][0]].grid(row=2, column=3)
-		setting_frame[setting_content_detail[ordinal_number][0]].pack(anchor='center')
+		setting_entry_button[setting_content[ordinal_number]].grid(row=2, column=3)
+		setting_frame[setting_content[ordinal_number]].pack(anchor='center')
 	close = Button(setting_window, text="Closed", font=font_family['setting_window'], command=setting_window.destroy)
 	close.pack(anchor='center')
 
