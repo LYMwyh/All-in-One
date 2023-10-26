@@ -20,7 +20,7 @@ print_text = Text(print_frame_border, bg="black", fg="white")
 input_frame_border = Frame(root, bg="white", bd=1)
 input_frame = Frame(input_frame_border, bg="black")
 example = Text(input_frame, bg="black", fg="white")
-input_text = Text(input_frame, bg="black", fg="white")
+input_text = Text(input_frame, bg="black", fg="white", insertbackground='white')
 submit = Button(input_frame, text="Submit")
 
 button_next = Button(input_frame, text="Next")
@@ -351,7 +351,7 @@ def submit_answers():
 			if type(answer[step]) is int:
 				answer[step] = float(answer[step])
 		algorithm.simplify_formula_first_part(answer)
-		answer, temporary_num = algorithm.simplify_formula_second_part(0, answer)
+		answer, temporary_num = algorithm.simplify_formula_second_part(0, answer, 0)
 		for step in range(len(answer)):
 			if type(answer[step]) is float:
 				answer[step] = int(answer[step])
@@ -389,6 +389,7 @@ def check_answer(yes):
 		printer("Please input your answer(s) in the input frame.")
 		printer("Each line write one answer.You don't need to write '=24' in the end of each line.")
 		
+		example.delete('1.0', 'end')
 		example.configure(state=DISABLED)
 		example.place(relx=0, rely=0, relwidth=1, relheight=0.1)
 		input_text.configure(state=NORMAL)
@@ -443,7 +444,7 @@ def clicked_yes():
 	algorithm.Four_Numbers = []
 	# for _ in range(4):
 	# 	algorithm.Four_Numbers.append(float(random.randint(1, 13)))
-	algorithm.Four_Numbers = [8.0, 5.0, 8.0, 1.0]
+	algorithm.Four_Numbers = [2.0, 6.0, 8.0, 4.0]
 	printer('\n')
 	printer('OK!')
 	time.sleep(0.2)
