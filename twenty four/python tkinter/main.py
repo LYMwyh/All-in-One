@@ -76,15 +76,16 @@ def open_setting_window():
 	def update_scroll_region_and_canvas_size(event):
 		setting_window_canvas.configure(scrollregion=setting_window_canvas.bbox('all'))
 		setting_window_canvas.configure(yscrollcommand=setting_window_canvas_scrollbar.set)
-		setting_window_canvas.configure(width=setting_window_frame.winfo_width(), height=setting_window_frame.winfo_height())
+		setting_window_canvas.configure(width=setting_window_frame.winfo_width(),
+		                                height=setting_window_frame.winfo_height())
 	
 	setting_window_frame.bind('<Configure>', update_scroll_region_and_canvas_size)
 	
 	def on_mousewheel(event):
 		if platform.system() == 'Windows':
-			setting_window_canvas.yview_scroll(int(-1*event.delta/120), 'units')
+			setting_window_canvas.yview_scroll(int(-1 * event.delta / 120), 'units')
 		elif platform.system() == 'Darwin':
-			setting_window_canvas.yview_scroll(int(-1*event.delta), 'units')
+			setting_window_canvas.yview_scroll(int(-1 * event.delta), 'units')
 		else:
 			if event.num == 4:
 				setting_window_canvas.yview_scroll(-1, 'units')
@@ -128,8 +129,8 @@ def open_setting_window():
 		font_style_vars.append(StringVar(setting_frame[content_name]))
 		font_style_vars[-1].set(font_family[content_name]['family'])
 		setting_menu_button[content_name] = Menubutton(setting_frame[content_name],
-		                                            font=(font_family[content_name]['family'], 13),
-		                                            textvariable=font_style_vars[-1])
+		                                               font=(font_family[content_name]['family'], 13),
+		                                               textvariable=font_style_vars[-1])
 	
 	def update_font_print(widget, **kwargs):
 		if 'font_style' in kwargs:
@@ -163,7 +164,8 @@ def open_setting_window():
 		if key_value == "setting_window":
 			continue
 		for each_font in fonts:
-			setting_menu[key_value].add_radiobutton(label=each_font, font=(each_font, 13), variable=font_style_vars[int(i)],
+			setting_menu[key_value].add_radiobutton(label=each_font, font=(each_font, 13),
+			                                        variable=font_style_vars[int(i)],
 			                                        command=lambda widget=key_value,
 			                                                       new_font=each_font: update_font_print(widget,
 			                                                                                             font_style=new_font))
@@ -184,11 +186,12 @@ def open_setting_window():
 	setting_entry_button = {}
 	for content_name in setting_content:
 		setting_entry[content_name] = Entry(setting_frame[content_name], validate="key",
-		                                 validatecommand=(setting_window_frame.register(only_int_input), '%P'))
+		                                    validatecommand=(setting_window_frame.register(only_int_input), '%P'))
 		setting_entry[content_name].insert('end', str(font_family[content_name]['size']))
 		setting_entry[content_name].bind('<FocusOut>',
-		                              lambda event, entry=setting_entry[content_name], widget=content_name: on_focus_out(
-			                              entry, widget))
+		                                 lambda event, entry=setting_entry[content_name],
+		                                        widget=content_name: on_focus_out(
+			                                 entry, widget))
 		setting_entry_button[content_name] = Button(setting_frame[content_name], text="Confirm")
 		setting_entry_button[content_name].config(
 			command=lambda widget=content_name, new_size=True: update_font_print(widget, font_size=new_size))
@@ -202,8 +205,12 @@ def open_setting_window():
 			continue
 		setting_font_size_frame[content_name] = Frame(setting_frame[content_name])
 		setting_font_size_button[content_name] = []
-		setting_font_size_button[content_name].append(Button(setting_font_size_frame[content_name], text='+', command=lambda widget=content_name: update_font_print(widget, add_size=True)))
-		setting_font_size_button[content_name].append(Button(setting_font_size_frame[content_name], text='-', command=lambda widget=content_name: update_font_print(widget, subtract_size=True)))
+		setting_font_size_button[content_name].append(Button(setting_font_size_frame[content_name], text='+',
+		                                                     command=lambda widget=content_name: update_font_print(
+			                                                     widget, add_size=True)))
+		setting_font_size_button[content_name].append(Button(setting_font_size_frame[content_name], text='-',
+		                                                     command=lambda widget=content_name: update_font_print(
+			                                                     widget, subtract_size=True)))
 	
 	setting_widget_hint = {}
 	for key, element in setting_content_detail.items():
@@ -225,7 +232,7 @@ def open_setting_window():
 			setting_menu_button['setting_window'].configure(text=font_style, font=(font_style, 13))
 		if 'add_size' in kwargs and kwargs['add_size']:
 			font_family['setting_window']['size'] += 1
-			
+		
 		if 'subtract_size' in kwargs and kwargs['subtract_size']:
 			font_family['setting_window']['size'] -= 1
 		
@@ -283,7 +290,8 @@ def open_setting_window():
 		
 		setting_entry_button[setting_content[ordinal_number]].grid(row=2, column=3)
 		setting_frame[setting_content[ordinal_number]].pack(anchor='center')
-	close = Button(setting_window_frame, text="Closed", font=font_family['setting_window'], command=setting_window.destroy)
+	close = Button(setting_window_frame, text="Closed", font=font_family['setting_window'],
+	               command=setting_window.destroy)
 	close.pack(anchor='center')
 
 
@@ -347,10 +355,13 @@ def submit_answers():
 			except ValueError:
 				num = False
 				answer.append(char)
+		algorithm.calculate_the_answer(answer)
 		for step in range(len(answer)):
 			if type(answer[step]) is int:
 				answer[step] = float(answer[step])
-		algorithm.simplify_formula_first_part(answer)
+		if algorithm.simplify_formula_first_part(answer) != [24]:
+			printer("Your answer's format is not right!")
+			continue
 		answer, temporary_num = algorithm.simplify_formula_second_part(0, answer, 0)
 		for step in range(len(answer)):
 			if type(answer[step]) is float:
@@ -425,6 +436,7 @@ def whole_answers(yes):
 	button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
 	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
 
+
 def whether_have_answers(yes):
 	printer("OK!")
 	if yes:
@@ -442,9 +454,9 @@ def clicked_yes():
 	algorithm.Whole_Answers = []
 	algorithm.the_Selected_Operators = []
 	algorithm.Four_Numbers = []
-	# for _ in range(4):
-	# 	algorithm.Four_Numbers.append(float(random.randint(1, 13)))
-	algorithm.Four_Numbers = [2.0, 6.0, 8.0, 4.0]
+	for _ in range(4):
+		algorithm.Four_Numbers.append(float(random.randint(1, 13)))
+	# algorithm.Four_Numbers = [2.0, 6.0, 8.0, 4.0]
 	printer('\n')
 	printer('OK!')
 	time.sleep(0.2)
