@@ -358,6 +358,9 @@ def submit_answers():
 		for step in range(len(answer)):
 			if type(answer[step]) is int:
 				answer[step] = float(answer[step])
+		if not algorithm.check_format(answer):
+			printer("Your answer's format can not be calculated!")
+			continue
 		algorithm.simplify_formula_first_part(answer)
 		answer, temporary_num = algorithm.simplify_formula_second_part(0, answer, 0)
 		for step in range(len(answer)):
@@ -397,6 +400,7 @@ def check_answer(yes):
 		printer("Please input your answer(s) in the input frame.")
 		printer("Each line write one answer.You don't need to write '=24' in the end of each line.")
 		
+		example.configure(state=NORMAL)
 		example.delete('1.0', 'end')
 		example.configure(state=DISABLED)
 		example.place(relx=0, rely=0, relwidth=1, relheight=0.1)
@@ -453,7 +457,7 @@ def clicked_yes():
 	algorithm.Four_Numbers = []
 	for _ in range(4):
 		algorithm.Four_Numbers.append(float(random.randint(1, 13)))
-	# algorithm.Four_Numbers = [2.0, 6.0, 8.0, 4.0]
+	# algorithm.Four_Numbers = [10.0, 7.0, 5.0, 2.0]
 	printer('\n')
 	printer('OK!')
 	time.sleep(0.2)
