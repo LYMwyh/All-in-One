@@ -441,9 +441,9 @@ def clicked_yes():
 	algorithm.Whole_Answers = []
 	algorithm.the_Selected_Operators = []
 	algorithm.Four_Numbers = []
-	for _ in range(4):
-		algorithm.Four_Numbers.append(float(random.randint(1, 13)))
-	# algorithm.Four_Numbers = [10.0, 12.0, 2.0, 1.0]
+	# for _ in range(4):
+	# 	algorithm.Four_Numbers.append(float(random.randint(1, 13)))
+	algorithm.Four_Numbers = [8.0, 5.0, 8.0, 1.0]
 	printer('\n')
 	printer('OK!')
 	time.sleep(0.2)
