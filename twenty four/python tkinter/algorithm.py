@@ -6,6 +6,8 @@ Whole_Answers = []
 the_Selected_Operators = []
 Four_Numbers = []
 
+one_group = 0
+
 
 def before_or_after_one(index_of_one, before, complete_answer):
 	if before is True:
@@ -272,8 +274,7 @@ def simplify_formula_second_part(first, complete_answer, layer):
 	return group, step
 
 
-def calculate_the_answer():
-	global answer
+def calculate_the_answer(answer):
 	step = 0
 	layer = 0
 	whether_use_addition_and_subtraction = [False]
@@ -350,6 +351,7 @@ def calculate_the_answer():
 					del answer[step: step + 2]
 					continue
 		step += 1
+		return answer
 
 
 def calculate_the_whole_answers():
@@ -405,7 +407,7 @@ def calculate_the_whole_answers():
 									if Create_the_Answer < 3:  # 0 , 1 , 2
 										answer.append(the_Selected_Operators[Create_the_Answer])
 								complete_answer = [_ for _ in answer]
-								calculate_the_answer()
+								answer = calculate_the_answer(answer)
 								
 								if answer == [24]:
 									old_version_answer = []
@@ -422,9 +424,7 @@ def calculate_the_whole_answers():
 										if type(complete_answer[step]) is float:
 											complete_answer[step] = int(complete_answer[step])
 									#
-									answer = [_ for _ in complete_answer]
-									calculate_the_answer()
-									if answer != [24]:
+									if calculate_the_answer(complete_answer) != [24]:
 										print("error!")
 									#
 									complete_answer = ''.join(list(map(str, complete_answer)))
