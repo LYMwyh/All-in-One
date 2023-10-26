@@ -355,13 +355,10 @@ def submit_answers():
 			except ValueError:
 				num = False
 				answer.append(char)
-		algorithm.calculate_the_answer(answer)
 		for step in range(len(answer)):
 			if type(answer[step]) is int:
 				answer[step] = float(answer[step])
-		if algorithm.simplify_formula_first_part(answer) != [24]:
-			printer("Your answer's format is not right!")
-			continue
+		algorithm.simplify_formula_first_part(answer)
 		answer, temporary_num = algorithm.simplify_formula_second_part(0, answer, 0)
 		for step in range(len(answer)):
 			if type(answer[step]) is float:
