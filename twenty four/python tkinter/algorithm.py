@@ -4,8 +4,8 @@ complete_answer = []
 
 Whole_Answers = []
 the_Selected_Operators = []
-Four_Numbers = []
-# Four_Numbers = [10.0, 12.0, 2.0, 1.0]
+# Four_Numbers = []
+Four_Numbers = [10.0, 12.0, 2.0, 1.0]
 
 
 def before_or_after_one(index_of_one, before, complete_answer):
@@ -202,10 +202,33 @@ def simplify_formula_second_part(first, complete_answer):
 	step = first
 	while step < len(complete_answer):
 		symbol = complete_answer[step]
+		
 		if symbol == '+' or symbol == '-':
+			temporary_step = 0
+			one_group = 0
+			while temporary_step < len(temporary_group):
+				temporary_symbol = temporary_group[temporary_step]
+				if temporary_symbol == 1:
+					if len(temporary_group) == 2:
+						break
+					elif temporary_step == 1 and temporary_group[temporary_step + 1] == '/':
+						continue
+					elif temporary_step == 1 and temporary_group[temporary_step + 1] == '*':
+						del temporary_group[temporary_step]
+						del temporary_group[temporary_step]
+					else:
+						del temporary_group[temporary_step - 1]
+						del temporary_group[temporary_step - 1]
+					temporary_step -= 2
+					one_group += 1
+				temporary_step += 1
+					
 			temporary_group = simplify_formula_third_part(temporary_group)
 			# print(temporary_group, 1)
 			group.append([_ for _ in temporary_group[:]])
+			while one_group:
+				one_group -= 1
+				group.append(['*', 1.0])
 			temporary_group.clear()
 		
 		if symbol == '(':
@@ -219,9 +242,34 @@ def simplify_formula_second_part(first, complete_answer):
 			break
 		temporary_group.append(symbol)
 		step += 1
+	
+	temporary_step = 0
+	one_group = 0
+	while temporary_step < len(temporary_group):
+		temporary_symbol = temporary_group[temporary_step]
+		if temporary_symbol == 1:
+			if len(temporary_group) == 2:
+				break
+			elif temporary_step == 1 and temporary_group[temporary_step + 1] == '/':
+				continue
+			elif temporary_step == 1 and temporary_group[temporary_step + 1] == '*':
+				del temporary_group[temporary_step]
+				del temporary_group[temporary_step]
+			else:
+				del temporary_group[temporary_step - 1]
+				del temporary_group[temporary_step - 1]
+			temporary_step -= 2
+			one_group += 1
+		temporary_step += 1
+	
 	temporary_group = simplify_formula_third_part(temporary_group)
+	
+	group.append([_ for _ in temporary_group[:]])
+	while one_group:
+		one_group -= 1
+		group.append(['*', 1.0])
+	temporary_group.clear()
 	# print(temporary_group, 2)
-	group.append([_ for _ in temporary_group])
 	group = simplify_formula_forth_part(group)
 	# print(group, 3)
 	return group, step
@@ -363,10 +411,13 @@ def calculate_the_whole_answers():
 								calculate_the_answer()
 								
 								if answer == [24]:
-									simplify_formula_first_part(complete_answer)
-									complete_answer, temporary_number = simplify_formula_second_part(0, complete_answer)
-									# simplify_formula_first_part(complete_answer)
-									# a = [_ for _ in complete_answer]
+									old_version_answer = []
+									while True:
+										simplify_formula_first_part(complete_answer)
+										complete_answer, temporary_number = simplify_formula_second_part(0, complete_answer)
+										if old_version_answer == complete_answer:
+											break
+										old_version_answer = [_ for _ in complete_answer]
 									for step in range(len(complete_answer)):
 										if type(complete_answer[step]) is float:
 											complete_answer[step] = int(complete_answer[step])
@@ -378,7 +429,6 @@ def calculate_the_whole_answers():
 									#
 									complete_answer = ''.join(list(map(str, complete_answer)))
 									if complete_answer not in Whole_Answers:
-										# print(a)
 										Whole_Answers.append(complete_answer)
 							
 							the_Selected_Operators.pop()
@@ -389,4 +439,3 @@ def calculate_the_whole_answers():
 			Four_Numbers[1], Four_Numbers[second_element] = Four_Numbers[second_element], Four_Numbers[1]
 		Four_Numbers[0], Four_Numbers[first_element] = Four_Numbers[first_element], Four_Numbers[0]
 
-# calculate_the_whole_answers()
