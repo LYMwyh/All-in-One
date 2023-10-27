@@ -1,0 +1,3 @@
+/Users/yiminliu/Documents/GitHub/All-in-One/cmake-build-debug/CMakeFiles/All_in_One.dir
+/Users/yiminliu/Documents/GitHub/All-in-One/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/yiminliu/Documents/GitHub/All-in-One/cmake-build-debug/CMakeFiles/rebuild_cache.dir
