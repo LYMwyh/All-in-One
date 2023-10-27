@@ -64,11 +64,15 @@ for content_name in setting_content:
 def open_setting_window():
 	global font_family, setting_content_detail, setting_content
 	setting_window = Toplevel(root)
+	setting_window_top_frame = Frame(setting_window)
+	setting_window_secondary_frame = Frame(setting_window_top_frame)
+	setting_window_secondary_frame.pack(anchor='center', expand=True)
+	setting_window_top_frame.pack(side='left', fill='both', expand=True)
 	
-	setting_window_canvas = Canvas(setting_window)
+	setting_window_canvas = Canvas(setting_window_secondary_frame)
 	setting_window_canvas_scrollbar = Scrollbar(setting_window, orient="vertical", command=setting_window_canvas.yview)
-	setting_window_canvas.pack(side='left', fill='both', expand=True)
-	setting_window_canvas_scrollbar.pack(side='right', fill='both')
+	setting_window_canvas.pack(anchor='center', fill='both')
+	setting_window_canvas_scrollbar.pack(side='right', fill='y')
 	setting_window_frame = Frame(setting_window_canvas)
 	
 	setting_window_canvas.create_window((0, 0), window=setting_window_frame, anchor='center', tags='frame')
@@ -78,7 +82,7 @@ def open_setting_window():
 		setting_window_canvas.configure(yscrollcommand=setting_window_canvas_scrollbar.set)
 		setting_window_canvas.configure(width=setting_window_frame.winfo_width(),
 		                                height=setting_window_frame.winfo_height())
-	
+
 	setting_window_frame.bind('<Configure>', update_scroll_region_and_canvas_size)
 	
 	def on_mousewheel(event):
