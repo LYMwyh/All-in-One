@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/All-in-One.iml" filepath="$PROJECT_DIR$/.idea/All-in-One.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/All_in_One.iml" filepath="$PROJECT_DIR$/.idea/All_in_One.iml" />
     </modules>
   </component>
 </project>
