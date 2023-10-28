@@ -7,4 +7,5 @@ include_directories(.)
 include_directories("twenty four")
 
 add_executable(All_in_One
-        "twenty four/c++/main.cpp")
+        "twenty four/c++/main.cpp"
+        "twenty four/c++/debug.cpp")
