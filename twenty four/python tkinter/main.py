@@ -490,7 +490,6 @@ def clicked_no():
 
 
 def start():
-	Start.place_forget()
 	print_frame_border.place(relx=0, rely=0.1, relwidth=0.5, relheight=0.9)
 	print_text.configure(state=DISABLED)
 	print_text.place(relx=0, rely=0, relwidth=1, relheight=1)
@@ -508,6 +507,11 @@ def start():
 	button_no.configure(command=lambda: clicked_no())
 	button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
 	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
+
+
+def selected_function():
+	Start.place_forget()
+	
 
 
 Start.configure(command=lambda: start())
