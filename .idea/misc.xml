@@ -4,5 +4,5 @@
     <option name="sdkName" value="Python 3.12 (All-in-One)" />
   </component>
   <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12 (All-in-One)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12" project-jdk-type="Python SDK" />
 </project>
