@@ -6,6 +6,6 @@ set(CMAKE_CXX_STANDARD 14)
 include_directories(.)
 include_directories("twenty four")
 
-add_executable(All_in_One
+add_executable(All-in-One
         "twenty four/c++/main.cpp"
         "twenty four/c++/debug.cpp")
