@@ -15,7 +15,7 @@ Start = Button(root, text="Start")
 setting = Button(root, text="Setting")
 
 print_frame_border = Frame(root, bg="white", bd=1)
-print_text = Text(print_frame_border, bg="black", fg="white")
+print_text = Text(print_frame_border, bg="black", fg="white", wrap="word")
 
 input_frame_border = Frame(root, bg="white", bd=1)
 input_frame = Frame(input_frame_border, bg="black")
@@ -64,6 +64,7 @@ for content_name in setting_content:
 def open_setting_window():
 	global font_family, setting_content_detail, setting_content
 	setting_window = Toplevel(root)
+	setting_window.title("Twenty Four Setting Window")
 	setting_window_top_frame = Frame(setting_window)
 	setting_window_secondary_frame = Frame(setting_window_top_frame)
 	setting_window_secondary_frame.pack(anchor='center', expand=True)
@@ -108,6 +109,7 @@ def open_setting_window():
 			widget.configure(highlightbackground='red')
 		else:
 			hint_window = Toplevel(root)
+			hint_window.title("Twenty Four Widget Hint")
 			hint_text = Text(hint_window, height=1)
 			hint_text.insert('end', setting_content_detail[widget], 'widget')
 			hint_text.tag_config('widget', foreground='green')
@@ -324,7 +326,7 @@ def whether_want_to_know_whole_answer():
 	print_text.configure(state=DISABLED)
 	
 	printer("Do you want to know all the answers?")
-	printer("Or there is no any answers.")
+	printer("Maybe there is no any answers.")
 	
 	button_yes.configure(command=lambda: whole_answers(True))
 	button_no.configure(command=lambda: whole_answers(False))
@@ -359,17 +361,11 @@ def submit_answers():
 			except ValueError:
 				num = False
 				answer.append(char)
-		for step in range(len(answer)):
-			if type(answer[step]) is int:
-				answer[step] = float(answer[step])
 		if not algorithm.check_format(answer):
 			printer("Your answer's format can not be calculated!")
 			continue
 		algorithm.simplify_formula_first_part(answer)
 		answer, temporary_num = algorithm.simplify_formula_second_part(0, answer, 0)
-		for step in range(len(answer)):
-			if type(answer[step]) is float:
-				answer[step] = int(answer[step])
 		answer = ''.join(list(map(str, answer)))
 		# print(answer)
 		if answer in algorithm.Whole_Answers:
@@ -449,6 +445,7 @@ def whether_have_answers(yes):
 		button_no.configure(command=lambda: check_answer(False))
 		printer("Did you find any answers?")
 	else:
+		time.sleep(1.0)
 		whether_want_to_know_whole_answer()
 
 
@@ -460,8 +457,7 @@ def clicked_yes():
 	algorithm.the_Selected_Operators = []
 	algorithm.Four_Numbers = []
 	for _ in range(4):
-		algorithm.Four_Numbers.append(float(random.randint(1, 13)))
-	# algorithm.Four_Numbers = [10.0, 7.0, 5.0, 2.0]
+		algorithm.Four_Numbers.append(random.randint(1, 13))
 	printer('\n')
 	printer('OK!')
 	time.sleep(0.2)
