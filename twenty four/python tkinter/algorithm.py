@@ -4,9 +4,15 @@ complete_answer = []
 
 Whole_Answers = []
 the_Selected_Operators = []
-Four_Numbers = [12.0, 1.0, 2.0, 1.0]
+Four_Numbers = []
 
 one_group = 0
+
+
+class Fraction(object):
+	def __init__(self, numerator, denominator):
+		self.numerator = numerator
+		self.denominator = denominator
 
 
 def check_format(answer):
@@ -29,8 +35,8 @@ def check_format(answer):
 			if len(back_bracket) > 1:
 				if back_bracket[-1] - back_bracket[-2] == 1:
 					return False
-		elif type(symbol) is float:
-			if step > 0 :
+		elif type(symbol) is int:
+			if step > 0:
 				if answer[step - 1] not in Operators and answer[step - 1] != '(':
 					return False
 			if step < len(answer) - 1:
@@ -40,21 +46,21 @@ def check_format(answer):
 			if symbol == '(':
 				if len(answer) - step <= 4:
 					return False
-				elif type(answer[step + 1]) is not float and answer[step + 1] != '(':
+				elif type(answer[step + 1]) is not int and answer[step + 1] != '(':
 					return False
 				elif answer[step - 1] not in Operators and answer[step - 1] != '(':
 					return False
 			elif symbol == ')':
 				if step <= 3:
 					return False
-				elif type(answer[step - 1]) is not float and answer[step - 1] != ')':
+				elif type(answer[step - 1]) is not int and answer[step - 1] != ')':
 					return False
 				elif answer[step + 1] not in Operators and answer[step + 1] != ')':
 					return False
 			elif symbol in Operators:
-				if type(answer[step - 1]) is not float and answer[step - 1] != ')':
+				if type(answer[step - 1]) is not int and answer[step - 1] != ')':
 					return False
-				elif type(answer[step + 1]) is not float and answer[step - 1] != '(':
+				elif type(answer[step + 1]) is not int and answer[step - 1] != '(':
 					return False
 			else:
 				return False
@@ -193,7 +199,7 @@ def simplify_formula_third_part(part_of_group):
 		symbol = part_of_group[step]
 		if type(symbol) is not str:
 			sort_list.append(
-				{"representative": str(part_of_group[step]), "operator": part_of_group[step - 1], "index": step})
+				{"representative": str(part_of_group[step]) if type(part_of_group[step]) is not list else ''.join(list(map(str, part_of_group[step]))), "operator": part_of_group[step - 1], "index": step})
 	min_number = 0
 	for step in range(len(sort_list)):
 		element = sort_list[step]
@@ -235,7 +241,7 @@ def simplify_formula_forth_part(group):
 	compare_nums = []
 	for step in range(len(group)):
 		part_of_group = group[step]
-		compare_nums.append({"representative": str(part_of_group[1:]), "operator": part_of_group[0], "index": step})
+		compare_nums.append({"representative": ''.join(list(map(str, part_of_group[1:]))), "operator": part_of_group[0], "index": step})
 	compare_nums.sort(reverse=False, key=lambda sort_num: sort_num["representative"])
 	for step in range(len(compare_nums)):
 		element = compare_nums[step]
@@ -321,7 +327,7 @@ def simplify_formula_second_part(first, complete_answer, layer):
 	if layer == 0:
 		while one_group:
 			one_group -= 1
-			group.append(['*', 1.0])
+			group.append(['*', 1])
 	
 	# print(temporary_group, 2)
 	group = simplify_formula_forth_part(group)
@@ -368,9 +374,15 @@ def calculate_the_answer():
 					pass
 				else:
 					if answer[step - 2] != '-':
-						answer[step - 1] += answer[step + 1]
+						answer[step - 1].numerator *= answer[step + 1].denominator
+						answer[step + 1].numerator *= answer[step - 1].denominator
+						answer[step - 1].numerator += answer[step + 1].numerator
+						answer[step - 1].denominator *= answer[step + 1].denominator
 					else:
-						answer[step - 1] -= answer[step + 1]
+						answer[step - 1].numerator *= answer[step + 1].denominator
+						answer[step + 1].numerator *= answer[step - 1].denominator
+						answer[step - 1].numerator -= answer[step + 1].numerator
+						answer[step - 1].denominator *= answer[step + 1].denominator
 					del answer[step: step + 2]
 					continue
 			elif symbol == '-':
@@ -379,9 +391,15 @@ def calculate_the_answer():
 					pass
 				else:
 					if answer[step - 2] != '-':
-						answer[step - 1] -= answer[step + 1]
+						answer[step - 1].numerator *= answer[step + 1].denominator
+						answer[step + 1].numerator *= answer[step - 1].denominator
+						answer[step - 1].numerator -= answer[step + 1].numerator
+						answer[step - 1].denominator *= answer[step + 1].denominator
 					else:
-						answer[step - 1] += answer[step + 1]
+						answer[step - 1].numerator *= answer[step + 1].denominator
+						answer[step + 1].numerator *= answer[step - 1].denominator
+						answer[step - 1].numerator += answer[step + 1].numerator
+						answer[step - 1].denominator *= answer[step + 1].denominator
 					del answer[step: step + 2]
 					continue
 		if whether_use_multiplication_and_division[layer]:
@@ -391,7 +409,8 @@ def calculate_the_answer():
 					step + 1] == ')':
 					whether_use_multiplication_and_division[layer] = False
 				else:
-					answer[step - 1] *= answer[step + 1]
+					answer[step - 1].numerator *= answer[step + 1].numerator
+					answer[step - 1].denominator *= answer[step + 1].denominator
 					del answer[step: step + 2]
 					continue
 			elif symbol == '/':
@@ -403,10 +422,17 @@ def calculate_the_answer():
 					if answer[step + 1] == 0:
 						answer = [0]
 						break
-					answer[step - 1] /= answer[step + 1]
+					answer[step - 1].numerator *= answer[step + 1].denominator
+					answer[step - 1].denominator *= answer[step + 1].numerator
 					del answer[step: step + 2]
 					continue
 		step += 1
+	if answer[0].denominator == 0:
+		answer[0] = 0
+	elif answer[0].numerator % answer[0].denominator == 0 and answer[0].numerator / answer[0].denominator == 24:
+		answer[0] = 24
+	else:
+		answer[0] = 0
 
 
 def calculate_the_whole_answers():
@@ -448,7 +474,7 @@ def calculate_the_whole_answers():
 											Type_of_Brackets == 2 or Type_of_Brackets == 5):
 										answer.append("(")
 									
-									answer.append(Four_Numbers[Create_the_Answer])
+									answer.append(Fraction(Four_Numbers[Create_the_Answer], 1))
 									
 									if Create_the_Answer == 1 and (Type_of_Brackets == 0 or Type_of_Brackets == 5):
 										answer.append(")")
@@ -461,7 +487,7 @@ def calculate_the_whole_answers():
 									
 									if Create_the_Answer < 3:  # 0 , 1 , 2
 										answer.append(the_Selected_Operators[Create_the_Answer])
-								complete_answer = [_ for _ in answer]
+								complete_answer = [_ if type(_) is not Fraction else _.numerator for _ in answer]
 								calculate_the_answer()
 								if answer == [24]:
 									old_version_answer = []
@@ -474,11 +500,11 @@ def calculate_the_whole_answers():
 										if old_version_answer == complete_answer:
 											break
 										old_version_answer = [_ for _ in complete_answer]
-									for step in range(len(complete_answer)):
-										if type(complete_answer[step]) is float:
-											complete_answer[step] = int(complete_answer[step])
+									# for step in range(len(complete_answer)):
+									# 	if type(complete_answer[step]) is float:
+									# 		complete_answer[step] = int(complete_answer[step])
 									#
-									answer = [_ for _ in complete_answer]
+									answer = [_ if type(_) is not int else Fraction(_, 1) for _ in complete_answer]
 									calculate_the_answer()
 									if answer != [24]:
 										print("error!")
