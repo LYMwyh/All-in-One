@@ -41,43 +41,43 @@ include CMakeFiles/rules.ninja
 
 cmake_ninja_workdir = /Users/yiminliu/Documents/GitHub/All-in-One/cmake-build-debug/
 # =============================================================================
-# Object build statements for EXECUTABLE target All_in_One
+# Object build statements for EXECUTABLE target All-in-One
 
 
 #############################################
-# Order-only phony target for All_in_One
+# Order-only phony target for All-in-One
 
-build cmake_object_order_depends_target_All_in_One: phony || CMakeFiles/All_in_One.dir
+build cmake_object_order_depends_target_All-in-One: phony || CMakeFiles/All-in-One.dir
 
-build CMakeFiles/All_in_One.dir/twenty_four/c++/main.cpp.o: CXX_COMPILER__All_in_One_unscanned_Debug /Users/yiminliu/Documents/GitHub/All-in-One/twenty$ four/c++/main.cpp || cmake_object_order_depends_target_All_in_One
-  DEP_FILE = CMakeFiles/All_in_One.dir/twenty_four/c++/main.cpp.o.d
+build CMakeFiles/All-in-One.dir/twenty_four/c++/main.cpp.o: CXX_COMPILER__All-in-One_unscanned_Debug /Users/yiminliu/Documents/GitHub/All-in-One/twenty$ four/c++/main.cpp || cmake_object_order_depends_target_All-in-One
+  DEP_FILE = CMakeFiles/All-in-One.dir/twenty_four/c++/main.cpp.o.d
   FLAGS = -g -std=gnu++14 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
   INCLUDES = -I/Users/yiminliu/Documents/GitHub/All-in-One/. -I"/Users/yiminliu/Documents/GitHub/All-in-One/twenty four"
-  OBJECT_DIR = CMakeFiles/All_in_One.dir
-  OBJECT_FILE_DIR = CMakeFiles/All_in_One.dir/twenty_four/c++
+  OBJECT_DIR = CMakeFiles/All-in-One.dir
+  OBJECT_FILE_DIR = CMakeFiles/All-in-One.dir/twenty_four/c++
 
-build CMakeFiles/All_in_One.dir/twenty_four/c++/debug.cpp.o: CXX_COMPILER__All_in_One_unscanned_Debug /Users/yiminliu/Documents/GitHub/All-in-One/twenty$ four/c++/debug.cpp || cmake_object_order_depends_target_All_in_One
-  DEP_FILE = CMakeFiles/All_in_One.dir/twenty_four/c++/debug.cpp.o.d
+build CMakeFiles/All-in-One.dir/twenty_four/c++/debug.cpp.o: CXX_COMPILER__All-in-One_unscanned_Debug /Users/yiminliu/Documents/GitHub/All-in-One/twenty$ four/c++/debug.cpp || cmake_object_order_depends_target_All-in-One
+  DEP_FILE = CMakeFiles/All-in-One.dir/twenty_four/c++/debug.cpp.o.d
   FLAGS = -g -std=gnu++14 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
   INCLUDES = -I/Users/yiminliu/Documents/GitHub/All-in-One/. -I"/Users/yiminliu/Documents/GitHub/All-in-One/twenty four"
-  OBJECT_DIR = CMakeFiles/All_in_One.dir
-  OBJECT_FILE_DIR = CMakeFiles/All_in_One.dir/twenty_four/c++
+  OBJECT_DIR = CMakeFiles/All-in-One.dir
+  OBJECT_FILE_DIR = CMakeFiles/All-in-One.dir/twenty_four/c++
 
 
 # =============================================================================
-# Link build statements for EXECUTABLE target All_in_One
+# Link build statements for EXECUTABLE target All-in-One
 
 
 #############################################
-# Link the executable All_in_One
+# Link the executable All-in-One
 
-build All_in_One: CXX_EXECUTABLE_LINKER__All_in_One_Debug CMakeFiles/All_in_One.dir/twenty_four/c++/main.cpp.o CMakeFiles/All_in_One.dir/twenty_four/c++/debug.cpp.o
+build All-in-One: CXX_EXECUTABLE_LINKER__All-in-One_Debug CMakeFiles/All-in-One.dir/twenty_four/c++/main.cpp.o CMakeFiles/All-in-One.dir/twenty_four/c++/debug.cpp.o
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk
-  OBJECT_DIR = CMakeFiles/All_in_One.dir
+  OBJECT_DIR = CMakeFiles/All-in-One.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_FILE = All_in_One
-  TARGET_PDB = All_in_One.dbg
+  TARGET_FILE = All-in-One
+  TARGET_PDB = All-in-One.dbg
 
 
 #############################################
@@ -113,7 +113,7 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 #############################################
 # Folder: /Users/yiminliu/Documents/GitHub/All-in-One/cmake-build-debug
 
-build all: phony All_in_One
+build all: phony All-in-One
 
 # =============================================================================
 # Built-in targets
