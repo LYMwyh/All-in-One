@@ -219,6 +219,15 @@ CMAKE_STRIP:FILEPATH=/Library/Developer/CommandLineTools/usr/bin/strip
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
+//Value Computed by CMake
+Project_BINARY_DIR:STATIC=/Users/yiminliu/Documents/GitHub/All-in-One/cmake-build-debug
+
+//Value Computed by CMake
+Project_IS_TOP_LEVEL:STATIC=ON
+
+//Value Computed by CMake
+Project_SOURCE_DIR:STATIC=/Users/yiminliu/Documents/GitHub/All-in-One
+
 
 ########################
 # INTERNAL cache entries
