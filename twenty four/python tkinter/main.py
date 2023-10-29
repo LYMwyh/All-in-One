@@ -30,7 +30,7 @@ button_close = Button(input_frame, text="closed", command=root.quit)
 
 button_game_mode = Button(root, text="Game Mode")
 
-again = Button(input_frame, text="Again")
+button_again = Button(input_frame, text="Again")
 
 button_answer_mode = Button(root, text="Answer Mode")
 
@@ -43,19 +43,21 @@ setting_content = [setting,
                    input_text,
                    submit,
                    button_next,
-                   button_close]
+                   button_close,
+                   button_again]
 
 setting_content_detail = {
-	setting: "Setting",
-	'setting_window': 'setting_window',
-	print_text: "Print Text",
-	button_yes: "Button Yes",
-	button_no: "Button No",
-	example: "Example",
-	input_text: "Input text",
-	submit: "Submit",
-	button_next: "Button Next",
-	button_close: "Button Close"
+	setting: ["Setting", True, True],
+	'setting_window': ['setting_window', True, True],
+	print_text: ["Print Text", True, True],
+	button_yes: ["Button Yes", True, False],
+	button_no: ["Button No", True, False],
+	example: ["Example", True, True],
+	input_text: ["Input text", True, True],
+	submit: ["Submit", True, True],
+	button_next: ["Button Next", True, True],
+	button_close: ["Button Close", True, True],
+	button_again: ["Button Again", False, True]
 }
 
 fonts = tkinter.font.families()
@@ -71,6 +73,12 @@ def open_setting_window(game_mode):
 	global font_family, setting_content_detail, setting_content
 	setting_window = Toplevel(root)
 	setting_window.title("Twenty Four Setting Window")
+	
+	if game_mode is True:
+		mode = 1
+	else:
+		mode = 2
+	
 	setting_window_top_frame = Frame(setting_window)
 	setting_window_secondary_frame = Frame(setting_window_top_frame)
 	setting_window_secondary_frame.pack(anchor='center', expand=True)
@@ -129,49 +137,51 @@ def open_setting_window(game_mode):
 	
 	setting_frame = {}
 	for content_name in setting_content:
-		setting_frame[content_name] = Frame(setting_window_frame)
-		if content_name == 'setting_window':
-			continue
-		setting_frame[content_name].bind('<Enter>', lambda event, widget=content_name: on_enter(event, widget))
-		setting_frame[content_name].bind('<Leave>', lambda event, widget=content_name: on_leave(event, widget))
+		if setting_content_detail[content_name][mode] is True:
+			setting_frame[content_name] = Frame(setting_window_frame)
+			if content_name == 'setting_window':
+				continue
+			setting_frame[content_name].bind('<Enter>', lambda event, widget=content_name: on_enter(event, widget))
+			setting_frame[content_name].bind('<Leave>', lambda event, widget=content_name: on_leave(event, widget))
 	
-	if game_mode:
-		setting_menu_button = {}
-		font_style_vars = []
-		for content_name in setting_content:
+	setting_menu_button = {}
+	font_style_vars = []
+	for content_name in setting_content:
+		if setting_content_detail[content_name][mode] is True:
 			font_style_vars.append(StringVar(setting_frame[content_name]))
 			font_style_vars[-1].set(font_family[content_name]['family'])
 			setting_menu_button[content_name] = Menubutton(setting_frame[content_name],
 			                                               font=(font_family[content_name]['family'], 13),
 			                                               textvariable=font_style_vars[-1])
+	
+	def update_font_print(widget, **kwargs):
+		if 'font_style' in kwargs:
+			font_style = kwargs['font_style']
+			font_family[widget]['family'] = font_style
+			setting_menu_button[widget].configure(text=font_style, font=(font_style, 13))
+		if 'font_size' in kwargs:
+			font_size = setting_entry[widget].get()
+			if font_size != "":
+				font_family[widget]['size'] = int(font_size)
+		if 'add_size' in kwargs:
+			font_family[widget]['size'] += 1
+			setting_entry[widget].delete(0, 'end')
+			setting_entry[widget].insert('end', str(font_family[widget]['size']))
+		if 'subtract_size' in kwargs:
+			font_family[widget]['size'] -= 1
+			setting_entry[widget].delete(0, 'end')
+			setting_entry[widget].insert('end', str(font_family[widget]['size']))
 		
-		def update_font_print(widget, **kwargs):
-			if 'font_style' in kwargs:
-				font_style = kwargs['font_style']
-				font_family[widget]['family'] = font_style
-				setting_menu_button[widget].configure(text=font_style, font=(font_style, 13))
-			if 'font_size' in kwargs:
-				font_size = setting_entry[widget].get()
-				if font_size != "":
-					font_family[widget]['size'] = int(font_size)
-			if 'add_size' in kwargs:
-				font_family[widget]['size'] += 1
-				setting_entry[widget].delete(0, 'end')
-				setting_entry[widget].insert('end', str(font_family[widget]['size']))
-			if 'subtract_size' in kwargs:
-				font_family[widget]['size'] -= 1
-				setting_entry[widget].delete(0, 'end')
-				setting_entry[widget].insert('end', str(font_family[widget]['size']))
-			
-			if widget['state'] == DISABLED:
-				widget.configure(state=NORMAL)
-				widget.configure(font=font_family[widget])
-				widget.configure(state=DISABLED)
-			else:
-				widget.configure(font=font_family[widget])
-		
-		setting_menu = {}
-		for i, (key_value, element) in enumerate(setting_menu_button.items()):
+		if widget['state'] == DISABLED:
+			widget.configure(state=NORMAL)
+			widget.configure(font=font_family[widget])
+			widget.configure(state=DISABLED)
+		else:
+			widget.configure(font=font_family[widget])
+	
+	setting_menu = {}
+	for i, (key_value, element) in enumerate(setting_menu_button.items()):
+		if setting_content_detail[key_value][mode] is True:
 			setting_menu[key_value] = Menu(element, tearoff=0)
 			setting_menu_button[key_value].configure(menu=setting_menu[key_value])
 			if key_value == "setting_window":
@@ -182,22 +192,23 @@ def open_setting_window(game_mode):
 				                                        command=lambda widget=key_value,
 				                                                       new_font=each_font: update_font_print(widget,
 				                                                                                             font_style=new_font))
-		
-		def on_focus_out(entry, widget):
-			entry.delete(0, 'end')
-			entry.insert('end', str(font_family[widget]['size']))
-		
-		def only_int_input(P):
-			if P.isdigit():
-				return True
-			elif P == "":
-				return True
-			else:
-				return False
-		
-		setting_entry = {}
-		setting_entry_button = {}
-		for content_name in setting_content:
+	
+	def on_focus_out(entry, widget):
+		entry.delete(0, 'end')
+		entry.insert('end', str(font_family[widget]['size']))
+	
+	def only_int_input(P):
+		if P.isdigit():
+			return True
+		elif P == "":
+			return True
+		else:
+			return False
+	
+	setting_entry = {}
+	setting_entry_button = {}
+	for content_name in setting_content:
+		if setting_content_detail[content_name][mode] is True:
 			setting_entry[content_name] = Entry(setting_frame[content_name], validate="key",
 			                                    validatecommand=(setting_window_frame.register(only_int_input), '%P'))
 			setting_entry[content_name].insert('end', str(font_family[content_name]['size']))
@@ -208,12 +219,13 @@ def open_setting_window(game_mode):
 			setting_entry_button[content_name] = Button(setting_frame[content_name], text="Confirm")
 			setting_entry_button[content_name].config(
 				command=lambda widget=content_name, new_size=True: update_font_print(widget, font_size=new_size))
-		
-		setting_font_size_frame = {}
-		setting_font_size_button = {}
-		# icon_up = PhotoImage(file="icon-up.png")
-		# icon_down = PhotoImage(file="icon-down.png")
-		for content_name in setting_content:
+	
+	setting_font_size_frame = {}
+	setting_font_size_button = {}
+	# icon_up = PhotoImage(file="icon-up.png")
+	# icon_down = PhotoImage(file="icon-down.png")
+	for content_name in setting_content:
+		if setting_content_detail[content_name][mode] is True:
 			if content_name == 'setting_window':
 				continue
 			setting_font_size_frame[content_name] = Frame(setting_frame[content_name])
@@ -224,73 +236,77 @@ def open_setting_window(game_mode):
 			setting_font_size_button[content_name].append(Button(setting_font_size_frame[content_name], text='-',
 			                                                     command=lambda widget=content_name: update_font_print(
 				                                                     widget, subtract_size=True)))
-		
-		setting_widget_hint = {}
-		for key, element in setting_content_detail.items():
+	
+	setting_widget_hint = {}
+	for key, element in setting_content_detail.items():
+		if element[mode] is True:
 			setting_widget_hint[key] = []
 			if key == 'setting_window':
 				continue
 			setting_widget_hint[key].append(
-				Label(setting_frame[key], text=element, font=font_family['setting_window']))
+				Label(setting_frame[key], text=element[0], font=font_family['setting_window']))
 			setting_widget_hint[key].append(
-				Label(setting_frame[key], text=element + ' font style: ', font=font_family['setting_window']))
+				Label(setting_frame[key], text=element[0] + ' font style: ', font=font_family['setting_window']))
 			setting_widget_hint[key].append(
-				Label(setting_frame[key], text=element + ' size: ', font=font_family['setting_window']))
+				Label(setting_frame[key], text=element[0] + ' size: ', font=font_family['setting_window']))
+	
+	def update_font_in_setting_window(**kwargs):
+		global font_family
+		if 'update_font_style' in kwargs:
+			font_style = kwargs['update_font_style']
+			font_family['setting_window']['family'] = font_style
+			setting_menu_button['setting_window'].configure(text=font_style, font=(font_style, 13))
+		if 'add_size' in kwargs and kwargs['add_size']:
+			font_family['setting_window']['size'] += 1
 		
-		def update_font_in_setting_window(**kwargs):
-			global font_family
-			if 'update_font_style' in kwargs:
-				font_style = kwargs['update_font_style']
-				font_family['setting_window']['family'] = font_style
-				setting_menu_button['setting_window'].configure(text=font_style, font=(font_style, 13))
-			if 'add_size' in kwargs and kwargs['add_size']:
-				font_family['setting_window']['size'] += 1
-			
-			if 'subtract_size' in kwargs and kwargs['subtract_size']:
-				font_family['setting_window']['size'] -= 1
-			
-			size_add.configure(font=font_family['setting_window'])
-			size_subtract.configure(font=font_family['setting_window'])
-			for ordinal_number in range(10):
+		if 'subtract_size' in kwargs and kwargs['subtract_size']:
+			font_family['setting_window']['size'] -= 1
+		
+		size_add.configure(font=font_family['setting_window'])
+		size_subtract.configure(font=font_family['setting_window'])
+		for ordinal_number in range(len(setting_content)):
+			if setting_content_detail[setting_content[ordinal_number]][mode] is True:
 				if ordinal_number == 1:
 					continue
 				setting_widget_hint[setting_content[ordinal_number]][0].config(font=font_family['setting_window'])
 				setting_widget_hint[setting_content[ordinal_number]][1].config(font=font_family['setting_window'])
 				setting_widget_hint[setting_content[ordinal_number]][2].config(font=font_family['setting_window'])
-		
-		# 开始放置
-		for each_font in fonts:
-			setting_menu['setting_window'].add_radiobutton(label=each_font, font=(each_font, 13),
-			                                               variable=font_style_vars[1],
-			                                               command=lambda new_font=each_font: update_font_in_setting_window(
-				                                               update_font_style=new_font))
-		
-		setting_menu_button['setting_window'].pack(fill='x', side='top', expand=True)
-		
-		size_add = Button(setting_frame['setting_window'], text="font size +",
-		                  command=lambda: update_font_in_setting_window(add_size=True))
-		size_add.configure(font=font_family['setting_window'])
-		size_subtract = Button(setting_frame['setting_window'], text="font size -",
-		                       command=lambda: update_font_in_setting_window(subtract_size=True))
-		size_subtract.configure(font=font_family['setting_window'])
-		
-		size_add.pack(fill='x', side='left', expand=True)
-		size_subtract.pack(fill='x', side='right', anchor="center", expand=True)
-		setting_frame['setting_window'].pack(fill='x')
-		
-		def draw_line(canvas):
-			canvas.delete('all')
-			canvas.create_line(0, 0, canvas.winfo_width(), 0, width=canvas.winfo_height(), fill='black')
-		
-		dividing_line = []
-		for ordinal_number in range(11):
+	
+	# 开始放置
+	for each_font in fonts:
+		setting_menu['setting_window'].add_radiobutton(label=each_font, font=(each_font, 13),
+		                                               variable=font_style_vars[1],
+		                                               command=lambda new_font=each_font: update_font_in_setting_window(
+			                                               update_font_style=new_font))
+	
+	setting_menu_button['setting_window'].pack(fill='x', side='top', expand=True)
+	
+	size_add = Button(setting_frame['setting_window'], text="font size +",
+	                  command=lambda: update_font_in_setting_window(add_size=True))
+	size_add.configure(font=font_family['setting_window'])
+	size_subtract = Button(setting_frame['setting_window'], text="font size -",
+	                       command=lambda: update_font_in_setting_window(subtract_size=True))
+	size_subtract.configure(font=font_family['setting_window'])
+	
+	size_add.pack(fill='x', side='left', expand=True)
+	size_subtract.pack(fill='x', side='right', anchor="center", expand=True)
+	setting_frame['setting_window'].pack(fill='x')
+	
+	def draw_line(canvas):
+		canvas.delete('all')
+		canvas.create_line(0, 0, canvas.winfo_width(), 0, width=canvas.winfo_height(), fill='black')
+	
+	dividing_line = []
+	for ordinal_number in range(len(setting_content)):
+		if setting_content_detail[setting_content[ordinal_number]][mode] is True:
 			if ordinal_number == 1:
 				continue
 			dividing_line.append(Canvas(setting_window_frame, height=1))
 			dividing_line[-1].pack(fill='x')
 			dividing_line[-1].bind("<Configure>", lambda event, canvas=dividing_line[-1]: draw_line(canvas))
-			if ordinal_number == 10:
+			if ordinal_number == len(setting_content) - 1:
 				break
+			print(setting_content_detail[setting_content[ordinal_number]][0])
 			setting_widget_hint[setting_content[ordinal_number]][0].grid(row=0, column=0)
 			setting_widget_hint[setting_content[ordinal_number]][1].grid(row=1, column=0)
 			setting_menu_button[setting_content[ordinal_number]].grid(row=1, column=1)
@@ -303,9 +319,9 @@ def open_setting_window(game_mode):
 			
 			setting_entry_button[setting_content[ordinal_number]].grid(row=2, column=3)
 			setting_frame[setting_content[ordinal_number]].pack(anchor='center')
-		close = Button(setting_window_frame, text="Closed", font=font_family['setting_window'],
-		               command=setting_window.destroy)
-		close.pack(anchor='center')
+	close = Button(setting_window_frame, text="Closed", font=font_family['setting_window'],
+	               command=setting_window.destroy)
+	close.pack(anchor='center')
 
 
 def printer(content, text=print_text):
@@ -519,7 +535,7 @@ def solve_each_question(questions, index, input):
 			printer("Your question's format can not be calculated!")
 	
 	if index == len(questions) - 1 or input is False:
-		again.place(relx=0, rely=0.9, relwidth=0.5, relheight=0.1)
+		button_again.place(relx=0, rely=0.9, relwidth=0.5, relheight=0.1)
 		button_close.place(relx=0.5, rely=0.9, relwidth=0.5, relheight=0.1)
 	else:
 		button_next.configure(command=lambda list_questions=questions, new_index=index+1: solve_each_question(list_questions, new_index, True))
@@ -591,7 +607,7 @@ def start(game_mode):
 button_game_mode.configure(command=lambda: start(True))
 button_answer_mode.configure(command=lambda: start(False))
 
-again.configure(command=lambda :start(False))
+button_again.configure(command=lambda :start(False))
 
 
 def selected_mode():
