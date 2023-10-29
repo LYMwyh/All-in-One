@@ -117,20 +117,21 @@ def open_setting_window(game_mode):
 		setting_window_canvas.bind_all("<Button-4", on_mousewheel)
 		setting_window_canvas.bind_all("<Button-5>", on_mousewheel)
 	
-	def on_enter(event, widget):
+	def change_widget_state(widget, use):
+		if len(widget.winfo_children()) != 0:
+			for children_widget in widget.winfo_children():
+				change_widget_state(children_widget, use)
+		if 'state' in widget.configure():
+			if use:
+				widget.configure(state=NORMAL)
+			else:
+				widget.configure(state=DISABLED)
+		
+	
+	def on_enter(event, widget, frame):
 		global setting_content_detail
 		if widget.winfo_viewable():
 			widget.configure(highlightbackground='red')
-		else:
-			hint_window = Toplevel(root)
-			hint_window.title("Twenty Four Widget Hint")
-			hint_text = Text(hint_window, height=1)
-			hint_text.insert('end', setting_content_detail[widget], 'widget')
-			hint_text.tag_config('widget', foreground='green')
-			hint_text.insert('end', " doesn't appear on the screen yet！")
-			hint_text.configure(state=DISABLED)
-			hint_text.pack()
-			Label(hint_window, text=str(datetime.datetime.now()), fg='red').pack()
 	
 	def on_leave(event, widget):
 		widget.configure(highlightbackground='systemWindowBackgroundColor')
@@ -141,8 +142,21 @@ def open_setting_window(game_mode):
 			setting_frame[content_name] = Frame(setting_window_frame)
 			if content_name == 'setting_window':
 				continue
-			setting_frame[content_name].bind('<Enter>', lambda event, widget=content_name: on_enter(event, widget))
+			setting_frame[content_name].bind('<Enter>', lambda event, widget=content_name, frame=setting_frame[content_name]: on_enter(event, widget, frame))
 			setting_frame[content_name].bind('<Leave>', lambda event, widget=content_name: on_leave(event, widget))
+	
+	# def on_map(event, widget):
+	# 	change_widget_state(setting_frame[widget], True)
+	#
+	# def on_unmap(event, widget):
+	# 	change_widget_state(setting_frame[widget], False)
+	#
+	# for content_name in setting_content:
+	# 	if content_name == 'setting_window':
+	# 		continue
+	# 	if setting_content_detail[content_name][mode] is True:
+	# 		content_name.bind("<Map>", lambda event, widget=content_name: on_map(event, widget))
+	# 		content_name.bind("<Unmap>", lambda event, widget=content_name: on_unmap(event, widget))
 	
 	setting_menu_button = {}
 	font_style_vars = []
@@ -615,6 +629,11 @@ button_again.configure(command=lambda :start(False))
 
 
 def selected_mode():
+	if len(root.winfo_children()) != 0:
+		windows = root.winfo_children()
+		for window in windows:
+			if type(window) is tkinter.Toplevel:
+				window.destroy()
 	Start.place_forget()
 	for content_name in setting_content:
 		if type(content_name) is str:
