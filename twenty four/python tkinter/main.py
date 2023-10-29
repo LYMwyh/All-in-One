@@ -29,6 +29,9 @@ button_no = Button(input_frame, text="NO")
 button_close = Button(input_frame, text="closed", command=root.quit)
 
 button_game_mode = Button(root, text="Game Mode")
+
+again = Button(input_frame, text="Again")
+
 button_answer_mode = Button(root, text="Answer Mode")
 
 setting_content = [setting,
@@ -490,19 +493,39 @@ def clicked_no():
 	button_close.place(relx=0, rely=0, relwidth=1, relheight=1)
 
 
-def solve_each_question(question, last):
-	algorithm.Four_Numbers = []
-	algorithm.Whole_Answers = []
-	for integer in question:
-		algorithm.Four_Numbers.append(integer)
-	algorithm.calculate_the_whole_answers()
-	if len(algorithm.Whole_Answers) == 0:
-		printer("There is no any answers!")
+def solve_each_question(questions, index, input):
+	if input is True:
+		algorithm.Four_Numbers = []
+		algorithm.Whole_Answers = []
+		question = questions[index].split(', ')
+		if len(question) == 4:
+			format_correct = True
+			for step in range(len(question)):
+				try:
+					question[step] = int(question[step])
+				except ValueError:
+					format_correct = False
+					break
+		else:
+			format_correct = False
+		if format_correct is True:
+			for integer in question:
+				algorithm.Four_Numbers.append(integer)
+			algorithm.calculate_the_whole_answers()
+			if len(algorithm.Whole_Answers) == 0:
+				printer("There is no any answers!")
+			else:
+				for Each_Answer in algorithm.Whole_Answers:
+					printer(Each_Answer + "=24")
+		else:
+			printer("Your question's format can not be calculated!")
+	
+	if index == len(questions) - 1 or input is False:
+		again.place(relx=0, rely=0.9, relwidth=0.5, relheight=0.1)
+		button_close.place(relx=0.5, rely=0.9, relwidth=0.5, relheight=0.1)
 	else:
-		for Each_Answer in algorithm.Whole_Answers:
-			printer(Each_Answer + "=24")
-	if last is True:
-		
+		button_next.configure(command=lambda list_questions=questions, new_index=index+1: solve_each_question(list_questions, new_index, True))
+		button_next.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
 
 
 def submit_questions():
@@ -515,25 +538,11 @@ def submit_questions():
 	questions = input_text.get('1.0', 'end')
 	questions = questions.split('\n')
 	questions.pop()
-	for index, question in enumerate(questions):
-		question = question.split(', ')
-		format_correct = True
-		for step in range(len(question)):
-			try:
-				question[step] = int(question[step])
-			except ValueError:
-				printer("Your question's format can not be calculated!")
-				format_correct = False
-				break
-		if format_correct is False:
-			continue
-		if index == len(question):
-			solve_each_question(question, True)
-		else:
-			solve_each_question(question, False)
 	if questions == ['']:
 		printer("You did not input any questions!")
-
+		solve_each_question(questions, 0, False)
+	else:
+		solve_each_question(questions, 0, True)
 
 def start(game_mode):
 	button_game_mode.pack_forget()
@@ -580,6 +589,8 @@ def start(game_mode):
 
 button_game_mode.configure(command=lambda: start(True))
 button_answer_mode.configure(command=lambda: start(False))
+
+again.configure(command=lambda :start(False))
 
 
 def selected_mode():
