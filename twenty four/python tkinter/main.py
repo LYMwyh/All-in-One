@@ -398,7 +398,7 @@ def check_answer(yes):
 				algorithm.Four_Numbers[0], algorithm.Four_Numbers[1], algorithm.Four_Numbers[2],
 				algorithm.Four_Numbers[3]))
 		printer("Please input your answer(s) in the input frame.")
-		printer("Each line write one answer.You don't need to write '=24' in the end of each line.")
+		printer("Each line writes one answer.You don't need to write '=24' in the end of each line.")
 		
 		example.configure(state=NORMAL)
 		example.delete('1.0', 'end')
@@ -490,6 +490,51 @@ def clicked_no():
 	button_close.place(relx=0, rely=0, relwidth=1, relheight=1)
 
 
+def solve_each_question(question, last):
+	algorithm.Four_Numbers = []
+	algorithm.Whole_Answers = []
+	for integer in question:
+		algorithm.Four_Numbers.append(integer)
+	algorithm.calculate_the_whole_answers()
+	if len(algorithm.Whole_Answers) == 0:
+		printer("There is no any answers!")
+	else:
+		for Each_Answer in algorithm.Whole_Answers:
+			printer(Each_Answer + "=24")
+	if last is True:
+		
+
+
+def submit_questions():
+	submit.configure(state=DISABLED)
+	submit.place_forget()
+	input_text.configure(state=DISABLED)
+	print_text.configure(state=NORMAL)
+	print_text.delete('1.0', 'end')
+	print_text.configure(state=DISABLED)
+	questions = input_text.get('1.0', 'end')
+	questions = questions.split('\n')
+	questions.pop()
+	for index, question in enumerate(questions):
+		question = question.split(', ')
+		format_correct = True
+		for step in range(len(question)):
+			try:
+				question[step] = int(question[step])
+			except ValueError:
+				printer("Your question's format can not be calculated!")
+				format_correct = False
+				break
+		if format_correct is False:
+			continue
+		if index == len(question):
+			solve_each_question(question, True)
+		else:
+			solve_each_question(question, False)
+	if questions == ['']:
+		printer("You did not input any questions!")
+
+
 def start(game_mode):
 	button_game_mode.pack_forget()
 	button_answer_mode.pack_forget()
@@ -516,6 +561,8 @@ def start(game_mode):
 		printer("Hello! Here is answer mode!")
 		printer("You can input four integers from 1 to 13.")
 		printer("I will print all the answers that can use them to calculate 24.")
+		printer("Four integers are a group.")
+		printer("Each line writes one group.")
 		
 		example.configure(state=NORMAL)
 		example.delete('1.0', 'end')
@@ -525,6 +572,7 @@ def start(game_mode):
 		input_text.delete('1.0', 'end')
 		input_text.place(relx=0, rely=0.1, relwidth=1, relheight=0.8)
 		#
+		submit.configure(command=lambda: submit_questions())
 		submit.configure(state=NORMAL)
 		submit.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
 		printer("Example: a, b, c, d", example)
