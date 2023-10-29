@@ -304,9 +304,8 @@ def open_setting_window(game_mode):
 			dividing_line.append(Canvas(setting_window_frame, height=1))
 			dividing_line[-1].pack(fill='x')
 			dividing_line[-1].bind("<Configure>", lambda event, canvas=dividing_line[-1]: draw_line(canvas))
-			if ordinal_number == len(setting_content) - 1:
+			if ordinal_number == len(setting_content):
 				break
-			print(setting_content_detail[setting_content[ordinal_number]][0])
 			setting_widget_hint[setting_content[ordinal_number]][0].grid(row=0, column=0)
 			setting_widget_hint[setting_content[ordinal_number]][1].grid(row=1, column=0)
 			setting_menu_button[setting_content[ordinal_number]].grid(row=1, column=1)
@@ -319,6 +318,9 @@ def open_setting_window(game_mode):
 			
 			setting_entry_button[setting_content[ordinal_number]].grid(row=2, column=3)
 			setting_frame[setting_content[ordinal_number]].pack(anchor='center')
+	dividing_line.append(Canvas(setting_window_frame, height=1))
+	dividing_line[-1].pack(fill='x')
+	dividing_line[-1].bind("<Configure>", lambda event, canvas=dividing_line[-1]: draw_line(canvas))
 	close = Button(setting_window_frame, text="Closed", font=font_family['setting_window'],
 	               command=setting_window.destroy)
 	close.pack(anchor='center')
