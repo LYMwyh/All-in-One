@@ -28,6 +28,9 @@ button_yes = Button(input_frame, text="YES")
 button_no = Button(input_frame, text="NO")
 button_close = Button(input_frame, text="closed", command=root.quit)
 
+button_game_mode = Button(root, text="Game Mode")
+button_answer_mode = Button(root, text="Answer Mode")
+
 setting_content = [setting,
                    'setting_window',
                    print_text,
@@ -380,9 +383,6 @@ def submit_answers():
 	button_next.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
 
 
-submit.configure(command=lambda: submit_answers())
-
-
 def check_answer(yes):
 	button_yes.place_forget()
 	button_no.place_forget()
@@ -407,6 +407,7 @@ def check_answer(yes):
 		input_text.configure(state=NORMAL)
 		input_text.delete('1.0', 'end')
 		input_text.place(relx=0, rely=0.1, relwidth=1, relheight=0.8)
+		submit.configure(command=lambda: submit_answers())
 		submit.configure(state=NORMAL)
 		submit.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
 		printer("Example: a+b+c+d", example)
@@ -489,32 +490,57 @@ def clicked_no():
 	button_close.place(relx=0, rely=0, relwidth=1, relheight=1)
 
 
-def start():
+def start(game_mode):
+	button_game_mode.pack_forget()
+	button_answer_mode.pack_forget()
 	print_frame_border.place(relx=0, rely=0.1, relwidth=0.5, relheight=0.9)
 	print_text.configure(state=DISABLED)
 	print_text.place(relx=0, rely=0, relwidth=1, relheight=1)
 	input_frame_border.place(relx=0.5, rely=0.1, relwidth=0.5, relheight=0.9)
 	input_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 	setting.place(relx=0, rely=0, relwidth=1, relheight=0.1)
-	printer("Here is a game:")
-	printer("There will have four random integers from 1 to 13, you need to use these four integers calculate 24.")
-	printer("Each integer must and can only be used once.")
-	printer("Sometimes, there is no solutions for figuring out 24.")
-	printer("\n")
-	
-	printer("Do you want to play it with me?")
-	button_yes.configure(command=lambda: clicked_yes())
-	button_no.configure(command=lambda: clicked_no())
-	button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
-	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
+	if game_mode:
+		printer("Hello! Here is game mode!")
+		printer("Here is a game:")
+		printer("There will have four random integers from 1 to 13, you need to use these four integers calculate 24.")
+		printer("Each integer must and can only be used once.")
+		printer("Sometimes, there is no solutions for figuring out 24.")
+		printer("\n")
+		
+		printer("Do you want to play it with me?")
+		button_yes.configure(command=lambda: clicked_yes())
+		button_no.configure(command=lambda: clicked_no())
+		button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
+		button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
+	else:
+		printer("Hello! Here is answer mode!")
+		printer("You can input four integers from 1 to 13.")
+		printer("I will print all the answers that can use them to calculate 24.")
+		
+		example.configure(state=NORMAL)
+		example.delete('1.0', 'end')
+		example.configure(state=DISABLED)
+		example.place(relx=0, rely=0, relwidth=1, relheight=0.1)
+		input_text.configure(state=NORMAL)
+		input_text.delete('1.0', 'end')
+		input_text.place(relx=0, rely=0.1, relwidth=1, relheight=0.8)
+		#
+		submit.configure(state=NORMAL)
+		submit.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
+		printer("Example: a, b, c, d", example)
 
 
-def selected_function():
+button_game_mode.configure(command=lambda: start(True))
+button_answer_mode.configure(command=lambda: start(False))
+
+
+def selected_mode():
 	Start.place_forget()
-	
+	button_game_mode.pack(side='top', expand=True)
+	button_answer_mode.pack(side='bottom', expand=True)
 
 
-Start.configure(command=lambda: start())
+Start.configure(command=lambda: selected_mode())
 Start.place(relx=0.5, rely=0.5, anchor='center')
 
 root.mainloop()
