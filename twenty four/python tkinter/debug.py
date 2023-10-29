@@ -2,8 +2,9 @@ import tkinter as tk
 
 root = tk.Tk()
 
-children = tk.Toplevel(root)
+label = tk.Label(root, text='1111')
 
-print(root.winfo_children())
+button = tk.Button(root, text='111', command=lambda: label.pack())
+button.pack()
 
 root.mainloop()
