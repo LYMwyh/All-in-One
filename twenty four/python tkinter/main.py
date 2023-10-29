@@ -321,9 +321,11 @@ def open_setting_window(game_mode):
 	dividing_line.append(Canvas(setting_window_frame, height=1))
 	dividing_line[-1].pack(fill='x')
 	dividing_line[-1].bind("<Configure>", lambda event, canvas=dividing_line[-1]: draw_line(canvas))
+	change_mode = Button(setting_window_frame, text="Change Mode", font=font_family['setting_window'], command=lambda: selected_mode())
+	change_mode.pack(side='left', fill='x', expand=True)
 	close = Button(setting_window_frame, text="Closed", font=font_family['setting_window'],
 	               command=setting_window.destroy)
-	close.pack(anchor='center')
+	close.pack(side='right', fill='x', expand=True)
 
 
 def printer(content, text=print_text):
@@ -614,6 +616,14 @@ button_again.configure(command=lambda :start(False))
 
 def selected_mode():
 	Start.place_forget()
+	for content_name in setting_content:
+		if type(content_name) is str:
+			continue
+		content_name.place_forget()
+		content_name.pack_forget()
+	print_frame_border.place_forget()
+	input_frame_border.place_forget()
+	input_frame.place_forget()
 	button_game_mode.pack(side='top', expand=True)
 	button_answer_mode.pack(side='bottom', expand=True)
 
