@@ -35,9 +35,9 @@ button_again = Button(input_frame, text="Again")
 button_answer_mode = Button(root, text="Answer Mode")
 
 mode = 0
-current_mode = 0
 
 state_of_change_mode = StringVar()
+state_of_change_mode.set('disable')
 
 setting_content = [setting,
                    'setting_window',
@@ -338,6 +338,10 @@ def open_setting_window():
 	dividing_line[-1].bind("<Configure>", lambda event, canvas=dividing_line[-1]: draw_line(canvas))
 	change_mode = Button(setting_window_frame, text="Change Mode", font=font_family['setting_window'], command=lambda: selected_mode())
 	change_mode.pack(side='left', fill='x', expand=True)
+	if state_of_change_mode.get() == 'normal':
+		change_mode.configure(state=NORMAL)
+	else:
+		change_mode.configure(state=DISABLED)
 	close = Button(setting_window_frame, text="Closed", font=font_family['setting_window'],
 	               command=setting_window.destroy)
 	close.pack(side='right', fill='x', expand=True)
@@ -350,29 +354,30 @@ def open_setting_window():
 				change_widget_state(setting_frame[content_name], True)
 			else:
 				change_widget_state(setting_frame[content_name], False)
+	
+	def whether_could_change_mode(*args):
+		if state_of_change_mode.get() == 'normal':
+			change_mode.configure(state=NORMAL)
+		else:
+			change_mode.configure(state=DISABLED)
+	
+	state_of_change_mode.trace('w', whether_could_change_mode)
 
 
 def printer(content, text=print_text):
-	global current_mode, mode
-	if current_mode != mode:
-		return
 	for char in content:
-		if current_mode != mode:
-			break
 		text.configure(state=NORMAL)
 		text.insert('end', char)
 		text.configure(state=DISABLED)
 		root.update()
 		time.sleep(0)
-	if current_mode == mode:
-		text.configure(state=NORMAL)
-		text.insert('end', '\n')
-		text.configure(state=DISABLED)
-	else:
-		text.delete('1.0', 'end')
+	text.configure(state=NORMAL)
+	text.insert('end', '\n')
+	text.configure(state=DISABLED)
 
 
 def whether_want_to_know_whole_answer():
+	state_of_change_mode.set('disable')
 	example.place_forget()
 	input_text.place_forget()
 	button_next.place_forget()
@@ -388,9 +393,11 @@ def whether_want_to_know_whole_answer():
 	button_no.configure(command=lambda: whole_answers(False))
 	button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
 	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
+	state_of_change_mode.set('normal')
 
 
 def submit_answers():
+	state_of_change_mode.set('disable')
 	submit.configure(state=DISABLED)
 	input_text.configure(state=DISABLED)
 	print_text.configure(state=NORMAL)
@@ -434,9 +441,11 @@ def submit_answers():
 	submit.place_forget()
 	button_next.configure(command=lambda: whether_want_to_know_whole_answer())
 	button_next.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
+	state_of_change_mode.set('normal')
 
 
 def check_answer(yes):
+	state_of_change_mode.set('disable')
 	button_yes.place_forget()
 	button_no.place_forget()
 	
@@ -464,11 +473,13 @@ def check_answer(yes):
 		submit.configure(state=NORMAL)
 		submit.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
 		printer("Example: a+b+c+d", example)
+		state_of_change_mode.set('normal')
 	else:
 		whether_want_to_know_whole_answer()
 
 
 def whole_answers(yes):
+	state_of_change_mode.set('disable')
 	button_yes.place_forget()
 	button_no.place_forget()
 	
@@ -490,9 +501,12 @@ def whole_answers(yes):
 	button_no.configure(command=lambda: clicked_no())
 	button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
 	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
+	
+	state_of_change_mode.set('normal')
 
 
 def whether_have_answers(yes):
+	state_of_change_mode.set('disable')
 	printer("OK!")
 	if yes:
 		button_yes.configure(command=lambda: check_answer(True))
@@ -501,9 +515,12 @@ def whether_have_answers(yes):
 	else:
 		time.sleep(1.0)
 		whether_want_to_know_whole_answer()
+	
+	state_of_change_mode.set('normal')
 
 
 def clicked_yes():
+	state_of_change_mode.set('disable')
 	button_yes.place_forget()
 	button_no.place_forget()
 	
@@ -530,9 +547,13 @@ def clicked_yes():
 	button_no.configure(command=lambda: whether_have_answers(False))
 	button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
 	button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
+	
+	state_of_change_mode.set('normal')
 
 
 def clicked_no():
+	state_of_change_mode.set('disable')
+	
 	button_yes.place_forget()
 	button_no.place_forget()
 	
@@ -541,9 +562,13 @@ def clicked_no():
 	printer("See you next time!")
 	
 	button_close.place(relx=0, rely=0, relwidth=1, relheight=1)
+	
+	state_of_change_mode.set('normal')
 
 
 def solve_each_question(questions, index, input):
+	state_of_change_mode.set('disable')
+	
 	if input is True:
 		algorithm.Four_Numbers = []
 		algorithm.Whole_Answers = []
@@ -573,12 +598,16 @@ def solve_each_question(questions, index, input):
 	if index == len(questions) - 1 or input is False:
 		button_again.place(relx=0, rely=0.9, relwidth=0.5, relheight=0.1)
 		button_close.place(relx=0.5, rely=0.9, relwidth=0.5, relheight=0.1)
+		state_of_change_mode.set('normal')
 	else:
 		button_next.configure(command=lambda list_questions=questions, new_index=index+1: solve_each_question(list_questions, new_index, True))
 		button_next.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
+		state_of_change_mode.set('normal')
 
 
 def submit_questions():
+	state_of_change_mode.set('disable')
+	
 	submit.configure(state=DISABLED)
 	submit.place_forget()
 	input_text.configure(state=DISABLED)
@@ -595,10 +624,16 @@ def submit_questions():
 		solve_each_question(questions, 0, True)
 
 def start(game_mode):
-	global mode, current_mode
+	global mode
+	
+	state_of_change_mode.set('disable')
 	
 	button_game_mode.pack_forget()
 	button_answer_mode.pack_forget()
+	
+	button_game_mode.place_forget()
+	button_answer_mode.place_forget()
+	
 	print_frame_border.place(relx=0, rely=0.1, relwidth=0.5, relheight=0.9)
 	print_text.configure(state=DISABLED)
 	print_text.place(relx=0, rely=0, relwidth=1, relheight=1)
@@ -616,7 +651,6 @@ def start(game_mode):
 	example.configure(state=DISABLED)
 	
 	if game_mode:
-		current_mode = 1
 		mode = 1
 		setting.configure(command=lambda: open_setting_window())
 		setting.place(relx=0, rely=0, relwidth=1, relheight=0.1)
@@ -632,8 +666,9 @@ def start(game_mode):
 		button_no.configure(command=lambda: clicked_no())
 		button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
 		button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
+		
+		state_of_change_mode.set('normal')
 	else:
-		current_mode = 2
 		mode = 2
 		setting.configure(command=lambda: open_setting_window())
 		setting.place(relx=0, rely=0, relwidth=1, relheight=0.1)
@@ -655,6 +690,8 @@ def start(game_mode):
 		submit.configure(state=NORMAL)
 		submit.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
 		printer("Example: a, b, c, d", example)
+		
+		state_of_change_mode.set('normal')
 
 
 button_game_mode.configure(command=lambda: start(True))
@@ -680,8 +717,10 @@ def selected_mode():
 	print_frame_border.place_forget()
 	input_frame_border.place_forget()
 	input_frame.place_forget()
-	button_game_mode.pack(side='top', expand=True)
-	button_answer_mode.pack(side='bottom', expand=True)
+	# button_game_mode.pack(side='top', expand=True)
+	# button_answer_mode.pack(side='bottom', expand=True)
+	button_game_mode.place(relx=0.5, rely=0.25, anchor="center")
+	button_answer_mode.place(relx=0.5, rely=0.75, anchor="center")
 
 
 Start.configure(command=lambda: selected_mode())
