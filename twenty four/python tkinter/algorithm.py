@@ -7,6 +7,7 @@ the_Selected_Operators = []
 Four_Numbers = []
 
 one_group = 0
+abc = 0
 
 
 class Fraction(object):
@@ -91,7 +92,7 @@ def before_or_after_one(index_of_one, before, complete_answer):
 				return False
 			elif complete_answer[index_of_one] == '+' or complete_answer[index_of_one] == '-':
 				return True
-		elif type(complete_answer[index_of_one]) is float and complete_answer[index_of_one] != 1:
+		elif type(complete_answer[index_of_one]) is int and complete_answer[index_of_one] != 1:
 			return False
 
 
@@ -258,7 +259,7 @@ def simplify_formula_forth_part(group):
 
 
 def simplify_formula_second_part(first, complete_answer, layer):
-	global one_group
+	global one_group, abc
 	group = []
 	temporary_group = ['+']
 	step = first
@@ -273,6 +274,7 @@ def simplify_formula_second_part(first, complete_answer, layer):
 					if len(temporary_group) == 2:
 						break
 					elif temporary_step == 1 and temporary_group[temporary_step + 1] == '/':
+						temporary_step += 1
 						continue
 					elif temporary_step == 1 and temporary_group[temporary_step + 1] == '*':
 						del temporary_group[temporary_step]
@@ -283,7 +285,6 @@ def simplify_formula_second_part(first, complete_answer, layer):
 					temporary_step -= 2
 					one_group += 1
 				temporary_step += 1
-			
 			temporary_group = simplify_formula_third_part(temporary_group)
 			# print(temporary_group, 1)
 			group.append([_ for _ in temporary_group[:]])
@@ -488,15 +489,19 @@ def calculate_the_whole_answers():
 									if Create_the_Answer < 3:  # 0 , 1 , 2
 										answer.append(the_Selected_Operators[Create_the_Answer])
 								complete_answer = [_ if type(_) is not Fraction else _.numerator for _ in answer]
+								b = [_ for _ in complete_answer]
 								calculate_the_answer()
+								a = []
 								if answer == [24]:
 									old_version_answer = []
 									while True:
 										one_group = 0
 										simplify_formula_first_part(complete_answer)
+										a.append([_ for _ in complete_answer])
 										complete_answer, temporary_number = simplify_formula_second_part(0,
 										                                                                 complete_answer,
 										                                                                 0)
+										a.append([_ for _ in complete_answer])
 										if old_version_answer == complete_answer:
 											break
 										old_version_answer = [_ for _ in complete_answer]
@@ -508,6 +513,9 @@ def calculate_the_whole_answers():
 									calculate_the_answer()
 									if answer != [24]:
 										print("error!")
+										print(complete_answer)
+										print('b', b)
+										print('a', a)
 									#
 									complete_answer = ''.join(list(map(str, complete_answer)))
 									if complete_answer not in Whole_Answers:
