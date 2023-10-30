@@ -35,6 +35,9 @@ button_again = Button(input_frame, text="Again")
 button_answer_mode = Button(root, text="Answer Mode")
 
 mode = 0
+current_mode = 0
+
+state_of_change_mode = StringVar()
 
 setting_content = [setting,
                    'setting_window',
@@ -350,15 +353,23 @@ def open_setting_window():
 
 
 def printer(content, text=print_text):
+	global current_mode, mode
+	if current_mode != mode:
+		return
 	for char in content:
+		if current_mode != mode:
+			break
 		text.configure(state=NORMAL)
 		text.insert('end', char)
 		text.configure(state=DISABLED)
 		root.update()
 		time.sleep(0)
-	text.configure(state=NORMAL)
-	text.insert('end', '\n')
-	text.configure(state=DISABLED)
+	if current_mode == mode:
+		text.configure(state=NORMAL)
+		text.insert('end', '\n')
+		text.configure(state=DISABLED)
+	else:
+		text.delete('1.0', 'end')
 
 
 def whether_want_to_know_whole_answer():
@@ -585,6 +596,7 @@ def submit_questions():
 
 def start(game_mode):
 	global mode, current_mode
+	
 	button_game_mode.pack_forget()
 	button_answer_mode.pack_forget()
 	print_frame_border.place(relx=0, rely=0.1, relwidth=0.5, relheight=0.9)
@@ -592,12 +604,17 @@ def start(game_mode):
 	print_text.place(relx=0, rely=0, relwidth=1, relheight=1)
 	input_frame_border.place(relx=0.5, rely=0.1, relwidth=0.5, relheight=0.9)
 	input_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
+	
 	print_text.configure(state=NORMAL)
 	print_text.delete('1.0', 'end')
 	print_text.configure(state=DISABLED)
 	input_text.configure(state=NORMAL)
 	input_text.delete('1.0', 'end')
 	input_text.configure(state=DISABLED)
+	example.configure(state=NORMAL)
+	example.delete('1.0', 'end')
+	example.configure(state=DISABLED)
+	
 	if game_mode:
 		current_mode = 1
 		mode = 1
