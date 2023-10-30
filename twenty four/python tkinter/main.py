@@ -34,6 +34,8 @@ button_again = Button(input_frame, text="Again")
 
 button_answer_mode = Button(root, text="Answer Mode")
 
+mode = 0
+
 setting_content = [setting,
                    'setting_window',
                    print_text,
@@ -69,15 +71,10 @@ for content_name in setting_content:
 		content_name.configure(font=font_family[content_name])
 
 
-def open_setting_window(game_mode):
-	global font_family, setting_content_detail, setting_content
+def open_setting_window():
+	global font_family, setting_content_detail, setting_content, mode
 	setting_window = Toplevel(root)
 	setting_window.title("Twenty Four Setting Window")
-	
-	if game_mode is True:
-		mode = 1
-	else:
-		mode = 2
 	
 	setting_window_top_frame = Frame(setting_window)
 	setting_window_secondary_frame = Frame(setting_window_top_frame)
@@ -118,14 +115,15 @@ def open_setting_window(game_mode):
 		setting_window_canvas.bind_all("<Button-5>", on_mousewheel)
 	
 	def change_widget_state(widget, use):
-		if len(widget.winfo_children()) != 0:
-			for children_widget in widget.winfo_children():
-				change_widget_state(children_widget, use)
-		if 'state' in widget.configure():
-			if use:
-				widget.configure(state=NORMAL)
-			else:
-				widget.configure(state=DISABLED)
+		if setting_window in root.winfo_children():
+			if len(widget.winfo_children()) != 0:
+				for children_widget in widget.winfo_children():
+					change_widget_state(children_widget, use)
+			if 'state' in widget.configure():
+				if use:
+					widget.configure(state=NORMAL)
+				else:
+					widget.configure(state=DISABLED)
 		
 	
 	def on_enter(event, widget, frame):
@@ -146,7 +144,7 @@ def open_setting_window(game_mode):
 			setting_frame[content_name].bind('<Leave>', lambda event, widget=content_name: on_leave(event, widget))
 	
 	def on_map(event, widget):
-		change_widget_state(setting_frame[widget], True)
+			change_widget_state(setting_frame[widget], True)
 
 	def on_unmap(event, widget):
 		change_widget_state(setting_frame[widget], False)
@@ -586,6 +584,7 @@ def submit_questions():
 		solve_each_question(questions, 0, True)
 
 def start(game_mode):
+	global mode, current_mode
 	button_game_mode.pack_forget()
 	button_answer_mode.pack_forget()
 	print_frame_border.place(relx=0, rely=0.1, relwidth=0.5, relheight=0.9)
@@ -593,8 +592,16 @@ def start(game_mode):
 	print_text.place(relx=0, rely=0, relwidth=1, relheight=1)
 	input_frame_border.place(relx=0.5, rely=0.1, relwidth=0.5, relheight=0.9)
 	input_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
+	print_text.configure(state=NORMAL)
+	print_text.delete('1.0', 'end')
+	print_text.configure(state=DISABLED)
+	input_text.configure(state=NORMAL)
+	input_text.delete('1.0', 'end')
+	input_text.configure(state=DISABLED)
 	if game_mode:
-		setting.configure(command=lambda: open_setting_window(True))
+		current_mode = 1
+		mode = 1
+		setting.configure(command=lambda: open_setting_window())
 		setting.place(relx=0, rely=0, relwidth=1, relheight=0.1)
 		printer("Hello! Here is game mode!")
 		printer("Here is a game:")
@@ -609,7 +616,9 @@ def start(game_mode):
 		button_yes.place(relx=0, rely=0, relwidth=1, relheight=0.5)
 		button_no.place(relx=0, rely=0.5, relwidth=1, relheight=0.5)
 	else:
-		setting.configure(command=lambda: open_setting_window(False))
+		current_mode = 2
+		mode = 2
+		setting.configure(command=lambda: open_setting_window())
 		setting.place(relx=0, rely=0, relwidth=1, relheight=0.1)
 		printer("Hello! Here is answer mode!")
 		printer("You can input four integers from 1 to 13.")
@@ -638,6 +647,8 @@ button_again.configure(command=lambda :start(False))
 
 
 def selected_mode():
+	global mode
+	mode = 0
 	if len(root.winfo_children()) != 0:
 		windows = root.winfo_children()
 		for window in windows:
