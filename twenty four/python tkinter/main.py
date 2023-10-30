@@ -145,18 +145,18 @@ def open_setting_window(game_mode):
 			setting_frame[content_name].bind('<Enter>', lambda event, widget=content_name, frame=setting_frame[content_name]: on_enter(event, widget, frame))
 			setting_frame[content_name].bind('<Leave>', lambda event, widget=content_name: on_leave(event, widget))
 	
-	# def on_map(event, widget):
-	# 	change_widget_state(setting_frame[widget], True)
-	#
-	# def on_unmap(event, widget):
-	# 	change_widget_state(setting_frame[widget], False)
-	#
-	# for content_name in setting_content:
-	# 	if content_name == 'setting_window':
-	# 		continue
-	# 	if setting_content_detail[content_name][mode] is True:
-	# 		content_name.bind("<Map>", lambda event, widget=content_name: on_map(event, widget))
-	# 		content_name.bind("<Unmap>", lambda event, widget=content_name: on_unmap(event, widget))
+	def on_map(event, widget):
+		change_widget_state(setting_frame[widget], True)
+
+	def on_unmap(event, widget):
+		change_widget_state(setting_frame[widget], False)
+
+	for content_name in setting_content:
+		if content_name == 'setting_window':
+			continue
+		if setting_content_detail[content_name][mode] is True:
+			content_name.bind("<Map>", lambda event, widget=content_name: on_map(event, widget))
+			content_name.bind("<Unmap>", lambda event, widget=content_name: on_unmap(event, widget))
 	
 	setting_menu_button = {}
 	font_style_vars = []
@@ -340,6 +340,15 @@ def open_setting_window(game_mode):
 	close = Button(setting_window_frame, text="Closed", font=font_family['setting_window'],
 	               command=setting_window.destroy)
 	close.pack(side='right', fill='x', expand=True)
+	
+	for content_name in setting_content:
+		if setting_content_detail[content_name][mode] is True:
+			if content_name == 'setting_window':
+				continue
+			if content_name.winfo_viewable():
+				change_widget_state(setting_frame[content_name], True)
+			else:
+				change_widget_state(setting_frame[content_name], False)
 
 
 def printer(content, text=print_text):
