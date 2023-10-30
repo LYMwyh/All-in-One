@@ -37,7 +37,7 @@ button_answer_mode = Button(root, text="Answer Mode")
 mode = 0
 
 state_of_change_mode = StringVar()
-state_of_change_mode.set('disable')
+state_of_change_mode.set('normal')
 
 setting_content = [setting,
                    'setting_window',
@@ -357,11 +357,28 @@ def open_setting_window():
 	
 	def whether_could_change_mode(*args):
 		if state_of_change_mode.get() == 'normal':
-			change_mode.configure(state=NORMAL)
+			if setting_window in root.winfo_children():
+				change_mode.configure(state=NORMAL)
 		else:
-			change_mode.configure(state=DISABLED)
+			if setting_window in root.winfo_children():
+				change_mode.configure(state=DISABLED)
 	
 	state_of_change_mode.trace('w', whether_could_change_mode)
+
+
+def close_root():
+	if state_of_change_mode.get() == 'normal':
+		root.quit()
+	else:
+		hint_window = Toplevel(root)
+		hint_text = Text(hint_window, height=1)
+		hint_text.insert('end', "When content stops putting, you can close the window.")
+		hint_text.configure(state=DISABLED)
+		hint_text.pack()
+		Label(hint_window, text=str(datetime.datetime.today()), fg='red').pack()
+
+
+root.protocol("WM_DELETE_WINDOW", close_root)
 
 
 def printer(content, text=print_text):
@@ -631,9 +648,6 @@ def start(game_mode):
 	button_game_mode.pack_forget()
 	button_answer_mode.pack_forget()
 	
-	button_game_mode.place_forget()
-	button_answer_mode.place_forget()
-	
 	print_frame_border.place(relx=0, rely=0.1, relwidth=0.5, relheight=0.9)
 	print_text.configure(state=DISABLED)
 	print_text.place(relx=0, rely=0, relwidth=1, relheight=1)
@@ -717,10 +731,9 @@ def selected_mode():
 	print_frame_border.place_forget()
 	input_frame_border.place_forget()
 	input_frame.place_forget()
-	# button_game_mode.pack(side='top', expand=True)
-	# button_answer_mode.pack(side='bottom', expand=True)
-	button_game_mode.place(relx=0.5, rely=0.25, anchor="center")
-	button_answer_mode.place(relx=0.5, rely=0.75, anchor="center")
+	button_game_mode.pack(side='top', expand=True)
+	button_answer_mode.pack(side='bottom', expand=True)
+	root.update_idletasks()
 
 
 Start.configure(command=lambda: selected_mode())
