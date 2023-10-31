@@ -5,6 +5,9 @@
 using namespace std;
 int main()
 {
-    printf("Hello World!");
+    while(true)
+    {
+        
+    }
     return 0;
 }
