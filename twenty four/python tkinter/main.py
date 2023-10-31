@@ -367,10 +367,15 @@ def open_setting_window():
 
 
 def close_root():
+	hint_window = Toplevel(root)
 	if state_of_change_mode.get() == 'normal':
-		root.quit()
+		hint_text = Label(hint_window, text="Are you sure you want to end the game?")
+		hint_text.pack(side='top', expand=True)
+		button_yes_close = Button(hint_window, text="Yes", command=root.quit)
+		button_no_close = Button(hint_window, text="Not sure", command=hint_window.destroy)
+		button_yes_close.pack(side='left', expand=True)
+		button_no_close.pack(side='right', expand=True)
 	else:
-		hint_window = Toplevel(root)
 		hint_text = Text(hint_window, height=1)
 		hint_text.insert('end', "When content stops putting, you can close the window.")
 		hint_text.configure(state=DISABLED)
