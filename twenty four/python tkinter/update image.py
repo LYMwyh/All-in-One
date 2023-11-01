@@ -1,22 +1,19 @@
 from PIL import Image
 
-def split_image(image_path):
-    # 打开图片
-    img = Image.open(image_path)
+def resize_image(input_image_path, output_image_path, scale_factor):
+    original_image = Image.open(input_image_path)
+    width, height = original_image.size
+    print(f"The original image size is {width} wide x {height} tall")
 
-    # 获取图片的宽度和高度
-    width, height = img.size
+    # 计算新的宽度和高度
+    new_height = int(height / scale_factor)
+    new_width = int(width * new_height / height)
 
-    # 计算分割线的位置
-    middle = height // 2
+    resized_image = original_image.resize((new_width, new_height))
+    width, height = resized_image.size
+    print(f"The resized image size is {width} wide x {height} tall")
+    resized_image.show()
+    resized_image.save(output_image_path)
 
-    # 分割图片
-    top_img = img.crop((0, 0, width, middle))
-    bottom_img = img.crop((0, middle, width, height))
-
-    # 保存分割后的图片
-    top_img.save("icon-up.png")
-    bottom_img.save("icon-down.png")
-
-# 调用函数
-split_image("sort-arrows-couple-pointing-up-and-down.png")  # 请将"your_image_file.png"替换为你的图片文件路径
+# 使用方法
+# resize_image('../../Alien Invasion/images/rocket.png', '../../Alien Invasion/images/rocket.png', 2)
