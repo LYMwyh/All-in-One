@@ -49,20 +49,24 @@ setting_content = [setting,
                    submit,
                    button_next,
                    button_close,
-                   button_again]
+                   button_again,
+                   button_game_mode,
+                   button_answer_mode]
 
 setting_content_detail = {
-	setting: ["Setting", True, True],
-	'setting_window': ['setting_window', True, True],
-	print_text: ["Print Text", True, True],
-	button_yes: ["Button Yes", True, False],
-	button_no: ["Button No", True, False],
-	example: ["Example", True, True],
-	input_text: ["Input text", True, True],
-	submit: ["Submit", True, True],
-	button_next: ["Button Next", True, True],
-	button_close: ["Button Close", True, True],
-	button_again: ["Button Again", False, True]
+	setting: ["Setting", True, True, False],
+	'setting_window': ['setting_window', True, True, True],
+	print_text: ["Print Text", True, True, False],
+	button_yes: ["Button Yes", True, False, False],
+	button_no: ["Button No", True, False, False],
+	example: ["Example", True, True, False],
+	input_text: ["Input text", True, True, False],
+	submit: ["Submit", True, True, False],
+	button_next: ["Button Next", True, True, False],
+	button_close: ["Button Close", True, True, False],
+	button_again: ["Button Again", False, True, False],
+	button_game_mode: ["Button Game Mode", False, False, True],
+	button_answer_mode: ["Button Answer Mode", False, False, True]
 }
 
 fonts = tkinter.font.families()
@@ -336,12 +340,14 @@ def open_setting_window():
 	dividing_line.append(Canvas(setting_window_frame, height=1))
 	dividing_line[-1].pack(fill='x')
 	dividing_line[-1].bind("<Configure>", lambda event, canvas=dividing_line[-1]: draw_line(canvas))
-	change_mode = Button(setting_window_frame, text="Change Mode", font=font_family['setting_window'], command=lambda: selected_mode())
-	change_mode.pack(side='left', fill='x', expand=True)
-	if state_of_change_mode.get() == 'normal':
-		change_mode.configure(state=NORMAL)
-	else:
-		change_mode.configure(state=DISABLED)
+	change_mode = Button(setting_window_frame, text="Change Mode", font=font_family['setting_window'],
+	                     command=lambda: selected_mode())
+	if mode != 3:
+		change_mode.pack(side='left', fill='x', expand=True)
+		if state_of_change_mode.get() == 'normal':
+			change_mode.configure(state=NORMAL)
+		else:
+			change_mode.configure(state=DISABLED)
 	close = Button(setting_window_frame, text="Closed", font=font_family['setting_window'],
 	               command=setting_window.destroy)
 	close.pack(side='right', fill='x', expand=True)
@@ -648,6 +654,12 @@ def submit_questions():
 def start(game_mode):
 	global mode
 	
+	if len(root.winfo_children()) != 0:
+		windows = root.winfo_children()
+		for window in windows:
+			if type(window) is tkinter.Toplevel:
+				window.destroy()
+	
 	state_of_change_mode.set('disable')
 	
 	button_game_mode.pack_forget()
@@ -721,7 +733,7 @@ button_again.configure(command=lambda :start(False))
 
 def selected_mode():
 	global mode
-	mode = 0
+	mode = 3
 	if len(root.winfo_children()) != 0:
 		windows = root.winfo_children()
 		for window in windows:
@@ -736,6 +748,7 @@ def selected_mode():
 	print_frame_border.place_forget()
 	input_frame_border.place_forget()
 	input_frame.place_forget()
+	open_setting_window()
 	button_game_mode.pack(side='top', expand=True)
 	button_answer_mode.pack(side='bottom', expand=True)
 	root.update_idletasks()
