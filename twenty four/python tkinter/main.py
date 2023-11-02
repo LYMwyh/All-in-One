@@ -101,7 +101,7 @@ def open_setting_window():
 		setting_window_canvas.configure(yscrollcommand=setting_window_canvas_scrollbar.set)
 		setting_window_canvas.configure(width=setting_window_frame.winfo_width(),
 		                                height=setting_window_frame.winfo_height())
-
+	
 	setting_window_frame.bind('<Configure>', update_scroll_region_and_canvas_size)
 	
 	def on_mousewheel(event):
@@ -131,7 +131,6 @@ def open_setting_window():
 					widget.configure(state=NORMAL)
 				else:
 					widget.configure(state=DISABLED)
-		
 	
 	def on_enter(event, widget, frame):
 		global setting_content_detail
@@ -147,15 +146,18 @@ def open_setting_window():
 			setting_frame[content_name] = Frame(setting_window_frame)
 			if content_name == 'setting_window':
 				continue
-			setting_frame[content_name].bind('<Enter>', lambda event, widget=content_name, frame=setting_frame[content_name]: on_enter(event, widget, frame))
+			setting_frame[content_name].bind('<Enter>', lambda event, widget=content_name,
+			                                                   frame=setting_frame[content_name]: on_enter(event,
+			                                                                                               widget,
+			                                                                                               frame))
 			setting_frame[content_name].bind('<Leave>', lambda event, widget=content_name: on_leave(event, widget))
 	
 	def on_map(event, widget):
-			change_widget_state(setting_frame[widget], True)
-
+		change_widget_state(setting_frame[widget], True)
+	
 	def on_unmap(event, widget):
 		change_widget_state(setting_frame[widget], False)
-
+	
 	for content_name in setting_content:
 		if content_name == 'setting_window':
 			continue
@@ -628,7 +630,9 @@ def solve_each_question(questions, index, input):
 		button_close.place(relx=0.5, rely=0.9, relwidth=0.5, relheight=0.1)
 		state_of_change_mode.set('normal')
 	else:
-		button_next.configure(command=lambda list_questions=questions, new_index=index+1: solve_each_question(list_questions, new_index, True))
+		button_next.configure(
+			command=lambda list_questions=questions, new_index=index + 1: solve_each_question(list_questions, new_index,
+			                                                                                  True))
 		button_next.place(relx=0, rely=0.9, relwidth=1, relheight=0.1)
 		state_of_change_mode.set('normal')
 
@@ -650,6 +654,7 @@ def submit_questions():
 		solve_each_question(questions, 0, False)
 	else:
 		solve_each_question(questions, 0, True)
+
 
 def start(game_mode):
 	global mode
@@ -728,7 +733,7 @@ def start(game_mode):
 button_game_mode.configure(command=lambda: start(True))
 button_answer_mode.configure(command=lambda: start(False))
 
-button_again.configure(command=lambda :start(False))
+button_again.configure(command=lambda: start(False))
 
 
 def selected_mode():
