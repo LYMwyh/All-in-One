@@ -14,12 +14,16 @@ def run_game():
 	
 	ship = Ship(ai_settings, screen)
 	bullets = Group()
+	aliens = Group()
+	
+	game_functions.create_fleet(ai_settings, screen, ship, aliens)
 	
 	while True:
 		game_functions.check_events(ai_settings, screen, ship, bullets)
 		ship.update()
-		game_functions.update_bullets(bullets)
-		game_functions.update_screen(ai_settings, screen, ship, bullets)
+		game_functions.update_bullets(ai_settings, screen, ship, aliens, bullets)
+		game_functions.update_aliens(ai_settings, ship, aliens)
+		game_functions.update_screen(ai_settings, screen, ship, aliens, bullets)
 
 
 run_game()
