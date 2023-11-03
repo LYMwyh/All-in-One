@@ -16,4 +16,4 @@ def resize_image(input_image_path, output_image_path, scale_factor):
     resized_image.save(output_image_path)
 
 # 使用方法
-# resize_image('../../Alien Invasion/images/rocket.png', '../../Alien Invasion/images/rocket.png', 2)
+# resize_image('images/ufo.png', 'images/ufo.png', 8)
