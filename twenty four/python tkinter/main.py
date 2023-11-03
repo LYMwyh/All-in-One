@@ -694,6 +694,7 @@ def start(game_mode):
 		printer("Here is a game:")
 		printer("There will have four random integers from 1 to 13, you need to use these four integers calculate 24.")
 		printer("Each integer must and can only be used once.")
+		printer("You only could use '+', '-', '*' and '/'.")
 		printer("Sometimes, there is no solutions for figuring out 24.")
 		printer("\n")
 		
