@@ -35,12 +35,11 @@ def run_game():
 			game_functions.update_bullets(ai_settings, screen, stats, score_board, ship, aliens, bullets)
 			game_functions.update_aliens(ai_settings, stats, screen, ship, aliens, bullets)
 		game_functions.update_screen(ai_settings, screen, stats, score_board, ship, aliens, bullets, play_button)
-		
-		# fps = clock.get_fps()
-		# fps_text = font.render("FPS: {:.2f}".format(fps), True, (255, 255, 255))
-		# screen.blit(fps_text, (10, 10))
-		#
-		# pygame.display.flip()
+# fps = clock.get_fps()
+# fps_text = font.render("FPS: {:.2f}".format(fps), True, (255, 255, 255))
+# screen.blit(fps_text, (10, 10))
+#
+# pygame.display.flip()
 
 
 run_game()
