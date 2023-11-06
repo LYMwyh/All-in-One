@@ -28,7 +28,7 @@ def run_game():
 	# font = pygame.font.Font(None, 30)
 	
 	while True:
-		clock.tick(ai_settings.ship_speed_factor * 700)
+		clock.tick(ai_settings.ship_speed_factor * 300)
 		game_functions.check_events(ai_settings, screen, stats, play_button, ship, aliens, bullets)
 		if stats.game_active:
 			ship.update()
