@@ -56,7 +56,7 @@ def check_play_button(ai_settings, screen, stats, play_button, ship, aliens, bul
 		
 		create_fleet(ai_settings, screen, ship, aliens)
 		ship.center_ship()
-		
+
 
 def update_screen(ai_settings, screen, stats, score_board, ship, aliens, bullets, play_button):
 	screen.fill(ai_settings.bg_color)
