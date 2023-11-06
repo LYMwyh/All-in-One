@@ -22,4 +22,3 @@ class ScoreBoard():
 	
 	def show_score(self):
 		self.screen.blit(self.score_image, self.score_rect)
-	
