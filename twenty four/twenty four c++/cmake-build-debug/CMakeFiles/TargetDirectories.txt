@@ -1,0 +1,3 @@
+/Users/yiminliu/Documents/GitHub/All-in-One/twenty four/twenty four c++/cmake-build-debug/CMakeFiles/twenty_four_c__.dir
+/Users/yiminliu/Documents/GitHub/All-in-One/twenty four/twenty four c++/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/yiminliu/Documents/GitHub/All-in-One/twenty four/twenty four c++/cmake-build-debug/CMakeFiles/rebuild_cache.dir
