@@ -30,7 +30,7 @@ def check_keyup_events(event, ship):
 		ship.moving_left = False
 
 
-def check_events(ai_settings, screen, stats, play_button, ship, aliens, bullets):
+def check_events(ai_settings, screen, stats, score_board, play_button, ship, aliens, bullets):
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			sys.exit()
@@ -40,16 +40,20 @@ def check_events(ai_settings, screen, stats, play_button, ship, aliens, bullets)
 			check_keyup_events(event, ship)
 		elif event.type == pygame.MOUSEBUTTONDOWN:
 			mouse_x, mouse_y = pygame.mouse.get_pos()
-			check_play_button(ai_settings, screen, stats, play_button, ship, aliens, bullets, mouse_x, mouse_y)
+			check_play_button(ai_settings, screen, stats, score_board, play_button, ship, aliens, bullets, mouse_x, mouse_y)
 
 
-def check_play_button(ai_settings, screen, stats, play_button, ship, aliens, bullets, mouse_x, mouse_y):
+def check_play_button(ai_settings, screen, stats, score_board, play_button, ship, aliens, bullets, mouse_x, mouse_y):
 	button_clicked = play_button.rect.collidepoint(mouse_x, mouse_y)
 	if button_clicked and not stats.game_active:
 		ai_settings.initialize_dynamic_settings()
 		pygame.mouse.set_visible(False)
 		stats.reset_stats()
 		stats.game_active = True
+		
+		score_board.prep_score()
+		score_board.prep_high_score()
+		score_board.prep_level()
 		
 		aliens.empty()
 		bullets.empty()
@@ -87,10 +91,14 @@ def check_bullet_alien_collision(ai_settings, screen, stats, score_board, ship, 
 	if collision:
 		for alien in collision.values():
 			stats.score += ai_settings.alien_points * len(alien)
-		score_board.prep_score()
+			score_board.prep_score()
+		check_high_score(stats, score_board)
 	if len(aliens) == 0:
-		ai_settings.increase_speed()
 		bullets.empty()
+		ai_settings.increase_speed()
+		stats.level += 1
+		score_board.prep_level()
+		
 		create_fleet(ai_settings, screen, ship, aliens)
 
 
@@ -170,3 +178,8 @@ def update_aliens(ai_settings, stats, screen, ship, aliens, bullets):
 	if pygame.sprite.spritecollideany(ship, aliens):
 		ship_hit(ai_settings, stats, screen, ship, aliens, bullets)
 	check_aliens_bottom(ai_settings, stats, screen, ship, aliens, bullets)
+
+def check_high_score(stats, score_board):
+	if stats.score > stats.high_score:
+		stats.high_score = stats.score
+		score_board.prep_high_score()
