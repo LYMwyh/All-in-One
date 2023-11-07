@@ -73,8 +73,11 @@ def update_screen(ai_settings, screen, stats, score_board, ship, aliens, bullets
 	
 	score_board.show_score()
 	
-	if not stats.game_active:
-		play_button.draw_button()
+	if stats.input_username:
+		if not stats.game_active:
+			play_button.draw_button()
+	else:
+		pass
 	
 	pygame.display.flip()
 
