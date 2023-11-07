@@ -16,7 +16,7 @@ class Settings():
 		self.speedup_scale = 1.1
 		self.score_scale = 1.5
 		
-		self.input_text_bg_color = (255, 255, 255)
+		self.input_text_bg_color = (5, 50, 255)
 		
 		self.initialize_dynamic_settings()
 	
@@ -34,4 +34,3 @@ class Settings():
 		self.alien_speed_factor *= self.speedup_scale
 		
 		self.alien_points = int(self.alien_points * self.score_scale)
-		print(self.alien_points)
