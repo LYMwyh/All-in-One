@@ -6,15 +6,25 @@ from bullet import Bullet
 from alien import Alien
 
 
-def check_keydown_events(event, ai_settings, screen, ship, bullets):
-	if event.key == pygame.K_RIGHT:
-		ship.moving_right = True
-	elif event.key == pygame.K_LEFT:
-		ship.moving_left = True
-	elif event.key == pygame.K_SPACE:
-		fire_bullet(ai_settings, screen, ship, bullets)
-	elif event.key == pygame.K_q:
+def check_keydown_events(event, ai_settings, screen, stats, username_input_text, ship, bullets):
+	if event.key == pygame.K_q:
 		sys.exit()
+	elif stats.input_username:
+		if event.key == pygame.K_RIGHT:
+			ship.moving_right = True
+		elif event.key == pygame.K_LEFT:
+			ship.moving_left = True
+		elif event.key == pygame.K_SPACE:
+			fire_bullet(ai_settings, screen, ship, bullets)
+	elif stats.username_start_input:
+		username_input_text.writing = True
+		if event.key == pygame.K_RETURN:
+			username_input_text.text += "\n"
+		elif event.key == pygame.K_BACKSPACE:
+			username_input_text.text = username_input_text.text[:-1]
+		else:
+			username_input_text.text += event.unicode
+		username_input_text.text = username_input_text.text.strip()
 
 
 def fire_bullet(ai_settings, screen, ship, bullets):
@@ -30,22 +40,23 @@ def check_keyup_events(event, ship):
 		ship.moving_left = False
 
 
-def check_events(ai_settings, screen, stats, score_board, play_button, ship, aliens, bullets):
+def check_events(ai_settings, screen, stats, username_input_text, username_confirm, score_board, play_button, ship, aliens, bullets):
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			sys.exit()
 		elif event.type == pygame.KEYDOWN:
-			check_keydown_events(event, ai_settings, screen, ship, bullets)
+			check_keydown_events(event, ai_settings, screen, stats, username_input_text, ship, bullets)
 		elif event.type == pygame.KEYUP:
 			check_keyup_events(event, ship)
 		elif event.type == pygame.MOUSEBUTTONDOWN:
 			mouse_x, mouse_y = pygame.mouse.get_pos()
-			check_play_button(ai_settings, screen, stats, score_board, play_button, ship, aliens, bullets, mouse_x, mouse_y)
+			check_button(ai_settings, screen, stats, username_input_text, username_confirm, score_board, play_button, ship, aliens, bullets, mouse_x, mouse_y)
 
 
-def check_play_button(ai_settings, screen, stats, score_board, play_button, ship, aliens, bullets, mouse_x, mouse_y):
-	button_clicked = play_button.rect.collidepoint(mouse_x, mouse_y)
-	if button_clicked and not stats.game_active:
+def check_button(ai_settings, screen, stats, user_input_text, username_confirm, score_board, play_button, ship, aliens, bullets, mouse_x, mouse_y):
+	stats.username_start_input = False
+	user_input_text.writing = False
+	if play_button.rect.collidepoint(mouse_x, mouse_y) and not stats.game_active and stats.input_username:
 		ai_settings.initialize_dynamic_settings()
 		pygame.mouse.set_visible(False)
 		stats.reset_stats()
@@ -62,9 +73,17 @@ def check_play_button(ai_settings, screen, stats, score_board, play_button, ship
 		
 		create_fleet(ai_settings, screen, ship, aliens)
 		ship.center_ship()
+	elif user_input_text.rect.collidepoint(mouse_x, mouse_y) and not stats.input_username:
+		stats.username_start_input = not stats.username_start_input
+	elif username_confirm.rect.collidepoint(mouse_x, mouse_y) and not stats.input_username:
+		if len(user_input_text.text):
+			stats.input_username = True
+		else:
+			user_input_text.hint = "Username could not be empty!"
+		
 
 
-def update_screen(ai_settings, screen, stats, score_board, ship, aliens, bullets, play_button):
+def update_screen(ai_settings, screen, stats, username_input_text, username_confirm, score_board, ship, aliens, bullets, play_button):
 	screen.fill(ai_settings.bg_color)
 	for bullet in bullets.sprites():
 		bullet.draw_bullet()
@@ -77,7 +96,8 @@ def update_screen(ai_settings, screen, stats, score_board, ship, aliens, bullets
 		if not stats.game_active:
 			play_button.draw_button()
 	else:
-		pass
+		username_input_text.draw_input_text()
+		username_confirm.draw_button()
 	
 	pygame.display.flip()
 
@@ -185,6 +205,7 @@ def update_aliens(ai_settings, stats, screen, score_board, ship, aliens, bullets
 	if pygame.sprite.spritecollideany(ship, aliens):
 		ship_hit(ai_settings, stats, screen, score_board, ship, aliens, bullets)
 	check_aliens_bottom(ai_settings, stats, screen, score_board, ship, aliens, bullets)
+
 
 def check_high_score(stats, score_board):
 	if stats.score > stats.high_score:
