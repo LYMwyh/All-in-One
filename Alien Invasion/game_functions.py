@@ -53,6 +53,7 @@ def check_play_button(ai_settings, screen, stats, score_board, play_button, ship
 		
 		score_board.prep_score()
 		score_board.prep_high_score()
+		score_board.prep_high_score_user()
 		score_board.prep_level()
 		score_board.prep_ships()
 		
