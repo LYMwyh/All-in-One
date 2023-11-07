@@ -23,7 +23,6 @@ def run_game():
 	aliens = Group()
 	
 	game_functions.create_fleet(ai_settings, screen, ship, aliens)
-	
 	clock = pygame.time.Clock()
 	# font = pygame.font.Font(None, 30)
 	
