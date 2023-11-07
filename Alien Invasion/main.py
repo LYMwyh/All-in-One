@@ -29,7 +29,7 @@ def run_game():
 	
 	while True:
 		clock.tick(ai_settings.ship_speed_factor * 300)
-		game_functions.check_events(ai_settings, screen, stats, play_button, ship, aliens, bullets)
+		game_functions.check_events(ai_settings, screen, stats, score_board, play_button, ship, aliens, bullets)
 		if stats.game_active:
 			ship.update()
 			game_functions.update_bullets(ai_settings, screen, stats, score_board, ship, aliens, bullets)
