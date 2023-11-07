@@ -29,10 +29,13 @@ def run_game():
 	while True:
 		clock.tick(ai_settings.ship_speed_factor * 300)
 		game_functions.check_events(ai_settings, screen, stats, score_board, play_button, ship, aliens, bullets)
-		if stats.game_active:
-			ship.update()
-			game_functions.update_bullets(ai_settings, screen, stats, score_board, ship, aliens, bullets)
-			game_functions.update_aliens(ai_settings, stats, screen, score_board, ship, aliens, bullets)
+		if stats.input_username:
+			if stats.game_active:
+				ship.update()
+				game_functions.update_bullets(ai_settings, screen, stats, score_board, ship, aliens, bullets)
+				game_functions.update_aliens(ai_settings, stats, screen, score_board, ship, aliens, bullets)
+		else:
+			pass
 		game_functions.update_screen(ai_settings, screen, stats, score_board, ship, aliens, bullets, play_button)
 # fps = clock.get_fps()
 # fps_text = font.render("FPS: {:.2f}".format(fps), True, (255, 255, 255))
