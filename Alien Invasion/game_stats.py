@@ -7,6 +7,7 @@ class GameStats():
 		self.reset_stats()
 		self.input_username = False
 		self.game_active = False
+		self.username_start_input = False
 		self.score = 0
 		self.level = 1
 		with open("high score data.json", 'r') as high_score_data_file:
