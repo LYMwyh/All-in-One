@@ -16,6 +16,8 @@ class Settings():
 		self.speedup_scale = 1.1
 		self.score_scale = 1.5
 		
+		self.input_text_bg_color = (255, 255, 255)
+		
 		self.initialize_dynamic_settings()
 	
 	def initialize_dynamic_settings(self):
