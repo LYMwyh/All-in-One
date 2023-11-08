@@ -10,10 +10,11 @@ class GameStats():
 		self.username_start_input = False
 		self.score = 0
 		self.level = 1
+		self.user = None
 		
 		with open("high score data.json", 'r') as high_score_data_file:
 			high_score_data = json.load(high_score_data_file)
-		
+
 		if 'high score' in high_score_data:
 			self.high_score = high_score_data['high score']
 		else:
