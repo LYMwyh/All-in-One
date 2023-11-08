@@ -1,6 +1,7 @@
 import pygame
 import sys
 from time import sleep
+import json
 
 from bullet import Bullet
 from alien import Alien
@@ -8,6 +9,14 @@ from alien import Alien
 
 def check_keydown_events(event, ai_settings, screen, stats, username_input_text, ship, bullets):
 	if event.key == pygame.K_q:
+		with open("users data.json", "r+") as users_data_file:
+			users_data_list = json.load(users_data_file)
+			for user_data in users_data_list:
+				if user_data[0] == stats.user:
+					user_data[1]['high score'] = stats.high_score
+					users_data_file.seek(0, 0)
+					json.dump(users_data_list, users_data_file)
+					break
 		sys.exit()
 	elif stats.input_username:
 		if event.key == pygame.K_RIGHT:
@@ -40,7 +49,8 @@ def check_keyup_events(event, ship):
 		ship.moving_left = False
 
 
-def check_events(ai_settings, screen, stats, username_input_text, username_confirm, score_board, play_button, ship, aliens, bullets):
+def check_events(ai_settings, screen, stats, username_input_text, username_confirm, score_board, play_button, ship,
+                 aliens, bullets):
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			sys.exit()
@@ -50,10 +60,12 @@ def check_events(ai_settings, screen, stats, username_input_text, username_confi
 			check_keyup_events(event, ship)
 		elif event.type == pygame.MOUSEBUTTONDOWN:
 			mouse_x, mouse_y = pygame.mouse.get_pos()
-			check_button(ai_settings, screen, stats, username_input_text, username_confirm, score_board, play_button, ship, aliens, bullets, mouse_x, mouse_y)
+			check_button(ai_settings, screen, stats, username_input_text, username_confirm, score_board, play_button,
+			             ship, aliens, bullets, mouse_x, mouse_y)
 
 
-def check_button(ai_settings, screen, stats, user_input_text, username_confirm, score_board, play_button, ship, aliens, bullets, mouse_x, mouse_y):
+def check_button(ai_settings, screen, stats, user_input_text, username_confirm, score_board, play_button, ship, aliens,
+                 bullets, mouse_x, mouse_y):
 	stats.username_start_input = False
 	user_input_text.writing = False
 	if play_button.rect.collidepoint(mouse_x, mouse_y) and not stats.game_active and stats.input_username:
@@ -66,6 +78,7 @@ def check_button(ai_settings, screen, stats, user_input_text, username_confirm, 
 		score_board.prep_high_score()
 		score_board.prep_high_score_user()
 		score_board.prep_level()
+		score_board.prep_user()
 		score_board.prep_ships()
 		
 		aliens.empty()
@@ -78,12 +91,27 @@ def check_button(ai_settings, screen, stats, user_input_text, username_confirm, 
 	elif username_confirm.rect.collidepoint(mouse_x, mouse_y) and not stats.input_username:
 		if len(user_input_text.text):
 			stats.input_username = True
+			stats.user = user_input_text.text
+			score_board.prep_user()
+			already_registered = False
+			with open("users data.json", "r+") as users_data_file:
+				users_data_list = json.load(users_data_file)
+				if users_data_list != []:
+					for user_data in users_data_list:
+						if user_data[0] == stats.user:
+							stats.high_score = user_data[1]['high score']
+							already_registered = True
+							break
+				if not already_registered:
+					users_data_file.seek(0, 0)
+					users_data_list.append([stats.user, {"high score": 0}])
+					json.dump(users_data_list, users_data_file)
 		else:
 			user_input_text.hint = "Username could not be empty!"
-		
 
 
-def update_screen(ai_settings, screen, stats, username_input_text, username_confirm, score_board, ship, aliens, bullets, play_button):
+def update_screen(ai_settings, screen, stats, username_input_text, username_confirm, score_board, ship, aliens, bullets,
+                  play_button):
 	screen.fill(ai_settings.bg_color)
 	for bullet in bullets.sprites():
 		bullet.draw_bullet()
