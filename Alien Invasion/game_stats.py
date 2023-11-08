@@ -16,15 +16,14 @@ class GameStats():
 		
 		with open("high score data.json", 'r') as high_score_data_file:
 			high_score_data = json.load(high_score_data_file)
-
-		if 'high score' in high_score_data:
-			self.high_score_history = high_score_data['high score']
-		else:
-			self.high_score_history = 0
-		if 'user' in high_score_data:
-			self.high_score_history_user = high_score_data['user']
-		else:
-			self.high_score_history_user = None
+			if 'high score' in high_score_data:
+				self.high_score_history = high_score_data['high score']
+			else:
+				self.high_score_history = 0
+			if 'user' in high_score_data:
+				self.high_score_history_user = high_score_data['user']
+			else:
+				self.high_score_history_user = None
 	
 	def reset_stats(self):
 		self.ships_left = self.ai_settings.ship_limit
