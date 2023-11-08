@@ -18,6 +18,8 @@ class Settings():
 		
 		self.input_text_bg_color = (5, 50, 255)
 		
+		self.label_bg_color = (125, 125, 125)
+		
 		self.initialize_dynamic_settings()
 	
 	def initialize_dynamic_settings(self):
