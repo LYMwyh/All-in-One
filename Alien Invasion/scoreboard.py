@@ -18,6 +18,7 @@ class ScoreBoard():
 		self.prep_high_score()
 		self.prep_high_score_user()
 		self.prep_level()
+		self.prep_user()
 		self.prep_ships()
 	
 	def prep_score(self):
@@ -33,6 +34,7 @@ class ScoreBoard():
 		self.screen.blit(self.high_score_image, self.high_score_rect)
 		self.screen.blit(self.high_score_user_image, self.high_score_user_rect)
 		self.screen.blit(self.level_image, self.level_rect)
+		self.screen.blit(self.user_image, self.user_rect)
 		
 		self.ships.draw(self.screen)
 	
@@ -66,4 +68,11 @@ class ScoreBoard():
 			ship.rect.x = 10 + ship_number * ship.rect.width
 			ship.rect.y = 10
 			self.ships.add(ship)
+	
+	def prep_user(self):
+		self.user_image = self.font.render(self.stats.user, True, self.text_color, self.ai_settings.bg_color)
+		
+		self.user_rect = self.user_image.get_rect()
+		self.user_rect.right = self.screen_rect.right - 20
+		self.user_rect.top = self.level_rect.bottom + 10
 		
