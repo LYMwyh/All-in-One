@@ -249,6 +249,6 @@ def check_high_score(stats, score_board):
 		score_board.prep_high_score()
 	if stats.high_score > stats.high_score_history:
 		stats.high_score_history = stats.high_score
-		stats.high_score_user_history = stats.user
+		stats.high_score_history_user = stats.user
 		score_board.prep_high_score_history()
 		score_board.prep_high_score_history_user()
