@@ -3,7 +3,6 @@ from pygame.sprite import Group
 
 from settings import Settings
 from game_stats import GameStats
-from label import Label
 from input_text import InputText
 from scoreboard import ScoreBoard
 from button import Button
