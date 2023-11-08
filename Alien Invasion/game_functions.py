@@ -74,9 +74,10 @@ def check_button(ai_settings, screen, stats, user_input_text, username_confirm, 
 		stats.reset_stats()
 		stats.game_active = True
 		
-		score_board.prep_score()
+		score_board.prep_high_score_history()
+		score_board.prep_high_score_history_user()
 		score_board.prep_high_score()
-		score_board.prep_high_score_user()
+		score_board.prep_score()
 		score_board.prep_level()
 		score_board.prep_user()
 		score_board.prep_ships()
@@ -239,3 +240,8 @@ def check_high_score(stats, score_board):
 	if stats.score > stats.high_score:
 		stats.high_score = stats.score
 		score_board.prep_high_score()
+	if stats.high_score > stats.high_score_history:
+		stats.high_score_history = stats.high_score
+		stats.high_score_user_history = stats.user
+		score_board.prep_high_score_history()
+		score_board.prep_high_score_history_user()
