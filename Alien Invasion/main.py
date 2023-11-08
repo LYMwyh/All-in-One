@@ -3,11 +3,14 @@ from pygame.sprite import Group
 
 from settings import Settings
 from game_stats import GameStats
+from label import Label
 from input_text import InputText
 from scoreboard import ScoreBoard
 from button import Button
 from ship import Ship
 import game_functions
+
+import preprocessing
 
 
 def run_game():
@@ -17,16 +20,22 @@ def run_game():
 	pygame.display.set_caption("Alien Invasion-1")
 	
 	stats = GameStats(ai_settings)
+	
+	introduction_of_game = []
+	preprocessing.introduction_of_game_prep(ai_settings, screen, introduction_of_game)
+	
+	next_button = Button(ai_settings, screen, "Next")
+	preprocessing.next_button_prep(next_button, introduction_of_game)
+	back_button = Button(ai_settings, screen, "Back")
+	preprocessing.back_button_prep(back_button, next_button)
+	
 	username_input_text = InputText(ai_settings, screen, "Username")
 	
 	username_confirm = Button(ai_settings, screen, "Confirm")
-	username_confirm.rect.centerx = username_confirm.screen_rect.centerx
-	username_confirm.rect.top = username_input_text.rect.bottom + 10
-	username_confirm.msg_image_rect.center = username_confirm.rect.center
+	preprocessing.username_confirm_button_prep(username_confirm, username_input_text)
 	
 	play_button = Button(ai_settings, screen, "Play")
-	play_button.rect.center = play_button.screen_rect.center
-	play_button.msg_image_rect.center = play_button.rect.center
+	preprocessing.play_button_prep(play_button)
 	
 	score_board = ScoreBoard(ai_settings, screen, stats)
 	
