@@ -7,16 +7,22 @@ from bullet import Bullet
 from alien import Alien
 
 
+def update_high_score_history_data(stats):
+	with open("users data.json", "r+") as users_data_file:
+		users_data_list = json.load(users_data_file)
+		for user_data in users_data_list:
+			if user_data[0] == stats.user:
+				user_data[1]['high score'] = stats.high_score
+				users_data_file.seek(0, 0)
+				json.dump(users_data_list, users_data_file)
+				break
+	with open("high score data.json", "w") as high_score_data_file:
+		json.dump({"user": stats.user, "high score": stats.high_score_history}, high_score_data_file)
+
+
 def check_keydown_events(event, ai_settings, screen, stats, username_input_text, ship, bullets):
 	if event.key == pygame.K_q:
-		with open("users data.json", "r+") as users_data_file:
-			users_data_list = json.load(users_data_file)
-			for user_data in users_data_list:
-				if user_data[0] == stats.user:
-					user_data[1]['high score'] = stats.high_score
-					users_data_file.seek(0, 0)
-					json.dump(users_data_list, users_data_file)
-					break
+		update_high_score_history_data(stats)
 		sys.exit()
 	elif stats.input_username:
 		if event.key == pygame.K_RIGHT:
@@ -53,6 +59,7 @@ def check_events(ai_settings, screen, stats, username_input_text, username_confi
                  aliens, bullets):
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
+			update_high_score_history_data(stats)
 			sys.exit()
 		elif event.type == pygame.KEYDOWN:
 			check_keydown_events(event, ai_settings, screen, stats, username_input_text, ship, bullets)
