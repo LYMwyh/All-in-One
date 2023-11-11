@@ -24,7 +24,7 @@ def run_game():
 	preprocessing.introduction_of_game_prep(ai_settings, screen, introduction_of_game)
 	
 	next_button = Button(ai_settings, screen, "Next")
-	preprocessing.next_button_prep(next_button, introduction_of_game)
+	preprocessing.next_button_prep(next_button, stats, introduction_of_game)
 	back_button = Button(ai_settings, screen, "Back")
 	preprocessing.back_button_prep(back_button, next_button)
 	
@@ -47,13 +47,13 @@ def run_game():
 	
 	while True:
 		clock.tick(ai_settings.ship_speed_factor * 300)
-		game_functions.check_events(ai_settings, screen, stats, username_input_text, username_confirm, score_board, play_button, ship, aliens, bullets)
+		game_functions.check_events(ai_settings, screen, stats, introduction_of_game, next_button, back_button, username_input_text, username_confirm, score_board, play_button, ship, aliens, bullets)
 		if stats.input_username:
 			if stats.game_active:
 				ship.update()
 				game_functions.update_bullets(ai_settings, screen, stats, score_board, ship, aliens, bullets)
 				game_functions.update_aliens(ai_settings, stats, screen, score_board, ship, aliens, bullets)
-		game_functions.update_screen(ai_settings, screen, stats, introduction_of_game, username_input_text, username_confirm, score_board, ship, aliens, bullets, play_button)
+		game_functions.update_screen(ai_settings, screen, stats, introduction_of_game, next_button, back_button, username_input_text, username_confirm, score_board, ship, aliens, bullets, play_button)
 
 
 run_game()
