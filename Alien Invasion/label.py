@@ -19,7 +19,7 @@ class Label():
 		for ordinal_line, content in enumerate(text_list):
 			text_image, text_image_rect = self.prep_content(text_list[ordinal_line])
 			if ordinal_line == 0:
-				text_image_rect.centery = self.screen_rect.centery
+				text_image_rect.y = (self.screen_rect.h - text_image_rect.h * len(text_list))/2
 			else:
 				text_image_rect.top = self.text_list[ordinal_line - 1][1].bottom
 			self.text_list.append([text_image, text_image_rect])
