@@ -29,17 +29,22 @@ import sys
 
 
 def run_game():
-	# 初始化游戏并创建一个屏幕对象
+	
 	pygame.init()
 	ai_settings = Settings()
 	screen = pygame.display.set_mode((ai_settings.screen_width, ai_settings.screen_height))
 	pygame.display.set_caption("Alien Invasion")
-	#
+	
 	stats = GameStats(ai_settings)
-	#
+	
 	introduction_of_game = []
 	preprocessing.introduction_of_game_prep(ai_settings, screen, introduction_of_game)
-	# 开始游戏的主循环
+	
+	next_button = Button(ai_settings, screen, "Next")
+	preprocessing.next_button_prep(next_button, stats, introduction_of_game)
+	back_button = Button(ai_settings, screen, "Back")
+	preprocessing.back_button_prep(back_button, next_button)
+	
 	while True:
 		screen.fill(ai_settings.bg_color)
 		# 监视键盘和鼠标事件
@@ -47,7 +52,9 @@ def run_game():
 			if event.type == pygame.QUIT:
 				sys.exit()
 		
-		introduction_of_game[0].show_label()
+		introduction_of_game[stats.introduction_page].show_label()
+		next_button.draw_button()
+		back_button.draw_button()
 		# 让最近绘制的屏幕可见
 		pygame.display.flip()
 
