@@ -11,6 +11,10 @@ class GameStats():
 		self.high_score = 0
 		self.score = 0
 		self.level = 1
+		self.view_introduction = True
+		self.introduction_page = 0
+		
+		self.back_button = False
 		
 		self.user = None
 		
