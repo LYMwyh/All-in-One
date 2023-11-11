@@ -118,7 +118,7 @@ def check_button(ai_settings, screen, stats, user_input_text, username_confirm, 
 			user_input_text.hint = "Username could not be empty!"
 
 
-def update_screen(ai_settings, screen, stats, username_input_text, username_confirm, score_board, ship, aliens, bullets,
+def update_screen(ai_settings, screen, stats, introduction_of_game, username_input_text, username_confirm, score_board, ship, aliens, bullets,
                   play_button):
 	screen.fill(ai_settings.bg_color)
 	for bullet in bullets.sprites():
