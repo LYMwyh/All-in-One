@@ -14,7 +14,7 @@ class Label():
 	
 	
 	def format_content(self):
-		text_list = "\n".split(self.text)
+		text_list = self.text.split('\n')
 		self.text_list = []
 		for ordinal_line, content in enumerate(text_list):
 			text_image, text_image_rect = self.prep_content(text_list[ordinal_line])
@@ -26,7 +26,7 @@ class Label():
 	
 	
 	def prep_content(self, text):
-		text_image = self.font.render(text, True, self.text_color, self.ai_settings.label_bg_color)
+		text_image = self.font.render(text, True, self.text_color, self.ai_settings.bg_color)
 		
 		text_image_rect = text_image.get_rect()
 		text_image_rect.centerx = self.screen_rect.centerx
