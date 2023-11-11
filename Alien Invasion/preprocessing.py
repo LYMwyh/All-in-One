@@ -48,9 +48,9 @@ def introduction_of_game_prep(ai_settings, screen, introduction_of_game):
 		introduction_of_game[page_ordinal] = Label(ai_settings, screen, introduction_of_game[page_ordinal])
 
 
-def next_button_prep(next_button, introduction_of_group):
+def next_button_prep(next_button, stats, introduction_of_group):
 	next_button.rect.centerx = next_button.screen_rect.centerx
-	next_button.rect.top = introduction_of_group[-1].text_list[-1][1].bottom + 10
+	next_button.rect.top = introduction_of_group[stats.introduction_page].text_list[-1][1].bottom + 10
 	next_button.msg_image_rect.center = next_button.rect.center
 
 
