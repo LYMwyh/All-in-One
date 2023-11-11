@@ -5,6 +5,7 @@ import json
 
 from bullet import Bullet
 from alien import Alien
+import preprocessing
 
 
 def update_high_score_history_data(stats):
@@ -55,7 +56,7 @@ def check_keyup_events(event, ship):
 		ship.moving_left = False
 
 
-def check_events(ai_settings, screen, stats, username_input_text, username_confirm, score_board, play_button, ship,
+def check_events(ai_settings, screen, stats, introduction_of_game, next_button, back_button, username_input_text, username_confirm, score_board, play_button, ship,
                  aliens, bullets):
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -67,15 +68,29 @@ def check_events(ai_settings, screen, stats, username_input_text, username_confi
 			check_keyup_events(event, ship)
 		elif event.type == pygame.MOUSEBUTTONDOWN:
 			mouse_x, mouse_y = pygame.mouse.get_pos()
-			check_button(ai_settings, screen, stats, username_input_text, username_confirm, score_board, play_button,
+			check_button(ai_settings, screen, stats, introduction_of_game, next_button, back_button, username_input_text, username_confirm, score_board, play_button,
 			             ship, aliens, bullets, mouse_x, mouse_y)
 
 
-def check_button(ai_settings, screen, stats, user_input_text, username_confirm, score_board, play_button, ship, aliens,
+def check_button(ai_settings, screen, stats, introduction_of_game, next_button, back_button, user_input_text, username_confirm, score_board, play_button, ship, aliens,
                  bullets, mouse_x, mouse_y):
 	stats.username_start_input = False
 	user_input_text.writing = False
-	if play_button.rect.collidepoint(mouse_x, mouse_y) and not stats.game_active and stats.input_username:
+	if stats.view_introduction is True:
+		if next_button.rect.collidepoint(mouse_x, mouse_y):
+			if stats.introduction_page == stats.introduction_total_pages - 1:
+				stats.view_introduction = False
+				stats.introduction_page = 0
+			else:
+				stats.introduction_page += 1
+			preprocessing.next_button_prep(next_button, stats, introduction_of_game)
+			preprocessing.back_button_prep(back_button, next_button)
+		elif back_button.rect.collidepoint(mouse_x, mouse_y):
+			if stats.introduction_page > 0:
+				stats.introduction_page -= 1
+			preprocessing.next_button_prep(next_button, stats, introduction_of_game)
+			preprocessing.back_button_prep(back_button, next_button)
+	elif play_button.rect.collidepoint(mouse_x, mouse_y) and not stats.game_active and stats.input_username:
 		ai_settings.initialize_dynamic_settings()
 		pygame.mouse.set_visible(False)
 		stats.reset_stats()
@@ -118,9 +133,10 @@ def check_button(ai_settings, screen, stats, user_input_text, username_confirm, 
 			user_input_text.hint = "Username could not be empty!"
 
 
-def update_screen(ai_settings, screen, stats, introduction_of_game, username_input_text, username_confirm, score_board, ship, aliens, bullets,
+def update_screen(ai_settings, screen, stats, introduction_of_game, next_button, back_button, username_input_text, username_confirm, score_board, ship, aliens, bullets,
                   play_button):
 	screen.fill(ai_settings.bg_color)
+	
 	for bullet in bullets.sprites():
 		bullet.draw_bullet()
 	ship.blitme()
@@ -128,12 +144,17 @@ def update_screen(ai_settings, screen, stats, introduction_of_game, username_inp
 	
 	score_board.show_score()
 	
-	if stats.input_username:
-		if not stats.game_active:
-			play_button.draw_button()
+	if stats.view_introduction is False:
+		if stats.input_username:
+			if not stats.game_active:
+				play_button.draw_button()
+		else:
+			username_input_text.draw_input_text()
+			username_confirm.draw_button()
 	else:
-		username_input_text.draw_input_text()
-		username_confirm.draw_button()
+		introduction_of_game[stats.introduction_page].show_label()
+		next_button.draw_button()
+		back_button.draw_button()
 	
 	pygame.display.flip()
 
