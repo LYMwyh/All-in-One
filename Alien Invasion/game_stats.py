@@ -13,6 +13,7 @@ class GameStats():
 		self.level = 1
 		self.view_introduction = True
 		self.introduction_page = 0
+		self.introduction_total_pages = 3
 		
 		self.back_button = False
 		
