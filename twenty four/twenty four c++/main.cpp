@@ -14,11 +14,24 @@ string the_Select_Operators[3];
 vector<string> answer;
 string complete_answer;
 
-auto return_fraction(string fraction_in_str)
+vector<bool> whether_use_addition_and_subtraction;
+vector<bool> whether_use_multiplication_and_division;
+vector<bool> whether_found_multiplication_or_division;
+
+
+auto str_to_fraction(string fraction_in_str)
 {
     size_t position = fraction_in_str.find('/');
-    if(position == variant_npos)    return make_pair(-1, -1);
-    else    return make_pair(stoi(fraction_in_str.substr(0, position)) , stoi(fraction_in_str.substr(position + 1)));
+    Fraction ans;
+    if(position == variant_npos)    ans.numerator = -1, ans.denominator = -1;
+    else    ans.numerator = stoi(fraction_in_str.substr(0, position)) , ans.denominator = stoi(fraction_in_str.substr(position + 1));
+    return ans;
+}
+
+
+auto fraction_to_str(Fraction fraction)
+{
+    return to_string(fraction.numerator) + '/' + to_string(fraction.denominator);
 }
 
 
@@ -42,33 +55,172 @@ auto before_or_after_one(int index_of_one, int before, vector<string> answer)
         if(answer[index_of_one] == "(" or answer[index_of_one] == ")")  return true;
         else if(answer[index_of_one] == "/" and before == -1)   return false;
         else if(answer[index_of_one] == "+" or answer[index_of_one] == "-") return true;
-        pair<int, int> temporary_variable = return_fraction(answer[index_of_one]);
-        if(temporary_variable.first != -1 and temporary_variable.first != temporary_variable.second)    return false;
+        Fraction temporary_variable = str_to_fraction(answer[index_of_one]);
+        if(temporary_variable.numerator != -1 and temporary_variable.numerator != temporary_variable.denominator)    return false;
     }
 }
 
 
 auto calculate_answer(vector<string> answer)
 {
+    string symbol;
+    Fraction temporary_fraction_front;
+    Fraction temporary_fraction_back;
     int step = 0;
     int layer = 0;
-    vector<bool> whether_use_addition_and_subtraction;
-    vector<bool> whether_use_multiplication_and_division;
-    vector<bool> whether_found_multiplication_or_division;
+    whether_use_addition_and_subtraction.clear();
+    whether_use_multiplication_and_division.clear();
+    whether_found_multiplication_or_division.clear();
     whether_use_addition_and_subtraction.push_back(false);
-    whether_use_addition_and_subtraction.push_back(true);
+    whether_use_multiplication_and_division.push_back(true);
     whether_found_multiplication_or_division.push_back(false);
+
     while(answer.size() != 1)
     {
         if(step == answer.size())
         {
             step = 0;
-            for(auto & element : whether_use_addition_and_subtraction)
+            for(size_t index = 0; index < whether_use_addition_and_subtraction.size(); index ++)
             {
-
+                whether_use_addition_and_subtraction[index] = ! whether_found_multiplication_or_division[index];
+                whether_use_multiplication_and_division[index] = true;
+                whether_found_multiplication_or_division[index] = false;
             }
         }
+        symbol = answer[step];
+        if(symbol == "(")
+        {
+            if(whether_found_multiplication_or_division.size() - 1 == layer)
+            {
+                whether_found_multiplication_or_division.push_back(false);
+                whether_use_multiplication_and_division.push_back(true);
+                whether_use_addition_and_subtraction.push_back(false);
+            }
+            layer += 1;
+            step += 1;
+            continue;
+        }
+        if(symbol == ")")
+        {
+            layer -= 1;
+            if(answer[step - 2] == "(")
+            {
+                answer.erase(answer.begin() + step - 2);
+                answer.erase(answer.begin() + step - 1);
+                step -= 1;
+            }
+            else    step += 1;
+            continue;
+        }
+        if(whether_use_addition_and_subtraction[layer])
+        {
+            if(symbol == "+")
+            {
+                if(answer[step - 1] == "(" or answer[step - 1] == ")" or answer[step + 1] == "(" or answer[step + 1] == ")")    ;
+                else
+                {
+                    temporary_fraction_front = str_to_fraction(answer[step - 1]);
+                    temporary_fraction_back = str_to_fraction(answer[step + 1]);
+                    if(answer[step - 2] != "-")
+                    {
+                        temporary_fraction_front.numerator *= temporary_fraction_back.denominator;
+                        temporary_fraction_back.numerator *= temporary_fraction_front.denominator;
+                        temporary_fraction_front.numerator += temporary_fraction_back.numerator;
+                        temporary_fraction_front.denominator *= temporary_fraction_back.denominator;
+                    }
+                    else
+                    {
+                        temporary_fraction_front.numerator *= temporary_fraction_back.denominator;
+                        temporary_fraction_back.numerator *= temporary_fraction_front.denominator;
+                        temporary_fraction_front.numerator -= temporary_fraction_back.numerator;
+                        temporary_fraction_front.denominator *= temporary_fraction_back.denominator;
+                    }
+                    answer[step - 1] = fraction_to_str(temporary_fraction_front);
+                    answer[step + 1] = fraction_to_str(temporary_fraction_back);
+                    answer.erase(answer.begin() + step, answer.begin() + step + 2);
+                    continue;
+                }
+            }
+            else if(symbol == "-")
+            {
+                if(answer[step - 1] == "(" or answer[step - 1] == ")" or answer[step + 1] == "(" or answer[step + 1] == ")")    ;
+                else
+                {
+                    temporary_fraction_front = str_to_fraction(answer[step - 1]);
+                    temporary_fraction_back = str_to_fraction(answer[step + 1]);
+                    if(answer[step - 2] != "-")
+                    {
+                        temporary_fraction_front.numerator *= temporary_fraction_back.denominator;
+                        temporary_fraction_back.numerator *= temporary_fraction_front.denominator;
+                        temporary_fraction_front.numerator -= temporary_fraction_back.numerator;
+                        temporary_fraction_front.denominator *= temporary_fraction_back.denominator;
+                    }
+                    else
+                    {
+                        temporary_fraction_front.numerator *= temporary_fraction_back.denominator;
+                        temporary_fraction_back.numerator *= temporary_fraction_front.denominator;
+                        temporary_fraction_front.numerator += temporary_fraction_back.numerator;
+                        temporary_fraction_front.denominator *= temporary_fraction_back.denominator;
+                    }
+                    answer[step - 1] = fraction_to_str(temporary_fraction_front);
+                    answer[step + 1] = fraction_to_str(temporary_fraction_back);
+                    answer.erase(answer.begin() + step, answer.begin() + step + 2);
+                    continue;
+                }
+            }
+        }
+        if(whether_use_multiplication_and_division[layer])
+        {
+            if(symbol == "*")
+            {
+                whether_found_multiplication_or_division[layer] = true;
+                if(answer[step - 1] == "(" or answer[step - 1] == ")" or answer[step + 1] == "(" or answer[step + 1] == ")")
+                    whether_use_multiplication_and_division[layer] = false;
+                else
+                {
+                    temporary_fraction_front = str_to_fraction(answer[step - 1]);
+                    temporary_fraction_back = str_to_fraction(answer[step + 1]);
+                    temporary_fraction_front.numerator *= temporary_fraction_back.numerator;
+                    temporary_fraction_front.denominator *= temporary_fraction_back.denominator;
+                    answer[step - 1] = fraction_to_str(temporary_fraction_front);
+                    answer[step + 1] = fraction_to_str(temporary_fraction_back);
+                    answer.erase(answer.begin() + step, answer.begin() + step + 2);
+                    continue;
+                }
+            }
+            else if(symbol == "/")
+            {
+                whether_found_multiplication_or_division[layer] = true;
+                if(answer[step - 1] == "(" or answer[step - 1] == ")" or answer[step + 1] == "(" or answer[step + 1] == ")")
+                    whether_use_multiplication_and_division[layer] = false;
+                else
+                {
+                    temporary_fraction_front = str_to_fraction(answer[step - 1]);
+                    temporary_fraction_back = str_to_fraction(answer[step + 1]);
+                    if(temporary_fraction_back.denominator == 0)
+                    {
+                        answer.clear();
+                        answer.emplace_back(fraction_to_str(temporary_fraction_back));
+                        break;
+                    }
+                    temporary_fraction_front.numerator *= temporary_fraction_back.denominator;
+                    temporary_fraction_front.denominator *= temporary_fraction_back.numerator;
+                    answer[step - 1] = fraction_to_str(temporary_fraction_front);
+                    answer[step + 1] = fraction_to_str(temporary_fraction_back);
+                    answer.erase(answer.begin() + step, answer.begin() + step + 2);
+                    continue;
+                }
+            }
+        }
+        step += 1;
     }
+    Fraction ans = str_to_fraction(answer[0]);
+    if(ans.denominator == 0)
+        return "0";
+    else if(ans.numerator % ans.denominator == 0 and ans.numerator / ans.denominator == 24)
+        return "24";
+    else
+        return "0";
 }
 
 
@@ -165,10 +317,12 @@ auto calculate_whole_answers()
                                         answer.emplace_back(the_Select_Operators[answer_index]);
                                         complete_answer += the_Select_Operators[answer_index];
                                     }
-
                                 }
-                                calculate_answer(answer);
-
+                                string ans = calculate_answer(answer);
+                                if(ans == "24")
+                                {
+                                    cout << complete_answer << endl;
+                                }
                             }
                         }
                     }
@@ -192,10 +346,16 @@ int main() {
     uniform_int_distribution<int> distribution(1,13);
     while(true)
     {
+        Four_Numbers[0].numerator = 1;
+        Four_Numbers[1].numerator = 8;
+        Four_Numbers[2].numerator = 9;
+        Four_Numbers[3].numerator = 2;
+
         for(auto & Number : Four_Numbers) {
-            Number.numerator = distribution(generator);
-            // printf("%d", Number.numerator);
+            // Number.numerator = distribution(generator);
+            printf("%d , ", Number.numerator);
         }
+        printf("\n");
         string whether_play;
         printf("Do you want to play the game?(YES/NO)");
         cin >> whether_play;
