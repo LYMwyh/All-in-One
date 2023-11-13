@@ -489,19 +489,15 @@ def calculate_the_whole_answers():
 									if Create_the_Answer < 3:  # 0 , 1 , 2
 										answer.append(the_Selected_Operators[Create_the_Answer])
 								complete_answer = [_ if type(_) is not Fraction else _.numerator for _ in answer]
-								b = [_ for _ in complete_answer]
 								calculate_the_answer()
-								a = []
 								if answer == [24]:
 									old_version_answer = []
 									while True:
 										one_group = 0
 										simplify_formula_first_part(complete_answer)
-										a.append([_ for _ in complete_answer])
 										complete_answer, temporary_number = simplify_formula_second_part(0,
 										                                                                 complete_answer,
 										                                                                 0)
-										a.append([_ for _ in complete_answer])
 										if old_version_answer == complete_answer:
 											break
 										old_version_answer = [_ for _ in complete_answer]
@@ -514,8 +510,6 @@ def calculate_the_whole_answers():
 									if answer != [24]:
 										print("error!")
 										print(complete_answer)
-										print('b', b)
-										print('a', a)
 									#
 									complete_answer = ''.join(list(map(str, complete_answer)))
 									if complete_answer not in Whole_Answers:
