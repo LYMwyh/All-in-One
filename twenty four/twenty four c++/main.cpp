@@ -11,12 +11,9 @@ struct Fraction{
 Fraction Four_Numbers[4];
 string Operators[] = {"+", "-", "*", "/"};
 string the_Select_Operators[3];
+vector<string> Whole_answers;
 vector<string> answer;
 string complete_answer;
-
-vector<bool> whether_use_addition_and_subtraction;
-vector<bool> whether_use_multiplication_and_division;
-vector<bool> whether_found_multiplication_or_division;
 
 
 auto str_to_fraction(string fraction_in_str)
@@ -61,11 +58,113 @@ auto before_or_after_one(int index_of_one, int before, vector<string> answer)
 }
 
 
+auto simplify_formula_first_part(vector<string> answer)
+{
+    int layer = 0;
+    int step = 0;
+    static vector<bool> whether_found_addition_or_subtraction;
+    static vector<bool> whether_found_multiplication_or_division;
+    whether_found_addition_or_subtraction.clear();
+    whether_found_multiplication_or_division.clear();
+    whether_found_multiplication_or_division.push_back(false);
+    whether_found_addition_or_subtraction.push_back(false);
+    static bool decision_front;
+    static bool decision_back;
+    static bool change_symbol_from_subtraction;
+    static bool change_symbol_from_division;
+    static vector<int> brackets;
+    brackets.clear();
+    static string symbol;
+    bool whether_change = false;
+    static Fraction temporary_fraction;
+    while(true)
+    {
+        if(step == answer.size())
+        {
+            if(! whether_change)
+                break;
+            else
+            {
+                step = 0;
+                whether_change = false;
+            }
+        }
+        symbol = complete_answer[step];
+        if(symbol == "(")
+        {
+            layer += 1;
+            if(whether_found_multiplication_or_division.size() == layer)
+            {
+                whether_found_multiplication_or_division.push_back(false);
+                whether_found_addition_or_subtraction.push_back(false);
+            }
+            else
+            {
+                whether_found_multiplication_or_division[layer] = false;
+                whether_found_addition_or_subtraction[layer] = false;
+            }
+            brackets.push_back(step);
+        }
+        if(symbol == ")")
+        {
+            decision_front = false;
+            decision_back = false;
+            change_symbol_from_subtraction = false;
+            change_symbol_from_division = false;
+            if(whether_found_multiplication_or_division[layer] and ! whether_found_addition_or_subtraction[layer])
+            {
+                decision_front = true;
+                decision_back = true;
+                if(brackets[layer - 1] != 0 and answer[brackets[layer - 1] - 1] == "/")
+                    change_symbol_from_division = true;
+            }
+            else if(brackets[layer - 1] != 0 and answer[brackets[layer - 1] - 1] == "/")    ;
+            else
+            {
+                if(brackets[layer - 1] != 0)
+                {
+                    temporary_fraction = str_to_fraction(answer[brackets[layer - 1] - 2]);
+                    if((answer[brackets[layer - 1] - 1] != "*" and answer[brackets[layer - 1] - 1] != "/") or (temporary_fraction.numerator == temporary_fraction.denominator and
+                            before_or_after_one(brackets[layer - 1] - 2, true, answer)))
+                    {
+                        decision_front = true;
+                        if(answer[brackets[layer - 1] - 1] == "-")
+                            change_symbol_from_subtraction = true;
+                    }
+                }
+                else    decision_front = true;
+                if(step != answer.size() - 1)
+                {
+                    temporary_fraction = str_to_fraction(answer[step + 2]);
+                    if(answer[step + 1] != "*" and answer[step + 1] != "/")
+                        decision_back = true;
+                    else if(temporary_fraction.numerator == temporary_fraction.denominator and before_or_after_one(step + 2,
+                                                                                                                   false, answer))
+                    {
+                        answer[step + 1] == "*";
+                        decision_back = true;
+                    }
+                }
+                else    decision_back = true;
+            }
+            // 11j23i12345678901234567890
+        }
+    }
+
+}
+
+
 auto calculate_answer(vector<string> answer)
 {
-    string symbol;
-    Fraction temporary_fraction_front;
-    Fraction temporary_fraction_back;
+    static vector<bool> whether_use_addition_and_subtraction;
+    static vector<bool> whether_use_multiplication_and_division;
+    static vector<bool> whether_found_multiplication_or_division;
+    whether_use_addition_and_subtraction.clear();
+    whether_use_multiplication_and_division.clear();
+    whether_found_multiplication_or_division.clear();
+    static string symbol;
+    static Fraction temporary_fraction_front;
+    static Fraction temporary_fraction_back;
     int step = 0;
     int layer = 0;
     whether_use_addition_and_subtraction.clear();
@@ -321,7 +420,7 @@ auto calculate_whole_answers()
                                 string ans = calculate_answer(answer);
                                 if(ans == "24")
                                 {
-                                    cout << complete_answer << endl;
+                                    Whole_answers.emplace_back(complete_answer);
                                 }
                             }
                         }
@@ -346,21 +445,24 @@ int main() {
     uniform_int_distribution<int> distribution(1,13);
     while(true)
     {
-        Four_Numbers[0].numerator = 1;
-        Four_Numbers[1].numerator = 8;
-        Four_Numbers[2].numerator = 9;
-        Four_Numbers[3].numerator = 2;
-
         for(auto & Number : Four_Numbers) {
-            // Number.numerator = distribution(generator);
+            Number.numerator = distribution(generator);
             printf("%d , ", Number.numerator);
         }
         printf("\n");
         string whether_play;
         printf("Do you want to play the game?(YES/NO)");
         cin >> whether_play;
-        if(whether_play == "YES")   calculate_whole_answers();
-        else break;
+        if(whether_play == "YES")
+        {
+            calculate_whole_answers();
+            for(const auto & answer : Whole_answers)
+                cout << answer << endl;
+        }
+        else
+        {
+            break;
+        }
     }
     return 0;
 }
