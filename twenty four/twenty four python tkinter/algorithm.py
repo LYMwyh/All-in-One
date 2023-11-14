@@ -188,6 +188,7 @@ def simplify_formula_first_part(complete_answer):
 		elif symbol == '*' or symbol == '/':
 			whether_found_multiplication_or_division[layer] = True
 		step += 1
+	return complete_answer
 
 
 def simplify_formula_third_part(part_of_group):
@@ -494,7 +495,7 @@ def calculate_the_whole_answers():
 									old_version_answer = []
 									while True:
 										one_group = 0
-										simplify_formula_first_part(complete_answer)
+										complete_answer = simplify_formula_first_part(complete_answer)
 										complete_answer, temporary_number = simplify_formula_second_part(0,
 										                                                                 complete_answer,
 										                                                                 0)
