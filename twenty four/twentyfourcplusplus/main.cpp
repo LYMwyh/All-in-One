@@ -2,6 +2,7 @@
 #include <random>
 #include <chrono>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 struct Fraction{
@@ -19,16 +20,63 @@ string complete_answer;
 auto str_to_fraction(string fraction_in_str)
 {
     size_t position = fraction_in_str.find('/');
+    bool change;
     Fraction ans;
-    if(position == variant_npos)    ans.numerator = -1, ans.denominator = -1;
-    else    ans.numerator = stoi(fraction_in_str.substr(0, position)) , ans.denominator = stoi(fraction_in_str.substr(position + 1));
-    return ans;
+    if(position == string::npos or fraction_in_str.length() <= 1)    ans.numerator = 0, ans.denominator = 0, change = false;
+    else    ans.numerator = stoi(fraction_in_str.substr(0, position)) , ans.denominator = stoi(fraction_in_str.substr(position + 1)), change = true;
+    return pair<Fraction, bool> (ans, change);
 }
 
 
 auto fraction_to_str(Fraction fraction)
 {
     return to_string(fraction.numerator) + '/' + to_string(fraction.denominator);
+}
+
+
+auto gcd(int a, int b)
+{
+    int temp;
+    while(b != 0)
+    {
+        temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+
+auto str_vector_to_str(vector<string> str_vector, bool format)
+{
+    static string ans;
+    static pair<Fraction, bool> temporary_pair;
+    static Fraction temporary;
+    ans = "";
+    int gcd_ans;
+    for(const auto & element : str_vector)
+    {
+        temporary_pair = str_to_fraction(element);
+        temporary = temporary_pair.first;
+        if(! temporary_pair.second)    ans += element;
+        else
+        {
+            if(format)
+            {
+                gcd_ans = gcd(temporary.numerator, temporary.denominator);
+                if(temporary.denominator == gcd_ans)
+                    ans += to_string(temporary.numerator / gcd_ans);
+                else
+                    ans += to_string(temporary.numerator / gcd_ans) + '/' + to_string(temporary.denominator / gcd_ans);
+            }
+            else
+            {
+                ans+= to_string(temporary.numerator) + '/' + to_string(temporary.denominator);
+            }
+
+        }
+    }
+    return ans;
 }
 
 
@@ -45,6 +93,8 @@ auto before_or_after_one(int index_of_one, int before, vector<string> answer)
         if(answer[index_of_one - 1] == "+" or answer[index_of_one - 1] == "-")  return true;
         before = 1;
     }
+    pair<Fraction, bool> temporary_pair;
+    Fraction temporary_variable;
     while(true)
     {
         index_of_one += before;
@@ -52,8 +102,9 @@ auto before_or_after_one(int index_of_one, int before, vector<string> answer)
         if(answer[index_of_one] == "(" or answer[index_of_one] == ")")  return true;
         else if(answer[index_of_one] == "/" and before == -1)   return false;
         else if(answer[index_of_one] == "+" or answer[index_of_one] == "-") return true;
-        Fraction temporary_variable = str_to_fraction(answer[index_of_one]);
-        if(temporary_variable.numerator != -1 and temporary_variable.numerator != temporary_variable.denominator)    return false;
+        temporary_pair = str_to_fraction(answer[index_of_one]);
+        temporary_variable = temporary_pair.first;
+        if(temporary_pair.second and temporary_variable.numerator != temporary_variable.denominator)    return false;
     }
 }
 
@@ -62,6 +113,7 @@ auto simplify_formula_first_part(vector<string> answer)
 {
     int layer = 0;
     int step = 0;
+    static pair<Fraction, bool> temporary_pair;
     static vector<bool> whether_found_addition_or_subtraction;
     static vector<bool> whether_found_multiplication_or_division;
     whether_found_addition_or_subtraction.clear();
@@ -77,6 +129,7 @@ auto simplify_formula_first_part(vector<string> answer)
     static string symbol;
     bool whether_change = false;
     static Fraction temporary_fraction;
+    int temporary_layer;
     while(true)
     {
         if(step == answer.size())
@@ -89,7 +142,7 @@ auto simplify_formula_first_part(vector<string> answer)
                 whether_change = false;
             }
         }
-        symbol = complete_answer[step];
+        symbol = answer[step];
         if(symbol == "(")
         {
             layer += 1;
@@ -123,7 +176,8 @@ auto simplify_formula_first_part(vector<string> answer)
             {
                 if(brackets[layer - 1] != 0)
                 {
-                    temporary_fraction = str_to_fraction(answer[brackets[layer - 1] - 2]);
+                    temporary_pair = str_to_fraction(answer[brackets[layer - 1] - 2]);
+                    temporary_fraction = temporary_pair.first;
                     if((answer[brackets[layer - 1] - 1] != "*" and answer[brackets[layer - 1] - 1] != "/") or (temporary_fraction.numerator == temporary_fraction.denominator and
                                                                                                                before_or_after_one(brackets[layer - 1] - 2, true, answer)))
                     {
@@ -135,27 +189,68 @@ auto simplify_formula_first_part(vector<string> answer)
                 else    decision_front = true;
                 if(step != answer.size() - 1)
                 {
-                    temporary_fraction = str_to_fraction(answer[step + 2]);
+                    temporary_pair = str_to_fraction(answer[step + 2]);
+                    temporary_fraction = temporary_pair.first;
                     if(answer[step + 1] != "*" and answer[step + 1] != "/")
                         decision_back = true;
                     else if(temporary_fraction.numerator == temporary_fraction.denominator and before_or_after_one(step + 2,
                                                                                                                    false, answer))
                     {
-                        answer[step + 1] == "*";
+                        answer[step + 1] = "*";
                         decision_back = true;
                     }
                 }
                 else    decision_back = true;
             }
-            // 11j23i12345678901234567890
+            if(decision_front and decision_back)
+            {
+                whether_change = true;
+                if(change_symbol_from_subtraction or change_symbol_from_division)
+                {
+                    temporary_layer = 0;
+                    for(int temporary_step = brackets[layer - 1] + 1; temporary_step < step; temporary_step ++)
+                    {
+                        if(change_symbol_from_subtraction and temporary_layer == 0 and answer[temporary_step] == "+")
+                            answer[temporary_step] = "-";
+                        else if(change_symbol_from_subtraction and temporary_layer == 0 and answer[temporary_step] == "-")
+                            answer[temporary_step] = "+";
+                        else if(change_symbol_from_division and temporary_layer == 0 and answer[temporary_step] == "*")
+                            answer[temporary_step] = "/";
+                        else if(change_symbol_from_division and temporary_layer == 0 and answer[temporary_step] == "/")
+                            answer[temporary_step] = "*";
+                        else if(answer[temporary_step] == "(")
+                            temporary_layer += 1;
+                        else if(answer[temporary_step] == ")")
+                            temporary_layer -= 1;
+                    }
+                }
+                if(whether_found_multiplication_or_division[layer])
+                    whether_found_multiplication_or_division[layer - 1] = true;
+                if(whether_found_addition_or_subtraction[layer])
+                    whether_found_addition_or_subtraction[layer - 1] = true;
+                answer.erase(answer.begin() + brackets[layer - 1]);
+                answer.erase(answer.begin() + step - 1);
+                step -= 2;
+            }
+            brackets.pop_back();
+            layer -= 1;
         }
+        if(symbol == "+" or symbol == "-")
+            whether_found_addition_or_subtraction[layer] = true;
+        else if(symbol == "*" or symbol == "/")
+            whether_found_multiplication_or_division[layer] = true;
+        step += 1;
     }
-
+//    for(const auto & element : answer)
+//        cout << element << ' ';
+//    cout << endl;
+    return answer;
 }
 
 
 auto calculate_answer(vector<string> answer)
 {
+    static pair<Fraction, bool> temporary_pair;
     static vector<bool> whether_use_addition_and_subtraction;
     static vector<bool> whether_use_multiplication_and_division;
     static vector<bool> whether_found_multiplication_or_division;
@@ -218,8 +313,10 @@ auto calculate_answer(vector<string> answer)
                 if(answer[step - 1] == "(" or answer[step - 1] == ")" or answer[step + 1] == "(" or answer[step + 1] == ")")    ;
                 else
                 {
-                    temporary_fraction_front = str_to_fraction(answer[step - 1]);
-                    temporary_fraction_back = str_to_fraction(answer[step + 1]);
+                    temporary_pair = str_to_fraction(answer[step - 1]);
+                    temporary_fraction_front = temporary_pair.first;
+                    temporary_pair = str_to_fraction(answer[step + 1]);
+                    temporary_fraction_back = temporary_pair.first;
                     if(answer[step - 2] != "-")
                     {
                         temporary_fraction_front.numerator *= temporary_fraction_back.denominator;
@@ -245,8 +342,10 @@ auto calculate_answer(vector<string> answer)
                 if(answer[step - 1] == "(" or answer[step - 1] == ")" or answer[step + 1] == "(" or answer[step + 1] == ")")    ;
                 else
                 {
-                    temporary_fraction_front = str_to_fraction(answer[step - 1]);
-                    temporary_fraction_back = str_to_fraction(answer[step + 1]);
+                    temporary_pair = str_to_fraction(answer[step - 1]);
+                    temporary_fraction_front = temporary_pair.first;
+                    temporary_pair = str_to_fraction(answer[step + 1]);
+                    temporary_fraction_back = temporary_pair.first;
                     if(answer[step - 2] != "-")
                     {
                         temporary_fraction_front.numerator *= temporary_fraction_back.denominator;
@@ -277,8 +376,10 @@ auto calculate_answer(vector<string> answer)
                     whether_use_multiplication_and_division[layer] = false;
                 else
                 {
-                    temporary_fraction_front = str_to_fraction(answer[step - 1]);
-                    temporary_fraction_back = str_to_fraction(answer[step + 1]);
+                    temporary_pair = str_to_fraction(answer[step - 1]);
+                    temporary_fraction_front = temporary_pair.first;
+                    temporary_pair = str_to_fraction(answer[step + 1]);
+                    temporary_fraction_back = temporary_pair.first;
                     temporary_fraction_front.numerator *= temporary_fraction_back.numerator;
                     temporary_fraction_front.denominator *= temporary_fraction_back.denominator;
                     answer[step - 1] = fraction_to_str(temporary_fraction_front);
@@ -294,8 +395,10 @@ auto calculate_answer(vector<string> answer)
                     whether_use_multiplication_and_division[layer] = false;
                 else
                 {
-                    temporary_fraction_front = str_to_fraction(answer[step - 1]);
-                    temporary_fraction_back = str_to_fraction(answer[step + 1]);
+                    temporary_pair = str_to_fraction(answer[step - 1]);
+                    temporary_fraction_front = temporary_pair.first;
+                    temporary_pair = str_to_fraction(answer[step + 1]);
+                    temporary_fraction_back = temporary_pair.first;
                     if(temporary_fraction_back.denominator == 0)
                     {
                         answer.clear();
@@ -313,7 +416,8 @@ auto calculate_answer(vector<string> answer)
         }
         step += 1;
     }
-    Fraction ans = str_to_fraction(answer[0]);
+    temporary_pair = str_to_fraction(answer[0]);
+    Fraction ans = temporary_pair.first;
     if(ans.denominator != 0 and ans.numerator % ans.denominator == 0 and ans.numerator / ans.denominator == 24)
         return "24";
     else
@@ -359,7 +463,7 @@ auto calculate_whole_answers()
                                             switch (bracket_type_ordinal) {
                                                 case 0: case 3: case 5:
                                                     answer.emplace_back("(");
-                                                    complete_answer += "(";
+                                                    // complete_answer += "(";
                                                 default: ;
                                             }
                                             break;
@@ -367,7 +471,7 @@ auto calculate_whole_answers()
                                             switch (bracket_type_ordinal) {
                                                 case 1: case 4:
                                                     answer.emplace_back("(");
-                                                    complete_answer += "(";
+                                                    // complete_answer += "(";
                                                 default: ;
                                             }
                                             break;
@@ -375,20 +479,20 @@ auto calculate_whole_answers()
                                             switch (bracket_type_ordinal) {
                                                 case 2: case 5:
                                                     answer.emplace_back("(");
-                                                    complete_answer += "(";
+                                                    // complete_answer += "(";
                                                 default: ;
                                             }
                                             break;
                                         default: ;
                                     }
                                     answer.emplace_back(to_string(Four_Numbers[answer_index].numerator) + "/" + to_string(Four_Numbers[answer_index].denominator));
-                                    complete_answer += to_string(Four_Numbers[answer_index].numerator);
+                                    // complete_answer += to_string(Four_Numbers[answer_index].numerator);
                                     switch (answer_index) {
                                         case 1:
                                             switch (bracket_type_ordinal) {
                                                 case 0: case 5:
                                                     answer.emplace_back(")");
-                                                    complete_answer += ")";
+                                                    // complete_answer += ")";
                                                 default: ;
                                             }
                                             break;
@@ -396,7 +500,7 @@ auto calculate_whole_answers()
                                             switch (bracket_type_ordinal) {
                                                 case 1: case 3:
                                                     answer.emplace_back(")");
-                                                    complete_answer += ")";
+                                                    // complete_answer += ")";
                                                 default: ;
                                             }
                                             break;
@@ -404,7 +508,7 @@ auto calculate_whole_answers()
                                             switch (bracket_type_ordinal) {
                                                 case 2: case 4: case 5:
                                                     answer.emplace_back(")");
-                                                    complete_answer += ")";
+                                                    // complete_answer += ")";
                                                 default: ;
                                             }
                                             break;
@@ -412,13 +516,16 @@ auto calculate_whole_answers()
                                     }
                                     if(answer_index < 3) {
                                         answer.emplace_back(the_Select_Operators[answer_index]);
-                                        complete_answer += the_Select_Operators[answer_index];
+                                        // complete_answer += the_Select_Operators[answer_index];
                                     }
                                 }
                                 string ans = calculate_answer(answer);
                                 if(ans == "24")
                                 {
-                                    Whole_answers.emplace_back(complete_answer);
+                                    answer = simplify_formula_first_part(answer);
+                                    complete_answer = str_vector_to_str(answer, true);
+                                    if(find(Whole_answers.begin(), Whole_answers.end(), complete_answer) == Whole_answers.end())
+                                        Whole_answers.emplace_back(complete_answer);
                                 }
                             }
                         }
