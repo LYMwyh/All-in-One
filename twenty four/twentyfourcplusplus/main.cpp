@@ -106,49 +106,56 @@ auto before_or_after_one(int index_of_one, int before, vector<string> answer)
 }
 
 
-auto simplify_formula_second_part(int step, vector<string> answer, int layer)
+auto format_one(vector<string> temporary_group)
+{
+    static int temporary_step;
+    static string temporary_symbol;
+    static pair<Fraction, bool> temporary_pair;
+    temporary_step = 0;
+    while(temporary_step < temporary_group.size())
+    {
+        temporary_symbol = temporary_group[temporary_step];
+        temporary_pair = str_to_fraction(temporary_symbol);
+        if(temporary_pair.second and temporary_pair.first.numerator == temporary_pair.first.denominator)
+        {
+            if(temporary_group.size() == 2) break;
+            else if(temporary_step == 1 and temporary_group[temporary_step + 1] == "/")
+            {
+                temporary_step += 1;
+                continue;
+            }
+            else if(temporary_step == 1 and temporary_group[temporary_step + 1] == "*")
+            {
+                temporary_group.erase(temporary_group.begin() + temporary_step);
+                temporary_group.erase(temporary_group.begin() + temporary_step);
+            }
+            else
+            {
+                temporary_group.erase(temporary_group.begin() + temporary_step - 1);
+                temporary_group.erase(temporary_group.begin() + temporary_step - 1);
+            }
+            temporary_step -= 2;
+            one_as_a_group += 1;
+        }
+        temporary_step += 1;
+    }
+    return temporary_group;
+}
+
+
+pair<vector<string>, int> simplify_formula_second_part(int step, vector<string> answer, int layer)
 {
     vector<string> group;
     vector<string> temporary_group;
     temporary_group.emplace_back("+");
     static string symbol;
-    static string temporary_symbol;
-    static pair<Fraction, bool> temporary_pair_fraction;
     pair<vector<string>, int> temporary_pair_second_part;
-    static int temporary_step;
     while(step < answer.size())
     {
         symbol = answer[step];
         if(symbol == "+" or symbol == "-")
         {
-            temporary_step = 0;
-            while(temporary_step < temporary_group.size())
-            {
-                temporary_symbol = temporary_group[temporary_step];
-                temporary_pair_fraction = str_to_fraction(temporary_symbol);
-                if(temporary_pair_fraction.second and temporary_pair_fraction.first.numerator == temporary_pair_fraction.first.denominator)
-                {
-                    if(temporary_group.size() == 2) break;
-                    else if(temporary_step == 1 and temporary_group[temporary_step + 1] == "/")
-                    {
-                        temporary_step += 1;
-                        continue;
-                    }
-                    else if(temporary_step == 1 and temporary_group[temporary_step + 1] == "*")
-                    {
-                        temporary_group.erase(temporary_group.begin() + temporary_step);
-                        temporary_group.erase(temporary_group.begin() + temporary_step);
-                    }
-                    else
-                    {
-                        temporary_group.erase(temporary_group.begin() + temporary_step - 1);
-                        temporary_group.erase(temporary_group.begin() + temporary_step - 1);
-                    }
-                    temporary_step -= 2;
-                    one_as_a_group += 1;
-                }
-                temporary_step += 1;
-            }
+            temporary_group = format_one(temporary_group);
             temporary_group = simplify_formula_third_part(temporary_group);
             group.emplace_back(str_vector_to_str(temporary_group, true));
             temporary_group.clear();
@@ -158,7 +165,7 @@ auto simplify_formula_second_part(int step, vector<string> answer, int layer)
             temporary_pair_second_part = simplify_formula_second_part(step + 1, answer, layer + 1);
             temporary_pair_second_part.first.insert(temporary_pair_second_part.first.begin(), "(");
             temporary_pair_second_part.first.emplace_back(")");
-            temporary_group.emplace_back(str_vector_to_str(temporary_pair_second_part.first));
+            temporary_group.emplace_back(str_vector_to_str(temporary_pair_second_part.first, true));
             step = temporary_pair_second_part.second + 1;
             continue;
         }
@@ -166,13 +173,21 @@ auto simplify_formula_second_part(int step, vector<string> answer, int layer)
         temporary_group.emplace_back(symbol);
         step ++;
     }
-    temporary_step = 0;
-    while(temporary_step < temporary_group.size())
+    temporary_group = format_one(temporary_group);
+    temporary_group = simplify_formula_third_part(temporary_group);
+    group.emplace_back(str_vector_to_str(temporary_group, true));
+    temporary_group.clear();
+    if(layer == 0)
     {
-        temporary_symbol = temporary_group[temporary_step];
-        
+        while(one_as_a_group)
+        {
+            one_as_a_group --;
+            group.emplace_back("*1");
+        }
     }
-
+    group = simplify_formula_forth_part(group);
+    temporary_pair_second_part.first = group, temporary_pair_second_part.second = step;
+    return temporary_pair_second_part;
 }
 
 
@@ -494,6 +509,8 @@ auto calculate_answer(vector<string> answer)
 
 auto calculate_whole_answers()
 {
+    static string old_version;
+    static pair<vector<string>, int> temporary_pair_second_part;
     for(int first_number_ordinal = 0;first_number_ordinal < 4; first_number_ordinal ++)
     {
         swap(Four_Numbers[first_number_ordinal], Four_Numbers[0]);
@@ -589,9 +606,17 @@ auto calculate_whole_answers()
                                 string ans = calculate_answer(answer);
                                 if(ans == "24")
                                 {
-                                    one_as_a_group = 0;
-                                    answer = simplify_formula_first_part(answer);
-                                    complete_answer = str_vector_to_str(answer, true);
+                                    old_version.clear();
+                                    while(true)
+                                    {
+                                        one_as_a_group = 0;
+                                        answer = simplify_formula_first_part(answer);
+                                        temporary_pair_second_part = simplify_formula_second_part(0, answer, 0);
+                                        answer = temporary_pair_second_part.first;
+                                        complete_answer = str_vector_to_str(answer, true);
+                                        if(old_version == complete_answer) break;
+                                        old_version = complete_answer;
+                                    }
                                     if(find(Whole_answers.begin(), Whole_answers.end(), complete_answer) == Whole_answers.end())
                                         Whole_answers.emplace_back(complete_answer);
                                 }
