@@ -15,6 +15,7 @@ string the_Select_Operators[3];
 vector<string> Whole_answers;
 vector<string> answer;
 string complete_answer;
+int one_as_a_group = 0;
 
 
 auto str_to_fraction(string fraction_in_str)
@@ -49,6 +50,7 @@ auto gcd(int a, int b)
 
 auto str_vector_to_str(vector<string> str_vector, bool format)
 {
+    // format means make the numerator and denominator relatively prime.
     static string ans;
     static pair<Fraction, bool> temporary_pair;
     static Fraction temporary;
@@ -64,15 +66,10 @@ auto str_vector_to_str(vector<string> str_vector, bool format)
             if(format)
             {
                 gcd_ans = gcd(temporary.numerator, temporary.denominator);
-                if(temporary.denominator == gcd_ans)
-                    ans += to_string(temporary.numerator / gcd_ans);
-                else
-                    ans += to_string(temporary.numerator / gcd_ans) + '/' + to_string(temporary.denominator / gcd_ans);
+                if(temporary.denominator == gcd_ans)    ans += to_string(temporary.numerator / gcd_ans);
+                else    ans += to_string(temporary.numerator / gcd_ans) + '/' + to_string(temporary.denominator / gcd_ans);
             }
-            else
-            {
-                ans+= to_string(temporary.numerator) + '/' + to_string(temporary.denominator);
-            }
+            else    ans+= to_string(temporary.numerator) + '/' + to_string(temporary.denominator);
 
         }
     }
@@ -106,6 +103,76 @@ auto before_or_after_one(int index_of_one, int before, vector<string> answer)
         temporary_variable = temporary_pair.first;
         if(temporary_pair.second and temporary_variable.numerator != temporary_variable.denominator)    return false;
     }
+}
+
+
+auto simplify_formula_second_part(int step, vector<string> answer, int layer)
+{
+    vector<string> group;
+    vector<string> temporary_group;
+    temporary_group.emplace_back("+");
+    static string symbol;
+    static string temporary_symbol;
+    static pair<Fraction, bool> temporary_pair_fraction;
+    pair<vector<string>, int> temporary_pair_second_part;
+    static int temporary_step;
+    while(step < answer.size())
+    {
+        symbol = answer[step];
+        if(symbol == "+" or symbol == "-")
+        {
+            temporary_step = 0;
+            while(temporary_step < temporary_group.size())
+            {
+                temporary_symbol = temporary_group[temporary_step];
+                temporary_pair_fraction = str_to_fraction(temporary_symbol);
+                if(temporary_pair_fraction.second and temporary_pair_fraction.first.numerator == temporary_pair_fraction.first.denominator)
+                {
+                    if(temporary_group.size() == 2) break;
+                    else if(temporary_step == 1 and temporary_group[temporary_step + 1] == "/")
+                    {
+                        temporary_step += 1;
+                        continue;
+                    }
+                    else if(temporary_step == 1 and temporary_group[temporary_step + 1] == "*")
+                    {
+                        temporary_group.erase(temporary_group.begin() + temporary_step);
+                        temporary_group.erase(temporary_group.begin() + temporary_step);
+                    }
+                    else
+                    {
+                        temporary_group.erase(temporary_group.begin() + temporary_step - 1);
+                        temporary_group.erase(temporary_group.begin() + temporary_step - 1);
+                    }
+                    temporary_step -= 2;
+                    one_as_a_group += 1;
+                }
+                temporary_step += 1;
+            }
+            temporary_group = simplify_formula_third_part(temporary_group);
+            group.emplace_back(str_vector_to_str(temporary_group, true));
+            temporary_group.clear();
+        }
+        if(symbol == "(")
+        {
+            temporary_pair_second_part = simplify_formula_second_part(step + 1, answer, layer + 1);
+            temporary_pair_second_part.first.insert(temporary_pair_second_part.first.begin(), "(");
+            temporary_pair_second_part.first.emplace_back(")");
+            temporary_group.emplace_back(str_vector_to_str(temporary_pair_second_part.first));
+            step = temporary_pair_second_part.second + 1;
+            continue;
+        }
+        if(symbol == ")") break;
+        temporary_group.emplace_back(symbol);
+        step ++;
+    }
+    temporary_step = 0;
+    while(temporary_step < temporary_group.size())
+    {
+        temporary_symbol = temporary_group[temporary_step];
+        
+    }
+
 }
 
 
@@ -522,6 +589,7 @@ auto calculate_whole_answers()
                                 string ans = calculate_answer(answer);
                                 if(ans == "24")
                                 {
+                                    one_as_a_group = 0;
                                     answer = simplify_formula_first_part(answer);
                                     complete_answer = str_vector_to_str(answer, true);
                                     if(find(Whole_answers.begin(), Whole_answers.end(), complete_answer) == Whole_answers.end())
