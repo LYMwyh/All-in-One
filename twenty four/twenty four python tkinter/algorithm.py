@@ -266,7 +266,6 @@ def simplify_formula_second_part(first, complete_answer, layer):
 	step = first
 	while step < len(complete_answer):
 		symbol = complete_answer[step]
-		
 		if symbol == '+' or symbol == '-':
 			temporary_step = 0
 			while temporary_step < len(temporary_group):
