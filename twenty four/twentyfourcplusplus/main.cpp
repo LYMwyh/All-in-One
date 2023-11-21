@@ -3,6 +3,7 @@
 #include <chrono>
 #include <vector>
 #include <algorithm>
+#include <map>
 using namespace std;
 
 struct Fraction{
@@ -18,7 +19,7 @@ string complete_answer;
 int one_as_a_group = 0;
 
 
-auto str_to_fraction(string fraction_in_str)
+auto str_to_fraction(const string& fraction_in_str)
 {
     size_t position = fraction_in_str.find('/');
     bool change;
@@ -48,7 +49,7 @@ auto gcd(int a, int b)
 }
 
 
-auto str_vector_to_str(vector<string> str_vector, bool format)
+auto str_vector_to_str(const vector<string>& str_vector, bool format)
 {
     // format means make the numerator and denominator relatively prime.
     static string ans;
@@ -77,8 +78,7 @@ auto str_vector_to_str(vector<string> str_vector, bool format)
 }
 
 
-auto before_or_after_one(int index_of_one, int before, vector<string> answer)
-{
+auto before_or_after_one(int index_of_one, int before, vector<string> answer) {
     if(before)
     {
         if(answer[index_of_one + 1] == "/") return false;
@@ -140,6 +140,44 @@ auto format_one(vector<string> temporary_group)
         temporary_step += 1;
     }
     return temporary_group;
+}
+
+
+auto simplify_formula_third_part(vector<string> part_of_group)
+{
+    if(part_of_group.size() < 3)    return part_of_group;
+    static vector<pair<map<string, string>, map<string, int>>> sort_list;
+    static map<string, string> temporary_represent_map;
+    static map<string ,int> temporary_index_map;
+    static string symbol;
+    static int min_number;
+    sort_list.clear();
+    for(int step = 0; step < part_of_group.size(); step ++)
+    {
+        symbol = part_of_group[step];
+        if(symbol != "+" and symbol != "-" and symbol !="(" and symbol != ")")
+        {
+            temporary_represent_map.clear();
+            temporary_index_map.clear();
+            temporary_represent_map["representative"] = symbol;
+            temporary_represent_map["operator"] = part_of_group[step - 1];
+            temporary_index_map["index"] = step;
+            sort_list.emplace_back(temporary_represent_map, temporary_index_map);
+        }
+    }
+    min_number = 0;
+    static int temporary_step = 0;
+    for(const auto & element : sort_list)
+    {
+        temporary_represent_map.clear();
+        temporary_index_map.clear();
+        temporary_represent_map = element.first;
+        temporary_index_map = element.second;
+        if(temporary_represent_map["operator"] == "*" and sort_list[min_number].first["representative"] > temporary_represent_map["representative"])
+            min_number = temporary_step;
+        temporary_step ++;
+    }
+    if(min_number != 0) ;
 }
 
 
