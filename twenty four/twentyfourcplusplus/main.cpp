@@ -177,7 +177,14 @@ auto simplify_formula_third_part(vector<string> part_of_group)
             min_number = temporary_step;
         temporary_step ++;
     }
-    if(min_number != 0) ;
+    if(min_number != 0)
+    {
+        swap(part_of_group[sort_list[0].second["index"]], part_of_group[sort_list[min_number].second["index"]]);
+        sort_list[min_number].first["representative"] = sort_list[0].first["representative"];
+    }
+    static int first_number = sort_list[0].second["index"] + 1;
+    sort_list.erase(sort_list.begin());
+    sort(sort_list.begin(), sort_list.end(), {return a.first["representative"] < b.first["representative"];});
 }
 
 
