@@ -182,9 +182,24 @@ auto simplify_formula_third_part(vector<string> part_of_group)
         swap(part_of_group[sort_list[0].second["index"]], part_of_group[sort_list[min_number].second["index"]]);
         sort_list[min_number].first["representative"] = sort_list[0].first["representative"];
     }
-    static int first_number = sort_list[0].second["index"] + 1;
+    static int first_number;
+    first_number = sort_list[0].second["index"] + 1;
     sort_list.erase(sort_list.begin());
-    sort(sort_list.begin(), sort_list.end(), {return a.first["representative"] < b.first["representative"];});
+    sort(sort_list.begin(), sort_list.end(), [](auto a, auto b) -> auto{return a.first["representative"] < b.first["representative"];});
+    static vector<string> new_list;
+    for(int i = 0; i < first_number; i ++)
+        new_list.emplace_back(part_of_group[i]);
+    static int index_of_sort_list;
+    static int index;
+    index_of_sort_list = 0;
+    for(int step = first_number; step < part_of_group.size(); step += 2)
+    {
+        index = sort_list[index_of_sort_list].second["index"];
+        new_list.emplace_back(part_of_group[index - 1]);
+        new_list.emplace_back(part_of_group[index]);
+        index_of_sort_list ++;
+    }
+    return new_list;
 }
 
 
