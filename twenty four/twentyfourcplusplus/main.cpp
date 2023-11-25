@@ -205,7 +205,6 @@ auto format_one(vector<string> temporary_group)
     static string temporary_symbol;
     static pair<Fraction, bool> temporary_pair;
     temporary_step = 0;
-//    temporary_group = split_to_str_vector(temporary_group);
     while(temporary_step < temporary_group.size())
     {
         temporary_symbol = temporary_group[temporary_step];
@@ -775,6 +774,7 @@ auto calculate_whole_answers()
                                 if(ans == "24")
                                 {
                                     complete_answer = str_vector_to_str(answer, true);
+                                    auto a = complete_answer;
                                     answer = split_to_str_vector(complete_answer);
                                     old_version = "";
                                     while(true)
@@ -792,7 +792,11 @@ auto calculate_whole_answers()
                                         old_version = complete_answer;
                                     }
                                     if(find(Whole_answers.begin(), Whole_answers.end(), complete_answer) == Whole_answers.end())
+                                    {
                                         Whole_answers.emplace_back(complete_answer);
+                                        cout << a << " " << complete_answer << endl;
+                                    }
+
                                 }
                             }
                         }
@@ -817,12 +821,12 @@ int main() {
     uniform_int_distribution<int> distribution(1,13);
     while(true)
     {
-//        Four_Numbers[0].numerator = 5;
-//        Four_Numbers[1].numerator = 9;
-//        Four_Numbers[2].numerator = 5;
-//        Four_Numbers[3].numerator = 3;
+        Four_Numbers[0].numerator = 1;
+        Four_Numbers[1].numerator = 1;
+        Four_Numbers[2].numerator = 1;
+        Four_Numbers[3].numerator = 24;
         for(auto & Number : Four_Numbers) {
-            Number.numerator = distribution(generator);
+//            Number.numerator = distribution(generator);
             printf("%d , ", Number.numerator);
         }
         printf("\n");
@@ -833,8 +837,8 @@ int main() {
         {
             calculate_whole_answers();
             cout << "result:"<< endl;
-            for(const auto & temporary_answer : Whole_answers)
-                cout << temporary_answer << endl;
+//            for(const auto & temporary_answer : Whole_answers)
+//                cout << temporary_answer << endl;
         }
         else
         {
