@@ -153,6 +153,35 @@ auto char_to_string(char c)
 }
 
 
+auto split_to_str_vector(const vector<string>& original_answer)
+{
+    static vector<string> new_answer;
+    static int num;
+    new_answer.clear();
+    num = 0;
+    for(const auto & equation : original_answer)
+    {
+        // 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10
+        for(auto symbol : equation)
+        {
+            try {
+                num = num * 10 + stoi(char_to_string(symbol));
+            }
+            catch (const exception & e)
+            {
+                if(num != 0)
+                {
+                    new_answer.emplace_back(to_string(num));
+                    num = 0;
+                }
+                new_answer.emplace_back(char_to_string(symbol));
+            }
+        }
+    }
+    return new_answer;
+}
+
+
 auto simplify_formula_forth_part(vector<string> group)
 {
     static vector<pair<map<string, string>, map<string, int>>> compare_nums;
@@ -693,6 +722,7 @@ auto calculate_whole_answers()
                                 string ans = calculate_answer(answer);
                                 if(ans == "24")
                                 {
+
                                     cout << str_vector_to_str(answer, true) << endl;
                                     old_version = "";
                                     cout << endl;
@@ -708,6 +738,7 @@ auto calculate_whole_answers()
                                         cout << complete_answer << endl;
                                         if(old_version == complete_answer) break;
                                         old_version = complete_answer;
+                                        answer = split_to_str_vector(answer);
                                     }
                                     cout << endl;
                                     if(find(Whole_answers.begin(), Whole_answers.end(), complete_answer) == Whole_answers.end())
