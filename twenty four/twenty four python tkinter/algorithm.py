@@ -260,7 +260,7 @@ def simplify_formula_forth_part(group):
 	compare_nums = []
 	for step in range(len(group)):
 		part_of_group = group[step]
-		compare_nums.append({"representative": ''.join(list(map(str, part_of_group[1:]))), "operator": part_of_group[0], "index": step})
+		compare_nums.append({"representative": ''.join(list(map(str, part_of_group))), "operator": part_of_group[0], "index": step})
 	compare_nums.sort(reverse=False, key=lambda sort_num: sort_num["representative"])
 	for step in range(len(compare_nums)):
 		element = compare_nums[step]
