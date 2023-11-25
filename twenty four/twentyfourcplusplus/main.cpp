@@ -171,16 +171,17 @@ auto str_vector_to_str(vector<string> & str_vector, bool format)
 }
 
 
-auto before_or_after_one(int index_of_one, int before, vector<string> answer) {
+pair<string, int> before_or_after_one(int index_of_one, int before, vector<string> answer) {
     if(before)
     {
-        if(answer[index_of_one + 1] == "/") return false;
-        else if(answer[index_of_one + 1] == "+" or answer[index_of_one + 1] == "-") return true;
+        if(answer[index_of_one + 1] == "/") return {"", -1};
+        else if(answer[index_of_one + 1] == "+")    return {"", answer.size()};
+        else if(answer[index_of_one + 1] == "-")    return {"-", answer.size()};
         before = -1;
     }
     else
     {
-        if(answer[index_of_one - 1] == "+" or answer[index_of_one - 1] == "-")  return true;
+        if(answer[index_of_one - 1] == "+" or answer[index_of_one - 1] == "-")  return {"", answer.size()};
         before = 1;
     }
     pair<Fraction, bool> temporary_pair;
@@ -188,13 +189,18 @@ auto before_or_after_one(int index_of_one, int before, vector<string> answer) {
     while(true)
     {
         index_of_one += before;
-        if(index_of_one < 0 or index_of_one >= answer.size())   return true;
-        if(answer[index_of_one] == "(" or answer[index_of_one] == ")")  return true;
-        else if(answer[index_of_one] == "/" and before == -1)   return false;
-        else if(answer[index_of_one] == "+" or answer[index_of_one] == "-") return true;
+        if(index_of_one < 0 or index_of_one >= answer.size())   return {"", answer.size()};
+        if(answer[index_of_one] == "(" or answer[index_of_one] == ")")  return {answer[index_of_one], answer.size()};
+        if(answer[index_of_one] == "+") return {"+", answer.size()};
+        if(before == -1)
+        {
+            if(answer[index_of_one] == "/") return {"/", index_of_one};
+            if(answer[index_of_one] == "-") return {"-", index_of_one};
+        }
+        else if(before == 1 and answer[index_of_one] == "-")    return {"-", answer.size()};
         temporary_pair = str_to_fraction(answer[index_of_one]);
         temporary_variable = temporary_pair.first;
-        if(temporary_pair.second and temporary_variable.numerator != temporary_variable.denominator)    return false;
+        if(temporary_pair.second and temporary_variable.numerator != temporary_variable.denominator)    return {answer[index_of_one], index_of_one};
     }
 }
 
@@ -382,6 +388,7 @@ auto simplify_formula_first_part(vector<string> answer)
     bool whether_change = false;
     static Fraction temporary_fraction;
     int temporary_layer;
+    static pair<string, int> temporary_symbol_and_index;
     while(true)
     {
         if(step == answer.size())
@@ -430,12 +437,19 @@ auto simplify_formula_first_part(vector<string> answer)
                 {
                     temporary_pair = str_to_fraction(answer[brackets[layer - 1] - 2]);
                     temporary_fraction = temporary_pair.first;
-                    if((answer[brackets[layer - 1] - 1] != "*" and answer[brackets[layer - 1] - 1] != "/") or (temporary_pair.second and temporary_fraction.numerator == temporary_fraction.denominator and
-                                                                                                               before_or_after_one(brackets[layer - 1] - 2, true, answer)))
+                    if(answer[brackets[layer - 1] - 1] != "*" and answer[brackets[layer - 1] - 1] != "/")
                     {
                         decision_front = true;
                         if(answer[brackets[layer - 1] - 1] == "-")
                             change_symbol_from_subtraction = true;
+                    }
+                    else if(temporary_pair.second and temporary_fraction.numerator == temporary_fraction.denominator)
+                    {
+                        temporary_symbol_and_index = before_or_after_one(brackets[layer - 1] - 2, true, answer);
+                        if(temporary_symbol_and_index.first == "/") ;
+                        else if(str_to_fraction(temporary_symbol_and_index.first).second)   ;
+                        else    decision_front = true;
+                        if(temporary_symbol_and_index.first == "-")    change_symbol_from_subtraction = true;
                     }
                 }
                 else    decision_front = true;
@@ -445,11 +459,11 @@ auto simplify_formula_first_part(vector<string> answer)
                     temporary_fraction = temporary_pair.first;
                     if(answer[step + 1] != "*" and answer[step + 1] != "/")
                         decision_back = true;
-                    else if(temporary_pair.second and temporary_fraction.numerator == temporary_fraction.denominator and before_or_after_one(step + 2,
-                                                                                                                   false, answer))
+                    else if(temporary_pair.second and temporary_fraction.numerator == temporary_fraction.denominator)
                     {
-                        answer[step + 1] = "*";
-                        decision_back = true;
+                        temporary_symbol_and_index = before_or_after_one(step + 2, false, answer);
+                        if(str_to_fraction(temporary_symbol_and_index.first).second)    ;
+                        else    decision_back = true;
                     }
                 }
                 else    decision_back = true;
