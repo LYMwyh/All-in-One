@@ -795,7 +795,6 @@ auto calculate_whole_answers()
                                 if(ans == "24")
                                 {
                                     complete_answer = str_vector_to_str(answer, true);
-                                    auto a = complete_answer;
                                     answer = split_to_str_vector(complete_answer);
                                     old_version = "";
                                     while(true)
@@ -803,20 +802,15 @@ auto calculate_whole_answers()
                                         one_as_a_group = 0;
                                         answer = simplify_formula_first_part(answer);
                                         complete_answer = str_vector_to_str(answer, false);
-//                                        cout << complete_answer << endl;
                                         temporary_pair_second_part = simplify_formula_second_part(0, answer, 0);
                                         answer = temporary_pair_second_part.first;
                                         answer = split_to_str_vector(answer);
                                         complete_answer = str_vector_to_str(answer, false);
-//                                        cout << complete_answer << endl;
                                         if(old_version == complete_answer) break;
                                         old_version = complete_answer;
                                     }
                                     if(find(Whole_answers.begin(), Whole_answers.end(), complete_answer) == Whole_answers.end())
-                                    {
                                         Whole_answers.emplace_back(complete_answer);
-                                        cout << a << " " << complete_answer << endl;
-                                    }
 
                                 }
                             }
@@ -842,12 +836,12 @@ int main() {
     uniform_int_distribution<int> distribution(1,13);
     while(true)
     {
-        Four_Numbers[0].numerator = 1;
-        Four_Numbers[1].numerator = 1;
-        Four_Numbers[2].numerator = 1;
-        Four_Numbers[3].numerator = 24;
+//        Four_Numbers[0].numerator = 1;
+//        Four_Numbers[1].numerator = 1;
+//        Four_Numbers[2].numerator = 1;
+//        Four_Numbers[3].numerator = 24;
         for(auto & Number : Four_Numbers) {
-//            Number.numerator = distribution(generator);
+            Number.numerator = distribution(generator);
             printf("%d , ", Number.numerator);
         }
         printf("\n");
@@ -857,9 +851,11 @@ int main() {
         if(whether_play == "YES")
         {
             calculate_whole_answers();
-            cout << "result:"<< endl;
-//            for(const auto & temporary_answer : Whole_answers)
-//                cout << temporary_answer << endl;
+            if(Whole_answers.size())
+                for(const auto & temporary_answer : Whole_answers)
+                cout << temporary_answer << endl;
+            else
+                cout << "There is no any answers!" << endl;
         }
         else
         {
