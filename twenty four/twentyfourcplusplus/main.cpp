@@ -32,6 +32,13 @@ auto str_to_fraction(const string & fraction_in_str)
 {
     bool change;
     Fraction ans;
+    if(! fraction_in_str.length())
+    {
+        ans.numerator = 0;
+        ans.denominator = 0;
+        change = false;
+        return pair<Fraction, bool> (ans, change);
+    }
     size_t position = fraction_in_str.find('/');
     if(position == string::npos)
     {
@@ -197,7 +204,7 @@ pair<string, int> before_or_after_one(int index_of_one, int before, vector<strin
             if(answer[index_of_one] == "/") return {"/", index_of_one};
             if(answer[index_of_one] == "-") return {"-", index_of_one};
         }
-        else if(before == 1 and answer[index_of_one] == "-")    return {"-", answer.size()};
+        else if(before and answer[index_of_one] == "-")    return {"-", answer.size()};
         temporary_pair = str_to_fraction(answer[index_of_one]);
         temporary_variable = temporary_pair.first;
         if(temporary_pair.second and temporary_variable.numerator != temporary_variable.denominator)    return {answer[index_of_one], index_of_one};
@@ -250,7 +257,7 @@ auto simplify_formula_forth_part(vector<string> group)
     for(int step = 0; step < group.size(); step ++)
     {
         part_of_group = group[step];
-        compare_nums.emplace_back(pair<map<string, string>, map<string, int>> ({{"representative", part_of_group.substr(1)},{"operator", char_to_string(part_of_group[0])}},
+        compare_nums.emplace_back(pair<map<string, string>, map<string, int>> ({{"representative", part_of_group},{"operator", char_to_string(part_of_group[0])}},
                                                                                {{"index", step}}));
     }
     sort(compare_nums.begin(), compare_nums.end(), [](auto a, auto b) -> auto{return a.first["representative"] < b.first["representative"];});
