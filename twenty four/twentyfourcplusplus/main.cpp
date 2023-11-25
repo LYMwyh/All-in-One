@@ -49,9 +49,10 @@ auto gcd(int a, int b)
 }
 
 
-auto str_vector_to_str(const vector<string>& str_vector, bool format)
+auto str_vector_to_str(const vector<string> & str_vector, bool format)
 {
     // format means make the numerator and denominator relatively prime.
+    if(str_vector.size() == 1)  return str_vector[0];
     static string ans;
     static pair<Fraction, bool> temporary_pair;
     static Fraction temporary;
