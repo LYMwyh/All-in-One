@@ -346,7 +346,7 @@ auto simplify_formula_first_part(vector<string> answer)
                 {
                     temporary_pair = str_to_fraction(answer[brackets[layer - 1] - 2]);
                     temporary_fraction = temporary_pair.first;
-                    if((answer[brackets[layer - 1] - 1] != "*" and answer[brackets[layer - 1] - 1] != "/") or (temporary_fraction.numerator == temporary_fraction.denominator and
+                    if((answer[brackets[layer - 1] - 1] != "*" and answer[brackets[layer - 1] - 1] != "/") or (temporary_pair.second and temporary_fraction.numerator == temporary_fraction.denominator and
                                                                                                                before_or_after_one(brackets[layer - 1] - 2, true, answer)))
                     {
                         decision_front = true;
@@ -361,7 +361,7 @@ auto simplify_formula_first_part(vector<string> answer)
                     temporary_fraction = temporary_pair.first;
                     if(answer[step + 1] != "*" and answer[step + 1] != "/")
                         decision_back = true;
-                    else if(temporary_fraction.numerator == temporary_fraction.denominator and before_or_after_one(step + 2,
+                    else if(temporary_pair.second and temporary_fraction.numerator == temporary_fraction.denominator and before_or_after_one(step + 2,
                                                                                                                    false, answer))
                     {
                         answer[step + 1] = "*";
@@ -735,10 +735,10 @@ int main() {
     uniform_int_distribution<int> distribution(1,13);
     while(true)
     {
-        Four_Numbers[0].numerator = 7;
-        Four_Numbers[1].numerator = 1;
-        Four_Numbers[2].numerator = 5;
-        Four_Numbers[3].numerator = 3;
+        Four_Numbers[0].numerator = 12;
+        Four_Numbers[1].numerator = 10;
+        Four_Numbers[2].numerator = 12;
+        Four_Numbers[3].numerator = 11;
         for(auto & Number : Four_Numbers) {
 //            Number.numerator = distribution(generator);
             printf("%d , ", Number.numerator);
