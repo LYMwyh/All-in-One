@@ -19,7 +19,7 @@ string complete_answer;
 int one_as_a_group = 0;
 
 
-auto str_to_fraction(const string& fraction_in_str)
+auto str_to_fraction(const string & fraction_in_str)
 {
     size_t position = fraction_in_str.find('/');
     bool change;
@@ -143,37 +143,62 @@ auto format_one(vector<string> temporary_group)
 }
 
 
+auto char_to_string(char c)
+{
+    static string temporary_string;
+    temporary_string.clear();
+    temporary_string.append(1, c);
+    return temporary_string;
+}
+
+
+auto simplify_formula_forth_part(vector<string> group)
+{
+    static vector<pair<map<string, string>, map<string, int>>> compare_nums;
+    static string part_of_group;
+    compare_nums.clear();
+    for(int step = 0; step < group.size(); step ++)
+    {
+        part_of_group = group[step];
+        compare_nums.emplace_back(pair<map<string, string>, map<string, int>> ({{"representative", part_of_group.substr(1)},{"operator", char_to_string(part_of_group[0])}},
+                                                                               {{"index", step}}));
+    }
+    sort(compare_nums.begin(), compare_nums.end(), [](auto a, auto b) -> auto{return a.first["representative"] < b.first["representative"];});
+    for(int step = 0; step < compare_nums.size(); step ++)
+        if(compare_nums[step].first["operator"] == "+")
+        {
+            swap(compare_nums[0], compare_nums[step]);
+            break;
+        }
+    static vector<string> new_group;
+    new_group.clear();
+    for(auto & element : compare_nums)
+        new_group.emplace_back(group[element.second["index"]]);
+    new_group[0] = new_group[0].substr(1);
+    return new_group;
+}
+
+
 auto simplify_formula_third_part(vector<string> part_of_group)
 {
     if(part_of_group.size() < 3)    return part_of_group;
     static vector<pair<map<string, string>, map<string, int>>> sort_list;
-    static map<string, string> temporary_represent_map;
-    static map<string ,int> temporary_index_map;
     static string symbol;
     static int min_number;
     sort_list.clear();
     for(int step = 0; step < part_of_group.size(); step ++)
     {
         symbol = part_of_group[step];
-        if(symbol != "+" and symbol != "-" and symbol !="(" and symbol != ")")
-        {
-            temporary_represent_map.clear();
-            temporary_index_map.clear();
-            temporary_represent_map["representative"] = symbol;
-            temporary_represent_map["operator"] = part_of_group[step - 1];
-            temporary_index_map["index"] = step;
-            sort_list.emplace_back(temporary_represent_map, temporary_index_map);
-        }
+        if(symbol != "+" and symbol != "-" and symbol != "*" and symbol != "/" and symbol !="(" and symbol != ")")
+            sort_list.emplace_back(pair<map<string, string>, map<string, int>> ({{"representative", symbol},{"operator", part_of_group[step - 1]}},
+                                   {{"index", step}}));
     }
     min_number = 0;
-    static int temporary_step = 0;
-    for(const auto & element : sort_list)
+    static int temporary_step;
+    temporary_step = 0;
+    for(auto & element : sort_list)
     {
-        temporary_represent_map.clear();
-        temporary_index_map.clear();
-        temporary_represent_map = element.first;
-        temporary_index_map = element.second;
-        if(temporary_represent_map["operator"] == "*" and sort_list[min_number].first["representative"] > temporary_represent_map["representative"])
+        if(element.first["operator"] == "*" and sort_list[min_number].first["representative"] > element.first["representative"])
             min_number = temporary_step;
         temporary_step ++;
     }
@@ -187,6 +212,7 @@ auto simplify_formula_third_part(vector<string> part_of_group)
     sort_list.erase(sort_list.begin());
     sort(sort_list.begin(), sort_list.end(), [](auto a, auto b) -> auto{return a.first["representative"] < b.first["representative"];});
     static vector<string> new_list;
+    new_list.clear();
     for(int i = 0; i < first_number; i ++)
         new_list.emplace_back(part_of_group[i]);
     static int index_of_sort_list;
@@ -658,7 +684,7 @@ auto calculate_whole_answers()
                                             break;
                                         default: ;
                                     }
-                                    if(answer_index < 3) {
+                                    if(answer_index >= 0 and answer_index < 3) {
                                         answer.emplace_back(the_Select_Operators[answer_index]);
                                         // complete_answer += the_Select_Operators[answer_index];
                                     }
