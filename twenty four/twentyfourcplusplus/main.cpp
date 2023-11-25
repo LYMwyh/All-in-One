@@ -723,8 +723,11 @@ auto calculate_whole_answers()
                                 string ans = calculate_answer(answer);
                                 if(ans == "24")
                                 {
-
-                                    cout << str_vector_to_str(answer, true) << endl;
+                                    complete_answer = str_vector_to_str(answer, true);
+                                    answer.clear();
+                                    answer.emplace_back(complete_answer);
+                                    answer = split_to_str_vector(answer);
+                                    cout << complete_answer << endl;
                                     old_version = "";
                                     cout << endl;
                                     while(true)
@@ -735,11 +738,11 @@ auto calculate_whole_answers()
                                         cout << complete_answer << endl;
                                         temporary_pair_second_part = simplify_formula_second_part(0, answer, 0);
                                         answer = temporary_pair_second_part.first;
+                                        answer = split_to_str_vector(answer);
                                         complete_answer = str_vector_to_str(answer, true);
                                         cout << complete_answer << endl;
                                         if(old_version == complete_answer) break;
                                         old_version = complete_answer;
-                                        answer = split_to_str_vector(answer);
                                     }
                                     cout << endl;
                                     if(find(Whole_answers.begin(), Whole_answers.end(), complete_answer) == Whole_answers.end())
@@ -768,10 +771,10 @@ int main() {
     uniform_int_distribution<int> distribution(1,13);
     while(true)
     {
-        Four_Numbers[0].numerator = 12;
-        Four_Numbers[1].numerator = 10;
-        Four_Numbers[2].numerator = 12;
-        Four_Numbers[3].numerator = 11;
+        Four_Numbers[0].numerator = 5;
+        Four_Numbers[1].numerator = 9;
+        Four_Numbers[2].numerator = 5;
+        Four_Numbers[3].numerator = 3;
         for(auto & Number : Four_Numbers) {
 //            Number.numerator = distribution(generator);
             printf("%d , ", Number.numerator);
