@@ -72,28 +72,34 @@ def check_format(answer):
 
 def before_or_after_one(index_of_one, before, complete_answer):
 	if before is True:
-		if complete_answer[index_of_one + 1] == '/':
-			return False
-		elif complete_answer[index_of_one + 1] == '+' or complete_answer[index_of_one + 1] == '-':
-			return True
+		if complete_answer[index_of_one + 1] == "/":
+			return "", -1
+		elif complete_answer[index_of_one + 1] == "+":
+			return "", len(complete_answer)
+		elif complete_answer[index_of_one + 1] == "-":
+			return "-", len(complete_answer)
 		before = -1
 	else:
-		if complete_answer[index_of_one - 1] == '+' or complete_answer[index_of_one - 1] == '-':
-			return True
+		if complete_answer[index_of_one - 1] == "+" or complete_answer[index_of_one - 1] == "-":
+			return "", len(complete_answer)
 		before = 1
 	while True:
 		index_of_one += before
 		if index_of_one < 0 or index_of_one >= len(complete_answer):
-			return True
-		if type(complete_answer[index_of_one]) is chr:
-			if complete_answer[index_of_one] == '(' or complete_answer[index_of_one] == ')':
-				return True
-			elif complete_answer[index_of_one] == '/' and before == -1:
-				return False
-			elif complete_answer[index_of_one] == '+' or complete_answer[index_of_one] == '-':
-				return True
-		elif type(complete_answer[index_of_one]) is int and complete_answer[index_of_one] != 1:
-			return False
+			return "", len(complete_answer)
+		if complete_answer[index_of_one] == "(" or complete_answer[index_of_one] == ")":
+			return complete_answer[index_of_one], len(complete_answer)
+		if complete_answer[index_of_one] == "+":
+			return "+", len(complete_answer)
+		if before == -1:
+			if complete_answer[index_of_one] == "/":
+				return "/", index_of_one
+			if complete_answer[index_of_one] == "-":
+				return "-", index_of_one
+		elif before == 1 and complete_answer[index_of_one] == "-":
+			return "-", len(complete_answer)
+		if complete_answer[index_of_one] != 1:
+			return complete_answer[index_of_one], index_of_one
 
 
 def simplify_formula_first_part(complete_answer):
@@ -136,21 +142,32 @@ def simplify_formula_first_part(complete_answer):
 				pass
 			else:
 				if brackets[layer - 1] != 0:
-					if (complete_answer[brackets[layer - 1] - 1] != '*' and complete_answer[
-						brackets[layer - 1] - 1] != '/') or (
-							complete_answer[brackets[layer - 1] - 2] == 1 and before_or_after_one(
-						brackets[layer - 1] - 2, True, complete_answer)):
+					if complete_answer[brackets[layer - 1] - 1] != '*' and complete_answer[
+						brackets[layer - 1] - 1] != '/':
 						decision_front = True
 						if complete_answer[brackets[layer - 1] - 1] == '-':
+							change_symbol_from_subtraction = True
+					elif complete_answer[brackets[layer - 1] - 2] == 1:
+						temporary_symbol, temporary_index = before_or_after_one(brackets[layer - 1] - 2, True, complete_answer)
+						if temporary_symbol == "/":
+							pass
+						elif type(temporary_symbol) is int:
+							pass
+						else:
+							decision_front = True
+						if temporary_symbol == "-":
 							change_symbol_from_subtraction = True
 				else:
 					decision_front = True
 				if step != len(complete_answer) - 1:
 					if complete_answer[step + 1] != '*' and complete_answer[step + 1] != '/':
 						decision_back = True
-					elif complete_answer[step + 2] == 1 and before_or_after_one(step + 2, False, complete_answer):
-						complete_answer[step + 1] = '*'
-						decision_back = True
+					elif complete_answer[step + 2] == 1:
+						temporary_symbol, temporary_index = before_or_after_one(step + 2, False, complete_answer)
+						if type(temporary_symbol) is int:
+							pass
+						else:
+							decision_back = True
 				else:
 					decision_back = True
 			if decision_front and decision_back:
