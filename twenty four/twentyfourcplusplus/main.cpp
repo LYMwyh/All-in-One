@@ -692,17 +692,23 @@ auto calculate_whole_answers()
                                 string ans = calculate_answer(answer);
                                 if(ans == "24")
                                 {
-                                    old_version.clear();
+                                    cout << str_vector_to_str(answer, true) << endl;
+                                    old_version = "";
+                                    cout << endl;
                                     while(true)
                                     {
                                         one_as_a_group = 0;
                                         answer = simplify_formula_first_part(answer);
+                                        complete_answer = str_vector_to_str(answer, true);
+                                        cout << complete_answer << endl;
                                         temporary_pair_second_part = simplify_formula_second_part(0, answer, 0);
                                         answer = temporary_pair_second_part.first;
                                         complete_answer = str_vector_to_str(answer, true);
+                                        cout << complete_answer << endl;
                                         if(old_version == complete_answer) break;
                                         old_version = complete_answer;
                                     }
+                                    cout << endl;
                                     if(find(Whole_answers.begin(), Whole_answers.end(), complete_answer) == Whole_answers.end())
                                         Whole_answers.emplace_back(complete_answer);
                                 }
@@ -729,8 +735,12 @@ int main() {
     uniform_int_distribution<int> distribution(1,13);
     while(true)
     {
+        Four_Numbers[0].numerator = 7;
+        Four_Numbers[1].numerator = 1;
+        Four_Numbers[2].numerator = 5;
+        Four_Numbers[3].numerator = 3;
         for(auto & Number : Four_Numbers) {
-            Number.numerator = distribution(generator);
+//            Number.numerator = distribution(generator);
             printf("%d , ", Number.numerator);
         }
         printf("\n");
@@ -740,6 +750,7 @@ int main() {
         if(whether_play == "YES")
         {
             calculate_whole_answers();
+            cout << "result:"<< endl;
             for(const auto & temporary_answer : Whole_answers)
                 cout << temporary_answer << endl;
         }
