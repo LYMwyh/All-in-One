@@ -178,6 +178,7 @@ auto split_to_str_vector(const vector<string>& original_answer)
             }
         }
     }
+    if(num != 0)    new_answer.emplace_back(to_string(num));
     return new_answer;
 }
 
