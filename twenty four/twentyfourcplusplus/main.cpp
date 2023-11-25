@@ -19,13 +19,49 @@ string complete_answer;
 int one_as_a_group = 0;
 
 
+auto char_to_string(char c)
+{
+    static string temporary_string;
+    temporary_string.clear();
+    temporary_string.append(1, c);
+    return temporary_string;
+}
+
+
 auto str_to_fraction(const string & fraction_in_str)
 {
-    size_t position = fraction_in_str.find('/');
     bool change;
     Fraction ans;
-    if(position == string::npos or fraction_in_str.length() <= 1)    ans.numerator = 0, ans.denominator = 0, change = false;
-    else    ans.numerator = stoi(fraction_in_str.substr(0, position)) , ans.denominator = stoi(fraction_in_str.substr(position + 1)), change = true;
+    size_t position = fraction_in_str.find('/');
+    if(position == string::npos)
+    {
+        change = true;
+        ans.numerator = 0;
+        for(const auto & symbol : fraction_in_str)
+        {
+            try {
+                ans.numerator = ans.numerator * 10 + stoi(char_to_string(symbol));
+            }
+            catch (const exception & e)
+            {
+                ans.numerator = 0;
+                ans.denominator = 0;
+                change = false;
+                break;
+            }
+        }
+    }
+    else
+    {
+        try {
+            ans.numerator = stoi(fraction_in_str.substr(0, position)), ans.denominator = stoi(
+                    fraction_in_str.substr(position + 1)), change = true;
+        }
+        catch (const exception & e)
+        {
+            ans.numerator = 0, ans.denominator = 0, change = false;
+        }
+    }
     return pair<Fraction, bool> (ans, change);
 }
 
@@ -46,15 +82,6 @@ auto gcd(int a, int b)
         a = temp;
     }
     return a;
-}
-
-
-auto char_to_string(char c)
-{
-    static string temporary_string;
-    temporary_string.clear();
-    temporary_string.append(1, c);
-    return temporary_string;
 }
 
 
@@ -88,6 +115,32 @@ auto split_to_str_vector(const vector<string>& original_answer)
 }
 
 
+auto split_to_str_vector(const string& original_answer)
+{
+    static vector<string> new_answer;
+    static int num;
+    new_answer.clear();
+    num = 0;
+    for(auto symbol : original_answer)
+    {
+        try {
+            num = num * 10 + stoi(char_to_string(symbol));
+        }
+        catch (const exception & e)
+        {
+            if(num != 0)
+            {
+                new_answer.emplace_back(to_string(num));
+                num = 0;
+            }
+            new_answer.emplace_back(char_to_string(symbol));
+        }
+    }
+    if(num != 0)    new_answer.emplace_back(to_string(num));
+    return new_answer;
+}
+
+
 auto str_vector_to_str(vector<string> & str_vector, bool format)
 {
     // format means make the numerator and denominator relatively prime.
@@ -97,7 +150,6 @@ auto str_vector_to_str(vector<string> & str_vector, bool format)
     static Fraction temporary;
     ans = "";
     int gcd_ans;
-    // str_vector = split_to_str_vector(str_vector);
     for(const auto & element : str_vector)
     {
         if(format)
@@ -153,6 +205,7 @@ auto format_one(vector<string> temporary_group)
     static string temporary_symbol;
     static pair<Fraction, bool> temporary_pair;
     temporary_step = 0;
+//    temporary_group = split_to_str_vector(temporary_group);
     while(temporary_step < temporary_group.size())
     {
         temporary_symbol = temporary_group[temporary_step];
@@ -285,10 +338,6 @@ pair<vector<string>, int> simplify_formula_second_part(int step, vector<string> 
             temporary_pair_second_part.first.emplace_back(")");
             temporary_group.emplace_back(str_vector_to_str(temporary_pair_second_part.first, false));
             step = temporary_pair_second_part.second + 1;
-            for(const auto & element : temporary_pair_second_part.first) cout << element << " ";
-            cout << endl;
-            for(const auto & element : temporary_group) cout << element << " ";
-            cout << endl;
             continue;
         }
         if(symbol == ")") break;
@@ -309,8 +358,6 @@ pair<vector<string>, int> simplify_formula_second_part(int step, vector<string> 
     }
     group = simplify_formula_forth_part(group);
     temporary_pair_second_part.first = group, temporary_pair_second_part.second = step;
-    for(const auto & element : group) cout << element << " ";
-    cout << endl;
     return temporary_pair_second_part;
 }
 
@@ -633,6 +680,7 @@ auto calculate_answer(vector<string> answer)
 
 auto calculate_whole_answers()
 {
+    Whole_answers.clear();
     static string old_version;
     static pair<vector<string>, int> temporary_pair_second_part;
     for(int first_number_ordinal = 0;first_number_ordinal < 4; first_number_ordinal ++)
@@ -700,7 +748,6 @@ auto calculate_whole_answers()
                                             switch (bracket_type_ordinal) {
                                                 case 0: case 5:
                                                     answer.emplace_back(")");
-                                                    // complete_answer += ")";
                                                 default: ;
                                             }
                                             break;
@@ -708,7 +755,6 @@ auto calculate_whole_answers()
                                             switch (bracket_type_ordinal) {
                                                 case 1: case 3:
                                                     answer.emplace_back(")");
-                                                    // complete_answer += ")";
                                                 default: ;
                                             }
                                             break;
@@ -716,7 +762,6 @@ auto calculate_whole_answers()
                                             switch (bracket_type_ordinal) {
                                                 case 2: case 4: case 5:
                                                     answer.emplace_back(")");
-                                                    // complete_answer += ")";
                                                 default: ;
                                             }
                                             break;
@@ -724,34 +769,28 @@ auto calculate_whole_answers()
                                     }
                                     if(answer_index >= 0 and answer_index < 3) {
                                         answer.emplace_back(the_Select_Operators[answer_index]);
-                                        // complete_answer += the_Select_Operators[answer_index];
                                     }
                                 }
                                 string ans = calculate_answer(answer);
                                 if(ans == "24")
                                 {
                                     complete_answer = str_vector_to_str(answer, true);
-                                    answer.clear();
-                                    answer.emplace_back(complete_answer);
-                                    answer = split_to_str_vector(answer);
-                                    cout << complete_answer << endl;
+                                    answer = split_to_str_vector(complete_answer);
                                     old_version = "";
-                                    cout << endl;
                                     while(true)
                                     {
                                         one_as_a_group = 0;
                                         answer = simplify_formula_first_part(answer);
                                         complete_answer = str_vector_to_str(answer, false);
-                                        cout << complete_answer << endl;
+//                                        cout << complete_answer << endl;
                                         temporary_pair_second_part = simplify_formula_second_part(0, answer, 0);
                                         answer = temporary_pair_second_part.first;
                                         answer = split_to_str_vector(answer);
                                         complete_answer = str_vector_to_str(answer, false);
-                                        cout << complete_answer << endl;
+//                                        cout << complete_answer << endl;
                                         if(old_version == complete_answer) break;
                                         old_version = complete_answer;
                                     }
-                                    cout << endl;
                                     if(find(Whole_answers.begin(), Whole_answers.end(), complete_answer) == Whole_answers.end())
                                         Whole_answers.emplace_back(complete_answer);
                                 }
@@ -778,12 +817,12 @@ int main() {
     uniform_int_distribution<int> distribution(1,13);
     while(true)
     {
-        Four_Numbers[0].numerator = 5;
-        Four_Numbers[1].numerator = 9;
-        Four_Numbers[2].numerator = 5;
-        Four_Numbers[3].numerator = 3;
+//        Four_Numbers[0].numerator = 5;
+//        Four_Numbers[1].numerator = 9;
+//        Four_Numbers[2].numerator = 5;
+//        Four_Numbers[3].numerator = 3;
         for(auto & Number : Four_Numbers) {
-//            Number.numerator = distribution(generator);
+            Number.numerator = distribution(generator);
             printf("%d , ", Number.numerator);
         }
         printf("\n");
