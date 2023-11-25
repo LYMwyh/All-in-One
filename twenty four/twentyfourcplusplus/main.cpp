@@ -49,7 +49,46 @@ auto gcd(int a, int b)
 }
 
 
-auto str_vector_to_str(const vector<string> & str_vector, bool format)
+auto char_to_string(char c)
+{
+    static string temporary_string;
+    temporary_string.clear();
+    temporary_string.append(1, c);
+    return temporary_string;
+}
+
+
+auto split_to_str_vector(const vector<string>& original_answer)
+{
+    static vector<string> new_answer;
+    static int num;
+    new_answer.clear();
+    num = 0;
+    for(const auto & equation : original_answer)
+    {
+        // 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10
+        for(auto symbol : equation)
+        {
+            try {
+                num = num * 10 + stoi(char_to_string(symbol));
+            }
+            catch (const exception & e)
+            {
+                if(num != 0)
+                {
+                    new_answer.emplace_back(to_string(num));
+                    num = 0;
+                }
+                new_answer.emplace_back(char_to_string(symbol));
+            }
+        }
+    }
+    if(num != 0)    new_answer.emplace_back(to_string(num));
+    return new_answer;
+}
+
+
+auto str_vector_to_str(vector<string> & str_vector, bool format)
 {
     // format means make the numerator and denominator relatively prime.
     if(str_vector.size() == 1)  return str_vector[0];
@@ -58,22 +97,23 @@ auto str_vector_to_str(const vector<string> & str_vector, bool format)
     static Fraction temporary;
     ans = "";
     int gcd_ans;
+    // str_vector = split_to_str_vector(str_vector);
     for(const auto & element : str_vector)
     {
-        temporary_pair = str_to_fraction(element);
-        temporary = temporary_pair.first;
-        if(! temporary_pair.second)    ans += element;
-        else
+        if(format)
         {
-            if(format)
+            temporary_pair = str_to_fraction(element);
+            temporary = temporary_pair.first;
+            if(! temporary_pair.second)
             {
-                gcd_ans = gcd(temporary.numerator, temporary.denominator);
-                if(temporary.denominator == gcd_ans)    ans += to_string(temporary.numerator / gcd_ans);
-                else    ans += to_string(temporary.numerator / gcd_ans) + '/' + to_string(temporary.denominator / gcd_ans);
+                ans += element;
+                continue;
             }
-            else    ans+= to_string(temporary.numerator) + '/' + to_string(temporary.denominator);
-
+            gcd_ans = gcd(temporary.numerator, temporary.denominator);
+            if(temporary.denominator == gcd_ans)    ans += to_string(temporary.numerator / gcd_ans);
+            else    ans += to_string(temporary.numerator / gcd_ans) + '/' + to_string(temporary.denominator / gcd_ans);
         }
+        else    ans += element;
     }
     return ans;
 }
@@ -141,45 +181,6 @@ auto format_one(vector<string> temporary_group)
         temporary_step += 1;
     }
     return temporary_group;
-}
-
-
-auto char_to_string(char c)
-{
-    static string temporary_string;
-    temporary_string.clear();
-    temporary_string.append(1, c);
-    return temporary_string;
-}
-
-
-auto split_to_str_vector(const vector<string>& original_answer)
-{
-    static vector<string> new_answer;
-    static int num;
-    new_answer.clear();
-    num = 0;
-    for(const auto & equation : original_answer)
-    {
-        // 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10
-        for(auto symbol : equation)
-        {
-            try {
-                num = num * 10 + stoi(char_to_string(symbol));
-            }
-            catch (const exception & e)
-            {
-                if(num != 0)
-                {
-                    new_answer.emplace_back(to_string(num));
-                    num = 0;
-                }
-                new_answer.emplace_back(char_to_string(symbol));
-            }
-        }
-    }
-    if(num != 0)    new_answer.emplace_back(to_string(num));
-    return new_answer;
 }
 
 
@@ -274,7 +275,7 @@ pair<vector<string>, int> simplify_formula_second_part(int step, vector<string> 
         {
             temporary_group = format_one(temporary_group);
             temporary_group = simplify_formula_third_part(temporary_group);
-            group.emplace_back(str_vector_to_str(temporary_group, true));
+            group.emplace_back(str_vector_to_str(temporary_group, false));
             temporary_group.clear();
         }
         if(symbol == "(")
@@ -282,8 +283,12 @@ pair<vector<string>, int> simplify_formula_second_part(int step, vector<string> 
             temporary_pair_second_part = simplify_formula_second_part(step + 1, answer, layer + 1);
             temporary_pair_second_part.first.insert(temporary_pair_second_part.first.begin(), "(");
             temporary_pair_second_part.first.emplace_back(")");
-            temporary_group.emplace_back(str_vector_to_str(temporary_pair_second_part.first, true));
+            temporary_group.emplace_back(str_vector_to_str(temporary_pair_second_part.first, false));
             step = temporary_pair_second_part.second + 1;
+            for(const auto & element : temporary_pair_second_part.first) cout << element << " ";
+            cout << endl;
+            for(const auto & element : temporary_group) cout << element << " ";
+            cout << endl;
             continue;
         }
         if(symbol == ")") break;
@@ -292,7 +297,7 @@ pair<vector<string>, int> simplify_formula_second_part(int step, vector<string> 
     }
     temporary_group = format_one(temporary_group);
     temporary_group = simplify_formula_third_part(temporary_group);
-    group.emplace_back(str_vector_to_str(temporary_group, true));
+    group.emplace_back(str_vector_to_str(temporary_group, false));
     temporary_group.clear();
     if(layer == 0)
     {
@@ -304,6 +309,8 @@ pair<vector<string>, int> simplify_formula_second_part(int step, vector<string> 
     }
     group = simplify_formula_forth_part(group);
     temporary_pair_second_part.first = group, temporary_pair_second_part.second = step;
+    for(const auto & element : group) cout << element << " ";
+    cout << endl;
     return temporary_pair_second_part;
 }
 
@@ -734,12 +741,12 @@ auto calculate_whole_answers()
                                     {
                                         one_as_a_group = 0;
                                         answer = simplify_formula_first_part(answer);
-                                        complete_answer = str_vector_to_str(answer, true);
+                                        complete_answer = str_vector_to_str(answer, false);
                                         cout << complete_answer << endl;
                                         temporary_pair_second_part = simplify_formula_second_part(0, answer, 0);
                                         answer = temporary_pair_second_part.first;
                                         answer = split_to_str_vector(answer);
-                                        complete_answer = str_vector_to_str(answer, true);
+                                        complete_answer = str_vector_to_str(answer, false);
                                         cout << complete_answer << endl;
                                         if(old_version == complete_answer) break;
                                         old_version = complete_answer;
