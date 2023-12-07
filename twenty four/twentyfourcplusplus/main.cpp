@@ -502,9 +502,9 @@ auto simplify_formula_first_part(vector<string> answer)
                     }
                 }
                 if(whether_found_multiplication_or_division[layer])
-                    whether_found_multiplication_or_division[layer - 1] = true;
+                    {whether_found_multiplication_or_division[layer - 1] = true;}
                 if(whether_found_addition_or_subtraction[layer])
-                    whether_found_addition_or_subtraction[layer - 1] = true;
+                    {whether_found_addition_or_subtraction[layer - 1] = true;}
                 answer.erase(answer.begin() + brackets[layer - 1]);
                 answer.erase(answer.begin() + step - 1);
                 step -= 2;
@@ -513,9 +513,9 @@ auto simplify_formula_first_part(vector<string> answer)
             layer -= 1;
         }
         if(symbol == "+" or symbol == "-")
-            whether_found_addition_or_subtraction[layer] = true;
+            {whether_found_addition_or_subtraction[layer] = true;}
         else if(symbol == "*" or symbol == "/")
-            whether_found_multiplication_or_division[layer] = true;
+            {whether_found_multiplication_or_division[layer] = true;}
         step += 1;
     }
 //    for(const auto & element : answer)
@@ -580,14 +580,14 @@ auto calculate_answer(vector<string> answer)
                 answer.erase(answer.begin() + step - 1);
                 step -= 1;
             }
-            else    step += 1;
+            else    {step += 1;}
             continue;
         }
         if(whether_use_addition_and_subtraction[layer])
         {
             if(symbol == "+")
             {
-                if(answer[step - 1] == "(" or answer[step - 1] == ")" or answer[step + 1] == "(" or answer[step + 1] == ")")    ;
+                if(answer[step - 1] == "(" or answer[step - 1] == ")" or answer[step + 1] == "(" or answer[step + 1] == ")")    {;}
                 else
                 {
                     temporary_pair = str_to_fraction(answer[step - 1]);
@@ -616,7 +616,7 @@ auto calculate_answer(vector<string> answer)
             }
             else if(symbol == "-")
             {
-                if(answer[step - 1] == "(" or answer[step - 1] == ")" or answer[step + 1] == "(" or answer[step + 1] == ")")    ;
+                if(answer[step - 1] == "(" or answer[step - 1] == ")" or answer[step + 1] == "(" or answer[step + 1] == ")")    {;}
                 else
                 {
                     temporary_pair = str_to_fraction(answer[step - 1]);
