@@ -452,15 +452,15 @@ auto simplify_formula_first_part(vector<string> answer)
                     {
                         decision_front = true;
                         if(answer[brackets[layer - 1] - 1] == "-")
-                            change_symbol_from_subtraction = true;
+                            {change_symbol_from_subtraction = true;}
                     }
                     else if(temporary_pair.second and temporary_fraction.numerator == temporary_fraction.denominator)
                     {
                         temporary_symbol_and_index = before_or_after_one(brackets[layer - 1] - 2, true, answer);
-                        if(temporary_symbol_and_index.first == "/") ;
-                        else if(str_to_fraction(temporary_symbol_and_index.first).second)   ;
+                        if(temporary_symbol_and_index.first == "/") {;}
+                        else if(str_to_fraction(temporary_symbol_and_index.first).second)   {;}
                         else    {decision_front = true;}
-                        if(temporary_symbol_and_index.first == "-")    change_symbol_from_subtraction = true;
+                        if(temporary_symbol_and_index.first == "-")    {change_symbol_from_subtraction = true;}
                     }
                 }
                 else    {decision_front = true;}
@@ -469,11 +469,11 @@ auto simplify_formula_first_part(vector<string> answer)
                     temporary_pair = str_to_fraction(answer[step + 2]);
                     temporary_fraction = temporary_pair.first;
                     if(answer[step + 1] != "*" and answer[step + 1] != "/")
-                        decision_back = true;
+                        {decision_back = true;}
                     else if(temporary_pair.second and temporary_fraction.numerator == temporary_fraction.denominator)
                     {
                         temporary_symbol_and_index = before_or_after_one(step + 2, false, answer);
-                        if(str_to_fraction(temporary_symbol_and_index.first).second)    ;
+                        if(str_to_fraction(temporary_symbol_and_index.first).second)    {;}
                         else    {decision_back = true;}
                     }
                 }
@@ -488,17 +488,17 @@ auto simplify_formula_first_part(vector<string> answer)
                     for(int temporary_step = brackets[layer - 1] + 1; temporary_step < step; temporary_step ++)
                     {
                         if(change_symbol_from_subtraction and temporary_layer == 0 and answer[temporary_step] == "+")
-                            answer[temporary_step] = "-";
+                            {answer[temporary_step] = "-";}
                         else if(change_symbol_from_subtraction and temporary_layer == 0 and answer[temporary_step] == "-")
-                            answer[temporary_step] = "+";
+                            {answer[temporary_step] = "+";}
                         else if(change_symbol_from_division and temporary_layer == 0 and answer[temporary_step] == "*")
-                            answer[temporary_step] = "/";
+                            {answer[temporary_step] = "/";}
                         else if(change_symbol_from_division and temporary_layer == 0 and answer[temporary_step] == "/")
-                            answer[temporary_step] = "*";
+                            {answer[temporary_step] = "*";}
                         else if(answer[temporary_step] == "(")
-                            temporary_layer += 1;
+                            {temporary_layer += 1;}
                         else if(answer[temporary_step] == ")")
-                            temporary_layer -= 1;
+                            {temporary_layer -= 1;}
                     }
                 }
                 if(whether_found_multiplication_or_division[layer])
