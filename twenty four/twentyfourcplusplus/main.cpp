@@ -650,7 +650,7 @@ auto calculate_answer(vector<string> answer)
             {
                 whether_found_multiplication_or_division[layer] = true;
                 if(answer[step - 1] == "(" or answer[step - 1] == ")" or answer[step + 1] == "(" or answer[step + 1] == ")")
-                    whether_use_multiplication_and_division[layer] = false;
+                    {whether_use_multiplication_and_division[layer] = false;}
                 else
                 {
                     temporary_pair = str_to_fraction(answer[step - 1]);
@@ -669,7 +669,7 @@ auto calculate_answer(vector<string> answer)
             {
                 whether_found_multiplication_or_division[layer] = true;
                 if(answer[step - 1] == "(" or answer[step - 1] == ")" or answer[step + 1] == "(" or answer[step + 1] == ")")
-                    whether_use_multiplication_and_division[layer] = false;
+                    {whether_use_multiplication_and_division[layer] = false;}
                 else
                 {
                     temporary_pair = str_to_fraction(answer[step - 1]);
@@ -696,9 +696,8 @@ auto calculate_answer(vector<string> answer)
     temporary_pair = str_to_fraction(answer[0]);
     Fraction ans = temporary_pair.first;
     if(ans.denominator != 0 and ans.numerator % ans.denominator == 0 and ans.numerator / ans.denominator == 24)
-        return "24";
-    else
-        return "0";
+        {return "24";}
+    return "0";
 }
 
 
@@ -810,11 +809,11 @@ auto calculate_whole_answers()
                                         answer = temporary_pair_second_part.first;
                                         answer = split_to_str_vector(answer);
                                         complete_answer = str_vector_to_str(answer, false);
-                                        if(old_version == complete_answer) break;
+                                        if(old_version == complete_answer) {break;}
                                         old_version = complete_answer;
                                     }
                                     if(find(Whole_answers.begin(), Whole_answers.end(), complete_answer) == Whole_answers.end())
-                                        Whole_answers.emplace_back(complete_answer);
+                                        {Whole_answers.emplace_back(complete_answer);}
 
                                 }
                             }
