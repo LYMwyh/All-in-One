@@ -10,29 +10,31 @@ struct Fraction{
     int numerator=1;
     int denominator=1;
 };
-Fraction Four_Numbers[4];
-string Operators[] = {"+", "-", "*", "/"};
-string the_Select_Operators[3];
+array<Fraction, 4> Four_Numbers;
+array<string, 4> Operators = {"+", "-", "*", "/"};
+array<string, 3> the_Select_Operators;
 vector<string> Whole_answers;
 vector<string> answer;
 string complete_answer;
 int one_as_a_group = 0;
 
+static const int TEN = 10;
 
-auto char_to_string(char c)
+
+auto char_to_string(char temp_c)
 {
     static string temporary_string;
     temporary_string.clear();
-    temporary_string.append(1, c);
+    temporary_string.append(1, temp_c);
     return temporary_string;
 }
 
 
 auto str_to_fraction(const string & fraction_in_str)
 {
-    bool change;
+    bool change = false;
     Fraction ans;
-    if(! fraction_in_str.length())
+    if(fraction_in_str.empty())
     {
         ans.numerator = 0;
         ans.denominator = 0;
@@ -47,7 +49,7 @@ auto str_to_fraction(const string & fraction_in_str)
         for(const auto & symbol : fraction_in_str)
         {
             try {
-                ans.numerator = ans.numerator * 10 + stoi(char_to_string(symbol));
+                ans.numerator = ans.numerator * TEN + stoi(char_to_string(symbol));
             }
             catch (const exception & e)
             {
@@ -81,7 +83,7 @@ auto fraction_to_str(Fraction fraction)
 
 auto gcd(int a, int b)
 {
-    int temp;
+    int temp = -1;
     while(b != 0)
     {
         temp = b;
@@ -104,7 +106,7 @@ auto split_to_str_vector(const vector<string>& original_answer)
         for(auto symbol : equation)
         {
             try {
-                num = num * 10 + stoi(char_to_string(symbol));
+                num = num * TEN + stoi(char_to_string(symbol));
             }
             catch (const exception & e)
             {
@@ -117,7 +119,7 @@ auto split_to_str_vector(const vector<string>& original_answer)
             }
         }
     }
-    if(num != 0)    new_answer.emplace_back(to_string(num));
+    if(num != 0)    {new_answer.emplace_back(to_string(num));}
     return new_answer;
 }
 
@@ -131,7 +133,7 @@ auto split_to_str_vector(const string& original_answer)
     for(auto symbol : original_answer)
     {
         try {
-            num = num * 10 + stoi(char_to_string(symbol));
+            num = num * TEN + stoi(char_to_string(symbol));
         }
         catch (const exception & e)
         {
@@ -143,7 +145,7 @@ auto split_to_str_vector(const string& original_answer)
             new_answer.emplace_back(char_to_string(symbol));
         }
     }
-    if(num != 0)    new_answer.emplace_back(to_string(num));
+    if(num != 0)    {new_answer.emplace_back(to_string(num));}
     return new_answer;
 }
 
@@ -151,7 +153,7 @@ auto split_to_str_vector(const string& original_answer)
 auto str_vector_to_str(vector<string> & str_vector, bool format)
 {
     // format means make the numerator and denominator relatively prime.
-    if(str_vector.size() == 1)  return str_vector[0];
+    if(str_vector.size() == 1)  {return str_vector[0];}
     static string ans;
     static pair<Fraction, bool> temporary_pair;
     static Fraction temporary;
@@ -169,8 +171,8 @@ auto str_vector_to_str(vector<string> & str_vector, bool format)
                 continue;
             }
             gcd_ans = gcd(temporary.numerator, temporary.denominator);
-            if(temporary.denominator == gcd_ans)    ans += to_string(temporary.numerator / gcd_ans);
-            else    ans += to_string(temporary.numerator / gcd_ans) + '/' + to_string(temporary.denominator / gcd_ans);
+            if(temporary.denominator == gcd_ans)    {ans += to_string(temporary.numerator / gcd_ans);}
+            else    {ans += to_string(temporary.numerator / gcd_ans) + '/' + to_string(temporary.denominator / gcd_ans);}
         }
         else    ans += element;
     }
@@ -181,14 +183,14 @@ auto str_vector_to_str(vector<string> & str_vector, bool format)
 pair<string, int> before_or_after_one(int index_of_one, int before, vector<string> answer) {
     if(before)
     {
-        if(answer[index_of_one + 1] == "/") return {"", -1};
-        else if(answer[index_of_one + 1] == "+")    return {"", answer.size()};
-        else if(answer[index_of_one + 1] == "-")    return {"-", answer.size()};
+        if(answer[index_of_one + 1] == "/") {return {"", -1};}
+        if(answer[index_of_one + 1] == "+")    {return {"", answer.size()};}
+        else if(answer[index_of_one + 1] == "-")    {return {"-", answer.size()};}
         before = -1;
     }
     else
     {
-        if(answer[index_of_one - 1] == "+" or answer[index_of_one - 1] == "-")  return {"", answer.size()};
+        if(answer[index_of_one - 1] == "+" or answer[index_of_one - 1] == "-")  {return {"", answer.size()};}
         before = 1;
     }
     pair<Fraction, bool> temporary_pair;
@@ -196,18 +198,18 @@ pair<string, int> before_or_after_one(int index_of_one, int before, vector<strin
     while(true)
     {
         index_of_one += before;
-        if(index_of_one < 0 or index_of_one >= answer.size())   return {"", answer.size()};
-        if(answer[index_of_one] == "(" or answer[index_of_one] == ")")  return {answer[index_of_one], answer.size()};
-        if(answer[index_of_one] == "+") return {"+", answer.size()};
+        if(index_of_one < 0 or index_of_one >= answer.size())   {return {"", answer.size()};}
+        if(answer[index_of_one] == "(" or answer[index_of_one] == ")")  {return {answer[index_of_one], answer.size()};}
+        if(answer[index_of_one] == "+") {return {"+", answer.size()};}
         if(before == -1)
         {
-            if(answer[index_of_one] == "/") return {"/", index_of_one};
-            if(answer[index_of_one] == "-") return {"-", index_of_one};
+            if(answer[index_of_one] == "/") {return {"/", index_of_one};}
+            if(answer[index_of_one] == "-") {return {"-", index_of_one};}
         }
-        else if(before and answer[index_of_one] == "-")    return {"-", answer.size()};
+        else if(before and answer[index_of_one] == "-")    {return {"-", answer.size()};}
         temporary_pair = str_to_fraction(answer[index_of_one]);
         temporary_variable = temporary_pair.first;
-        if(temporary_pair.second and temporary_variable.numerator != temporary_variable.denominator)    return {answer[index_of_one], index_of_one};
+        if(temporary_pair.second and temporary_variable.numerator != temporary_variable.denominator)    {return {answer[index_of_one], index_of_one};}
     }
 }
 
@@ -224,8 +226,8 @@ auto format_one(vector<string> temporary_group)
         temporary_pair = str_to_fraction(temporary_symbol);
         if(temporary_pair.second and temporary_pair.first.numerator == temporary_pair.first.denominator)
         {
-            if(temporary_group.size() == 2) break;
-            else if(temporary_step == 1 and temporary_group[temporary_step + 1] == "/")
+            if(temporary_group.size() == 2) {break;}
+            if(temporary_step == 1 and temporary_group[temporary_step + 1] == "/")
             {
                 temporary_step += 1;
                 continue;
@@ -262,15 +264,19 @@ auto simplify_formula_forth_part(vector<string> group)
     }
     sort(compare_nums.begin(), compare_nums.end(), [](auto a, auto b) -> auto{return a.first["representative"] < b.first["representative"];});
     for(int step = 0; step < compare_nums.size(); step ++)
+    {
         if(compare_nums[step].first["operator"] == "+")
         {
             swap(compare_nums[0], compare_nums[step]);
             break;
         }
+    }
     static vector<string> new_group;
     new_group.clear();
     for(auto & element : compare_nums)
+    {
         new_group.emplace_back(group[element.second["index"]]);
+    }
     new_group[0] = new_group[0].substr(1);
     return new_group;
 }
@@ -278,7 +284,7 @@ auto simplify_formula_forth_part(vector<string> group)
 
 auto simplify_formula_third_part(vector<string> part_of_group)
 {
-    if(part_of_group.size() < 3)    return part_of_group;
+    if(part_of_group.size() < 3)    {return part_of_group;}
     static vector<pair<map<string, string>, map<string, int>>> sort_list;
     static string symbol;
     static int min_number;
@@ -287,8 +293,8 @@ auto simplify_formula_third_part(vector<string> part_of_group)
     {
         symbol = part_of_group[step];
         if(symbol != "+" and symbol != "-" and symbol != "*" and symbol != "/" and symbol !="(" and symbol != ")")
-            sort_list.emplace_back(pair<map<string, string>, map<string, int>> ({{"representative", symbol},{"operator", part_of_group[step - 1]}},
-                                   {{"index", step}}));
+            {sort_list.emplace_back(pair<map<string, string>, map<string, int>> ({{"representative", symbol},{"operator", part_of_group[step - 1]}},
+                                   {{"index", step}}));}
     }
     min_number = 0;
     static int temporary_step;
@@ -296,7 +302,7 @@ auto simplify_formula_third_part(vector<string> part_of_group)
     for(auto & element : sort_list)
     {
         if(element.first["operator"] == "*" and sort_list[min_number].first["representative"] > element.first["representative"])
-            min_number = temporary_step;
+            {min_number = temporary_step;}
         temporary_step ++;
     }
     if(min_number != 0)
@@ -311,7 +317,9 @@ auto simplify_formula_third_part(vector<string> part_of_group)
     static vector<string> new_list;
     new_list.clear();
     for(int i = 0; i < first_number; i ++)
+    {
         new_list.emplace_back(part_of_group[i]);
+    }
     static int index_of_sort_list;
     static int index;
     index_of_sort_list = 0;
@@ -352,7 +360,7 @@ pair<vector<string>, int> simplify_formula_second_part(int step, vector<string> 
             step = temporary_pair_second_part.second + 1;
             continue;
         }
-        if(symbol == ")") break;
+        if(symbol == ")") {break;}
         temporary_group.emplace_back(symbol);
         step ++;
     }
@@ -362,7 +370,7 @@ pair<vector<string>, int> simplify_formula_second_part(int step, vector<string> 
     temporary_group.clear();
     if(layer == 0)
     {
-        while(one_as_a_group)
+        while(one_as_a_group != 0)
         {
             one_as_a_group --;
             group.emplace_back("*1");
@@ -400,13 +408,9 @@ auto simplify_formula_first_part(vector<string> answer)
     {
         if(step == answer.size())
         {
-            if(! whether_change)
-                break;
-            else
-            {
-                step = 0;
-                whether_change = false;
-            }
+            if(! whether_change)    {break;}
+            step = 0;
+            whether_change = false;
         }
         symbol = answer[step];
         if(symbol == "(")
@@ -435,9 +439,9 @@ auto simplify_formula_first_part(vector<string> answer)
                 decision_front = true;
                 decision_back = true;
                 if(brackets[layer - 1] != 0 and answer[brackets[layer - 1] - 1] == "/")
-                    change_symbol_from_division = true;
+                    {change_symbol_from_division = true;}
             }
-            else if(brackets[layer - 1] != 0 and answer[brackets[layer - 1] - 1] == "/")    ;
+            else if(brackets[layer - 1] != 0 and answer[brackets[layer - 1] - 1] == "/")    {;}
             else
             {
                 if(brackets[layer - 1] != 0)
@@ -455,11 +459,11 @@ auto simplify_formula_first_part(vector<string> answer)
                         temporary_symbol_and_index = before_or_after_one(brackets[layer - 1] - 2, true, answer);
                         if(temporary_symbol_and_index.first == "/") ;
                         else if(str_to_fraction(temporary_symbol_and_index.first).second)   ;
-                        else    decision_front = true;
+                        else    {decision_front = true;}
                         if(temporary_symbol_and_index.first == "-")    change_symbol_from_subtraction = true;
                     }
                 }
-                else    decision_front = true;
+                else    {decision_front = true;}
                 if(step != answer.size() - 1)
                 {
                     temporary_pair = str_to_fraction(answer[step + 2]);
@@ -470,10 +474,10 @@ auto simplify_formula_first_part(vector<string> answer)
                     {
                         temporary_symbol_and_index = before_or_after_one(step + 2, false, answer);
                         if(str_to_fraction(temporary_symbol_and_index.first).second)    ;
-                        else    decision_back = true;
+                        else    {decision_back = true;}
                     }
                 }
-                else    decision_back = true;
+                else    {decision_back = true;}
             }
             if(decision_front and decision_back)
             {
