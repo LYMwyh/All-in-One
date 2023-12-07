@@ -829,7 +829,7 @@ auto calculate_whole_answers()
     }
 }
 
-int main() {
+auto main() -> int {
     // 使用当前系统时间作为种子值
     unsigned seed = chrono::system_clock::now().time_since_epoch().count();
 
@@ -846,20 +846,24 @@ int main() {
 //        Four_Numbers[3].numerator = 24;
         for(auto & Number : Four_Numbers) {
             Number.numerator = distribution(generator);
-            printf("%d , ", Number.numerator);
+            cout << Number.numerator << ", ";
         }
-        printf("\n");
+        cout << '\n';
         string whether_play;
-        printf("Do you want to play the game?(YES/NO)");
+        cout << "Do you want to play the game?(YES/NO)";
         cin >> whether_play;
         if(whether_play == "YES")
         {
             calculate_whole_answers();
-            if(Whole_answers.size())
+            if(!Whole_answers.empty())
+            {
                 for(const auto & temporary_answer : Whole_answers)
-                cout << temporary_answer << endl;
+                {
+                    cout << temporary_answer << '\n';
+                }
+            }
             else
-                cout << "There is no any answers!" << endl;
+                {cout << "There is no any answers!\n";}
         }
         else
         {
