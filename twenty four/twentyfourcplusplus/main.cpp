@@ -1,6 +1,7 @@
 #include <iostream>
 #include <random>
-//#include <chrono>
+#include <cstring>
+#include <chrono>
 #include <vector>
 #include <algorithm>
 #include <map>
@@ -83,7 +84,7 @@ auto fraction_to_str(Fraction fraction)
 
 auto gcd(int a, int b)
 {
-    int temp = -1;
+    int temp;
     while(b != 0)
     {
         temp = b;
@@ -203,10 +204,10 @@ pair<string, int> before_or_after_one(int index_of_one, int before, vector<strin
         if(answer[index_of_one] == "+") {return {"+", answer.size()};}
         if(before == -1)
         {
-            if(answer[index_of_one] == "/") {return {"/", index_of_one};}
-            if(answer[index_of_one] == "-") {return {"-", index_of_one};}
+            if (answer[index_of_one] == "/") return {"/", index_of_one};
+            if (answer[index_of_one] == "-") return {"-", index_of_one};
         }
-        else if(before and answer[index_of_one] == "-")    {return {"-", answer.size()};}
+        else if(answer[index_of_one] == "-")    {return {"-", answer.size()};} // before == 1
         temporary_pair = str_to_fraction(answer[index_of_one]);
         temporary_variable = temporary_pair.first;
         if(temporary_pair.second and temporary_variable.numerator != temporary_variable.denominator)    {return {answer[index_of_one], index_of_one};}
@@ -457,9 +458,10 @@ auto simplify_formula_first_part(vector<string> answer)
                     else if(temporary_pair.second and temporary_fraction.numerator == temporary_fraction.denominator)
                     {
                         temporary_symbol_and_index = before_or_after_one(brackets[layer - 1] - 2, true, answer);
-                        if(temporary_symbol_and_index.first == "/") {;}
-                        else if(str_to_fraction(temporary_symbol_and_index.first).second)   {;}
-                        else    {decision_front = true;}
+                        if(temporary_symbol_and_index.first != "/"){
+                            if(str_to_fraction(temporary_symbol_and_index.first).second)   {;}
+                            else    {decision_front = true;}
+                        }
                         if(temporary_symbol_and_index.first == "-")    {change_symbol_from_subtraction = true;}
                     }
                 }
