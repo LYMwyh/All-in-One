@@ -831,7 +831,7 @@ auto calculate_whole_answers()
 }
 
 auto main() -> int {
-    // 使用当前系统时间作为种子值
+    // use current system time as the seed value
     unsigned seed = chrono::system_clock::now().time_since_epoch().count();
 
     // 使用种子值初始化随机数生成器
