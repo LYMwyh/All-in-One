@@ -834,10 +834,10 @@ auto main() -> int {
     // use current system time as the seed value
     unsigned seed = chrono::system_clock::now().time_since_epoch().count();
 
-    // 使用种子值初始化随机数生成器
+    // use seed value initialize random engine
     default_random_engine generator(seed);
 
-    // 生成随机数
+    // generate random value
     uniform_int_distribution<int> distribution(1,13);
     while(true)
     {
