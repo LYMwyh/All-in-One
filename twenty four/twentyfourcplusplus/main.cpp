@@ -1,6 +1,6 @@
 #include <iostream>
 #include <random>
-#include <cstring>
+#include <string>
 #include <chrono>
 #include <vector>
 #include <algorithm>
