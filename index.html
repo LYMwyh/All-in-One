@@ -43,28 +43,28 @@
             Hi! I am
             <span class="comment-quote-container">
                 <span class="quote --text-shadow-black">HelloWorld-er</span>
-                <span class="comment --color-platinum --bg-gunmetal">My Github Account Name</span>
+                <span class="comment --color-platinum --bg-gunmetal">My GitHub Account Name</span>
             </span>
             !
         </h1>
     </section>
     <section class="section --page-width --border-bottom-divider">
         <h2 class="section-title">Projects</h2>
-        <div class="marquee-container --flex-direction-row --flex-align-content-center">
-            <div class="marquee-content --flex-direction-row --flex-align-content-center">
-                <div class="marquee-item">item1</div>
-                <div class="marquee-item">item2</div>
-                <div class="marquee-item">item3</div>
-                <div class="marquee-item">item4</div>
-                <div class="marquee-item">item5</div>
-                <div class="marquee-item">item6</div>
-                <div class="marquee-item">item7</div>
-                <div class="marquee-item">item8</div>
-                <div class="marquee-item">item9</div>
-                <div class="marquee-item">item10</div>
+        <div class="projects-container marquee-container --flex-direction-row --flex-align-content-center">
+            <div class="project-content marquee-content --flex-direction-row --flex-align-content-center">
+                <!-- js adds content by template -->
             </div>
         </div>
     </section>
+
+    <template id="project-item-template">
+        <div class="project-item marquee-item">
+            <h3 class="project-name"></h3>
+            <p class="project-description"></p>
+            <a href="" class="project-url"></a>
+        </div>
+    </template>
+
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             // For comment and quote styles
@@ -107,6 +107,53 @@
                     item.appendChild(newMarqueeItem);
                 })
             })
+
+            // For projects content
+            if ("content" in document.createElement("template")) {
+                const projectItemTemplate = document.querySelector("#project-item-template");
+
+
+                async function getProjectsData() {
+                    const response = await fetch("./content/projects.json");
+                    if (!response.ok) {
+                        throw new Error(`HTTP error: ${response.status}`);
+                    }
+                    return await response.json();
+                }
+
+                getProjectsData()
+                    .then((projectData) => {
+                        document.querySelectorAll(".project-content").forEach((projectContent) => {
+                            projectData["projects"].forEach((project) => {
+                                let projectItem = projectItemTemplate.content.cloneNode(true);
+                                projectItem.querySelector(".project-name").textContent = project.name;
+                                projectItem.querySelector(".project-description").textContent = project.description;
+                                projectItem.querySelector(".project-url").textContent = project.name;
+                                projectItem.querySelector(".project-url").href = project.url;
+
+                                if (project.skills && project.skills.length > 0) {
+                                    let skillsContainer = document.createElement("div");
+                                    skillsContainer.classList.add("skills-container");
+                                    project.skills.forEach((skill) => {
+                                        let skillLabel = document.createElement("div");
+                                        skillLabel.classList.add("skill-label");
+                                        skillLabel.textContent = skill;
+                                        skillsContainer.appendChild(skillLabel);
+                                    })
+                                    projectItem.querySelector(".project-name").insertAdjacentElement("afterend", skillsContainer);
+                                }
+
+                                projectContent.appendChild(projectItem);
+                            })
+
+                        })
+                    })
+                    .catch((error) => {
+                        console.log(`Could not get projects data: ${error}`)
+                    })
+            } else {
+                console.log("Template is not supported");
+            }
         })
     </script>
 </body>
