@@ -17,9 +17,9 @@ a:hover {
 }
 
 .clearfix::after {
+    clear: both;
     content: "";
     display: block;
-    clear: both;
 }
 
 .float-wrap {
@@ -36,42 +36,42 @@ a:hover {
 
 .status-label-active {
     background-color: #1fa33d;
-    color: #fff;
     border: 1px solid #1fa33dff;
+    color: #fff;
 }
 
 .status-label-deleted {
     background-color: #60000b;
-    color: #fff;
     border: 1px solid #60000bff;
+    color: #fff;
 }
 
 .status-label-undefined {
     background-color: #7a7a7a;
+    border: 1px solid #7a7a7aff;
     color: #fff;
-    border:  1px solid #7a7a7aff;
 }
 
 .status-label-python {
     background-color: #3572A5;
+    border: 1px solid #3572A5ff;
     color: #fff;
-    border:  1px solid #3572A5ff;
 }
 
 .status-label-cpp {
     background-color: #f34b7d;
+    border: 1px solid #f34b7dff;
     color: #fff;
-    border:  1px solid #f34b7dff;
 }
 
 .status-label-html {
     background-color: #e34c26;
+    border: 1px solid #e34c26ff;
     color: #fff;
-    border:  1px solid #e34c26ff;
 }
 
 .status-label-css {
     background-color: #563d7c;
+    border: 1px solid #563d7cff;
     color: #fff;
-    border:  1px solid #563d7cff;
 }
