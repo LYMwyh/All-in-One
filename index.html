@@ -50,7 +50,8 @@
     </section>
     <section class="section --page-width --border-bottom-divider">
         <h2 class="section-title">Projects</h2>
-        <div class="projects-container marquee-container --flex-direction-row --flex-align-content-center">
+        <div class="projects-container marquee-container --flex-direction-row --flex-align-content-center --template-required">
+            <p class="projects-failed-hint failed-hint --hidden"></p>
             <div class="project-content marquee-content --flex-direction-row --flex-align-content-center">
                 <!-- js adds content by template -->
             </div>
@@ -150,9 +151,20 @@
                     })
                     .catch((error) => {
                         console.log(`Could not get projects data: ${error}`)
+                        document.querySelectorAll(".projects-failed-hint").forEach((projectsFailedHint) => {
+                            projectsFailedHint.innerHTML = `Could not get projects data: <br> ${error}`;
+                            projectsFailedHint.classList.remove("--hidden");
+                        })
+
                     })
             } else {
                 console.log("Template is not supported");
+                document.querySelectorAll(".--template-required").forEach((templateRequiredArea) => {
+                    templateRequiredArea.querySelectorAll(".failed-hint").forEach((failedHint) => {
+                        failedHint.innerHTML = "<code>&lt;Template&gt;&lt;/Template&gt;</code> is not supported";
+                        failedHint.classList.remove("--hidden");
+                    })
+                })
             }
         })
     </script>

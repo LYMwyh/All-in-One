@@ -15,6 +15,34 @@ body {
 }
 
 /* || General Structures (Objects under the OOCSS methodology) */
+.failed-hint {
+    max-width: 100%;
+    margin: 1em;
+    padding: 1em;
+    text-align: center;
+    border-radius: .5em;
+    border: 3px solid #f87171;
+    font-size: 2em;
+    background: radial-gradient(#f87171, #fca5a5), #fca5a5;
+    color: #fef2f2;
+    animation: grow-and-shrink 1s linear 1;
+}
+@keyframes grow-and-shrink {
+    from {
+        transform: scale(90%);
+    }
+    33% {
+        transform: scale(100%);
+    }
+    66% {
+        transform: scale(95%);
+    }
+    to {
+        transform: scale(100%);
+    }
+
+}
+
 .page-heading {
     font-size: 4em;
 }
@@ -161,6 +189,10 @@ body {
 }
 
 /* || General Skins (Skins under the OOCSS methodology) */
+.--hidden {
+    display: none;
+}
+
 .--page-width {
     width: 85%;
 }
