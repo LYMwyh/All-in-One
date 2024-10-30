@@ -68,46 +68,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // For comment and quote styles
-            document.querySelectorAll(".comment").forEach((item) => {
-                item.style.setProperty("display", "none");
-            });
-
-            document.querySelectorAll(".comment-quote-container").forEach((item) => {
-                item.addEventListener("mouseenter", (event) => {
-                    event.stopPropagation();
-                    event.preventDefault();
-                    if (event.currentTarget.hasChildNodes()) {
-                        if (event.currentTarget.querySelector(".quote")) {
-                            event.currentTarget.querySelector(".quote").style.setProperty("display", "none");
-                        }
-                        if (event.currentTarget.querySelector(".comment")) {
-                            event.currentTarget.querySelector(".comment").style.removeProperty("display");
-                        }
-                    }
-                });
-                item.addEventListener("mouseleave", (event) => {
-                    event.stopPropagation();
-                    event.preventDefault();
-                    if (event.currentTarget.hasChildNodes()) {
-                        if (event.currentTarget.querySelector(".quote")) {
-                            event.currentTarget.querySelector(".quote").style.removeProperty("display");
-                        }
-                        if (event.currentTarget.querySelector(".comment")) {
-                            event.currentTarget.querySelector(".comment").style.setProperty("display", "none");
-                        }
-                    }
-                })
-            });
-
-            // For marquee styles
-            document.querySelectorAll(".marquee-content").forEach((item) => {
-                item.querySelectorAll(".marquee-item").forEach((marqueeItem) => {
-                    let newMarqueeItem = marqueeItem.cloneNode(true);
-                    newMarqueeItem.setAttribute("aria-hidden", "true");
-                    item.appendChild(newMarqueeItem);
-                })
-            })
+            let promises = [];
 
             // For projects content
             if ("content" in document.createElement("template")) {
@@ -122,7 +83,7 @@
                     return await response.json();
                 }
 
-                getProjectsData()
+                promises.push(getProjectsData()
                     .then((projectData) => {
                         document.querySelectorAll(".project-content").forEach((projectContent) => {
                             projectData["projects"].forEach((project) => {
@@ -156,7 +117,7 @@
                             projectsFailedHint.classList.remove("--hidden");
                         })
 
-                    })
+                    }))
             } else {
                 console.log("Template is not supported");
                 document.querySelectorAll(".--template-required").forEach((templateRequiredArea) => {
@@ -166,6 +127,51 @@
                     })
                 })
             }
+
+            // For styles manipulation
+            Promise.all(promises).then(() => {
+                // For comment and quote styles
+                document.querySelectorAll(".comment").forEach((item) => {
+                    item.style.setProperty("display", "none");
+                });
+
+                document.querySelectorAll(".comment-quote-container").forEach((item) => {
+                    item.addEventListener("mouseenter", (event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        if (event.currentTarget.hasChildNodes()) {
+                            if (event.currentTarget.querySelector(".quote")) {
+                                event.currentTarget.querySelector(".quote").style.setProperty("display", "none");
+                            }
+                            if (event.currentTarget.querySelector(".comment")) {
+                                event.currentTarget.querySelector(".comment").style.removeProperty("display");
+                            }
+                        }
+                    });
+                    item.addEventListener("mouseleave", (event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        if (event.currentTarget.hasChildNodes()) {
+                            if (event.currentTarget.querySelector(".quote")) {
+                                event.currentTarget.querySelector(".quote").style.removeProperty("display");
+                            }
+                            if (event.currentTarget.querySelector(".comment")) {
+                                event.currentTarget.querySelector(".comment").style.setProperty("display", "none");
+                            }
+                        }
+                    })
+                });
+
+                // For marquee styles
+                document.querySelectorAll(".marquee-content").forEach((item) => {
+                    item.querySelectorAll(".marquee-item").forEach((marqueeItem) => {
+                        console.log(marqueeItem);
+                        let newMarqueeItem = marqueeItem.cloneNode(true);
+                        newMarqueeItem.setAttribute("aria-hidden", "true");
+                        item.appendChild(newMarqueeItem);
+                    })
+                })
+            })
         })
     </script>
 </body>
