@@ -43,10 +43,6 @@ body {
 
 }
 
-.page-heading {
-    font-size: 4em;
-}
-
 .section {
     margin: 40px auto;
     padding: 20px 10px;
@@ -158,6 +154,22 @@ body {
     justify-content: right;
 }
 
+.page-heading {
+    font-size: 4em;
+    margin-bottom: .5em;
+}
+
+.about-me {
+    padding: .75em;
+    margin: .75em;
+    border-radius: .8em;
+    border: 2px solid #F2F2F3;
+}
+.about-me-title {
+    font-size: 1.25em;
+    margin-bottom: .5em;
+}
+
 .projects-container {
     margin: 1em auto;
     overflow: hidden;
@@ -165,11 +177,16 @@ body {
 .project-item {
     padding: 1em;
     margin: 1em;
-    height: 10em;
     overflow: hidden;
     text-overflow: ellipsis;
     border-radius: .8em;
     background-color: #F2F2F3;
+}
+@media all and (min-width: 640px) { {
+    .project-item {
+        height: 10em;
+    }
+}
 }
 .project-item > * {
     margin-bottom: .3em;
