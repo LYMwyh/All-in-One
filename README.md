@@ -1,8 +1,27 @@
-# All-in-One
+# derekhello.github.io
 
-the collection of my open-source projects
+# Start
 
-- [Twenty-Four--cpp](https://github.com/LYMwyh/Twenty-Four--cpp)
-- [Twenty-Four--python](https://github.com/LYMwyh/Twenty-Four--python)
-- [Alien-Invasion--python](https://github.com/LYMwyh/Alien-Invasion--pygame)
-- [Tetris--pygame](https://github.com/LYMwyh/Tetris--pygame)
+## Node version
+
+```
+v20.16.0 +
+```
+
+## Install Dependencies
+
+```
+yarn
+```
+
+## Dev
+
+```
+yarn dev
+```
+
+## Build
+
+```
+yarn build
+```
