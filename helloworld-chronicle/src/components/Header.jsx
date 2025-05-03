@@ -1,14 +1,35 @@
+'use client';
+
 import GithubIcon from "@/components/GithubIcon";
+import {useEffect, useState} from "react";
+import {scrollToElement} from "@/utils/scrollToElement";
+import {getIDsInCurrentPage, idToName} from "@/utils/htmlIDHelper";
 
 export default function Header() {
+    const [idsInCurrentPage, setIDsInCurrentPage] = useState([]);
+
+    useEffect(() => {
+        setIDsInCurrentPage(getIDsInCurrentPage());
+    }, []);
+
     return (
         <header className="p-6 flex gap-4 items-center justify-between justify-self-stretch flex-wrap">
             <div className="flex items-center shrink-0 mr-6 cursor-default">
                 <span className="font-bold text-3xl tracking-tight">HelloWorld-er</span>
             </div>
             <nav className="grow flex flex-row gap-4 justify-start shrink-0 font-bold text-bright tracking-tight *:border-l-2 *:border-l-foreground *:px-2">
-                <div className="hover:underline hover:underline-offset-2 hover:decoration-dotted hover:decoration-2">Index</div>
-                <div className="hover:underline hover:underline-offset-2 hover:decoration-dotted hover:decoration-2">About</div>
+                {idsInCurrentPage.map(el => {
+                    return (
+                        <button key={el} onClick={() => {
+                            const element = document.getElementById(el);
+                            if (element) {
+                                scrollToElement(element);
+                            }
+                        }}><div className="hover:underline hover:underline-offset-2 hover:decoration-dotted hover:decoration-2">{idToName(el)}</div></button>
+                    );
+                })}
+
+                {/*<a href=""><div className="hover:underline hover:underline-offset-2 hover:decoration-dotted hover:decoration-2">About</div></a>*/}
             </nav>
             <div className="flex justify-end shrink-0">
                 <a className="w-fit h-fit m-auto *:h-6" href="https://github.com/HelloWorld-er"><GithubIcon /></a>

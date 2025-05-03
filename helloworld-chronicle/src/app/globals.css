@@ -6,14 +6,18 @@
     --background: #0a192f;
     --foreground: var(--color-slate-300);
     --bright: #ffffff;
+    --shadow: #8892b0;
+    --highlight: var(--color-teal-300);
 }
 
 @theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-bright: var(--bright);
-    --font-sans: var(--font-geist-sans);
-    --font-mono: var(--font-geist-mono);
+    --color-shadow: var(--shadow);
+    --color-highlight: var(--highlight);
+    --font-roboto-condensed: var(--font-roboto-condensed);
+    --font-roboto-mono: var(--font-roboto-mono);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -26,5 +30,41 @@
 body {
     background: var(--background);
     color: var(--foreground);
-    font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
+    @apply cursor-pointer;
+}
+
+button {
+    @apply cursor-pointer;
+}
+
+main {
+    h1 {
+        @apply text-7xl font-bold my-8;
+    }
+
+    h2 {
+        @apply text-5xl font-bold my-6;
+    }
+
+    h3 {
+        @apply text-4xl font-bold my-4;
+    }
+
+    h4 {
+        @apply text-3xl font-bold my-2;
+    }
+
+    p {
+        @apply my-4 text-shadow;
+    }
+
+    a {
+        @apply text-blue-400 font-semibold;
+    }
+    a:hover {
+        @apply underline decoration-2 underline-offset-2 decoration-dotted;
+    }
 }
