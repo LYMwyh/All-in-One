@@ -1,6 +1,6 @@
 import {Roboto_Condensed, Roboto_Mono} from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
+import ScrollTargetContextProvider from "@/context/ScrollTargetContext";
 
 const robotoCondensed = Roboto_Condensed({
     variable: "--font-roboto-condensed",
@@ -21,12 +21,11 @@ export default function RootLayout({children}) {
     return (
         <html lang="en">
         <body
-            className={`${robotoCondensed.variable} ${robotoMono.variable} font-roboto-condensed antialiased h-lvh px-30 flex flex-col bg-background text-foreground`}
+            className={`${robotoCondensed.variable} ${robotoMono.variable} font-roboto-condensed antialiased px-30 bg-background text-foreground`}
         >
-            <Header/>
-            <main className="grow *:h-full overflow-scroll [scrollbar-width:_none]">
+            <ScrollTargetContextProvider>
                 {children}
-            </main>
+            </ScrollTargetContextProvider>
         </body>
         </html>
     );

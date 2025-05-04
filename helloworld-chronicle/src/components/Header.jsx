@@ -1,38 +1,32 @@
 'use client';
 
 import GithubIcon from "@/components/GithubIcon";
-import {useEffect, useState} from "react";
-import {scrollToElement} from "@/utils/scrollToElement";
-import {getIDsInCurrentPage, idToName} from "@/utils/htmlIDHelper";
+import {sectionIDToName} from "@/utils/customIDHelper";
+import {CurrentScrollTargetContext, sectionIDsInCurrentPageContext} from "@/context/ScrollTargetContext";
+import {useContext} from "react";
 
 export default function Header() {
-    const [idsInCurrentPage, setIDsInCurrentPage] = useState([]);
-
-    useEffect(() => {
-        setIDsInCurrentPage(getIDsInCurrentPage());
-    }, []);
+    const scrollSectionTargets = useContext(sectionIDsInCurrentPageContext);
+    const {currentScrollTarget, dispatchCurrentScrollTarget} = useContext(CurrentScrollTargetContext);
 
     return (
-        <header className="p-6 flex gap-4 items-center justify-between justify-self-stretch flex-wrap">
+        <header className="bg-background p-6 flex gap-4 items-center justify-between justify-self-stretch flex-wrap">
             <div className="flex items-center shrink-0 mr-6 cursor-default">
                 <span className="font-bold text-3xl tracking-tight">HelloWorld-er</span>
             </div>
-            <nav className="grow flex flex-row gap-4 justify-start shrink-0 font-bold text-bright tracking-tight *:border-l-2 *:border-l-foreground *:px-2">
-                {idsInCurrentPage.map(el => {
+            <nav className="hidden grow lg:flex flex-row gap-4 justify-start shrink-0 font-bold text-bright tracking-tight *:border-l-2 *:border-l-foreground *:px-2">
+                {scrollSectionTargets.map(id => {
                     return (
-                        <button key={el} onClick={() => {
-                            const element = document.getElementById(el);
-                            if (element) {
-                                scrollToElement(element);
-                            }
-                        }}><div className="hover:underline hover:underline-offset-2 hover:decoration-dotted hover:decoration-2">{idToName(el)}</div></button>
+                        <button key={id} onClick={() => {
+                            dispatchCurrentScrollTarget({type: "navigate", id: id});
+                        }}>
+                            <div className="hover:underline hover:underline-offset-2 hover:decoration-dotted hover:decoration-2">{sectionIDToName(id)}</div>
+                        </button>
                     );
                 })}
-
-                {/*<a href=""><div className="hover:underline hover:underline-offset-2 hover:decoration-dotted hover:decoration-2">About</div></a>*/}
             </nav>
-            <div className="flex justify-end shrink-0">
-                <a className="w-fit h-fit m-auto *:h-6" href="https://github.com/HelloWorld-er"><GithubIcon /></a>
+            <div className="hidden lg:flex justify-end shrink-0">
+                <a className="w-fit h-fit m-auto" href="https://github.com/HelloWorld-er"><GithubIcon /></a>
             </div>
             <div className="block lg:hidden">
                 <button
