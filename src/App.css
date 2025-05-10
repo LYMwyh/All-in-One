@@ -1,0 +1,36 @@
+
+.--filter-drop-shadow-black-invert-ten-percent{
+  filter: drop-shadow(16px 16px 20px #8eb9ff) invert(10%);
+}
+
+.--text-shadow-black{
+  text-shadow: 1px 1px 40px #8eb9ff;
+}
+
+.--text-shadow-black-one{
+  text-shadow: 1px 1px 30px #8eb9ff;
+}
+
+.scroll-container {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  white-space: nowrap; /* 确保内容在一行 */
+}
+
+.scroll-content {
+  display: flex;
+  gap: 1rem;
+  white-space: nowrap;
+  width: max-content;
+  padding: 10px 0;
+}
+
+.scroll-content > div {
+  display: inline-block;
+}
+
+
+.scroll-content:hover {
+  animation-play-state: paused;
+}
