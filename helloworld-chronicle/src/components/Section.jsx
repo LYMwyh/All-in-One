@@ -22,7 +22,7 @@ export default function Section({sectionID, className, style, children}) {
     }, []);
 
     return (
-        <section ref={sectionRef} className={className} style={style}>
+        <section ref={sectionRef} className={className + " " + "lg:flex lg:items-center lg:justify-center"} style={style}>
             {children}
         </section>
     );

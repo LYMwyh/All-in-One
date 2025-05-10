@@ -1,12 +1,12 @@
 import React from "react";
 
 export default function PetProjectCard({children}) {
-
+    if (!children.headingAs) children.headingAs = "div";
     return (
         <div className="px-3 py-4 flex flex-col gap-2  bg-slate-800 rounded-xl">
-            <div className="text-3xl font-bold my-4">
+            <children.headingAs className="text-3xl font-bold my-4">
                 {children.heading}
-            </div>
+            </children.headingAs>
             <p className="grow">
                 {children.description}
             </p>
