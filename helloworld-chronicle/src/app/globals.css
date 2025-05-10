@@ -8,6 +8,7 @@
     --bright: #ffffff;
     --shadow: #8892b0;
     --dark-shadow: var(--color-slate-700);
+    --darkest-shadow: var(--color-slate-800);
     --highlight: var(--color-teal-300);
 }
 
@@ -17,6 +18,7 @@
     --color-bright: var(--bright);
     --color-shadow: var(--shadow);
     --color-dark-shadow: var(--dark-shadow);
+    --color-darkest-shadow: var(--darkest-shadow);
     --color-highlight: var(--highlight);
     --font-roboto-condensed: var(--font-roboto-condensed);
     --font-roboto-mono: var(--font-roboto-mono);
@@ -47,19 +49,19 @@ button {
 }
 
 h1 {
-    @apply text-7xl font-bold my-8;
+    @apply text-6xl sm:text-7xl font-bold my-8;
 }
 
 h2 {
-    @apply text-5xl font-bold my-6;
+    @apply text-4xl sm:text-5xl font-bold my-6;
 }
 
 h3 {
-    @apply text-3xl font-bold my-4;
+    @apply text-3xl sm:text-4xl font-bold my-4;
 }
 
 h4 {
-    @apply text-xl font-bold my-2;
+    @apply text-2xl sm:text-3xl font-bold my-2;
 }
 
 p {
