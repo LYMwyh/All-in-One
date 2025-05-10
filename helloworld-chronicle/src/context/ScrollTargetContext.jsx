@@ -1,7 +1,8 @@
 'use client';
 
-import {createContext, useEffect, useReducer, useState} from "react";
+import {createContext, useContext, useEffect, useReducer, useState} from "react";
 import {scrollToElement} from "@/utils/scrollToElement";
+import {HeaderHeightContext} from "@/context/HeaderContext";
 
 
 export const sectionIDsInCurrentPageContext = createContext(null);
@@ -25,6 +26,8 @@ export default function ScrollTargetContextProvider({children}) {
         }
     }, new Map(), undefined);
 
+    const headerHeight = useContext(HeaderHeightContext);
+
     let currentScrollTargetIndex = 0;
     const [currentScrollTarget, dispatchCurrentScrollTarget] = useReducer((currentScrollTarget, action) => {
         if (!scrollTargets.size) return null;
@@ -33,14 +36,33 @@ export default function ScrollTargetContextProvider({children}) {
                 let index = 0;
                 for (const elementInfo of scrollTargets.values()) {
                     const elementRect = elementInfo.element.getBoundingClientRect();
-                    if ((elementRect.top > 0 && elementRect.top < window.innerHeight) || (elementRect.bottom > 0 && elementRect.bottom < window.innerHeight)) {
+                    if ((elementRect.top > headerHeight && elementRect.top < window.innerHeight) || (elementRect.bottom > headerHeight && elementRect.bottom < window.innerHeight)) {
                         currentScrollTargetIndex = index;
                         return elementInfo.element;
                     }
                     index ++;
                 }
-                currentScrollTargetIndex = index - 1;
-                return scrollTargets.size ? [...scrollTargets.values()][currentScrollTargetIndex - 1].element : null;
+                currentScrollTargetIndex = scrollTargets.size - 1;
+                return scrollTargets.size ? [...scrollTargets.values()][currentScrollTargetIndex].element : null;
+            }
+            case "updateWithScroll": {
+                if (!scrollTargets.size) return null;
+                let index = 0;
+                let flag = false;
+                for (const elementInfo of scrollTargets.values()) {
+                    const elementRect = elementInfo.element.getBoundingClientRect();
+                    if ((elementRect.top > headerHeight && elementRect.top < window.innerHeight) || (elementRect.bottom > headerHeight && elementRect.bottom < window.innerHeight)) {
+                        currentScrollTargetIndex = index;
+                        flag = true;
+                        break;
+                    }
+                    index ++;
+                }
+                if (!flag)  currentScrollTargetIndex = scrollTargets.size - 1;
+                console.log(currentScrollTargetIndex, scrollTargets.size);
+                const targetElement = [...scrollTargets.values()][currentScrollTargetIndex].element;
+                scrollToElement(targetElement, headerHeight ? headerHeight : 0);
+                return targetElement;
             }
             case "scroll": {
                 switch (action.direction) {
@@ -49,7 +71,7 @@ export default function ScrollTargetContextProvider({children}) {
                             currentScrollTargetIndex --;
                         }
                         const targetElement = [...scrollTargets.values()][currentScrollTargetIndex].element;
-                        scrollToElement(targetElement);
+                        scrollToElement(targetElement, headerHeight ? headerHeight : 0);
                         return targetElement;
                     }
                     case "down": {
@@ -57,7 +79,7 @@ export default function ScrollTargetContextProvider({children}) {
                             currentScrollTargetIndex ++;
                         }
                         const targetElement = [...scrollTargets.values()][currentScrollTargetIndex].element;
-                        scrollToElement(targetElement);
+                        scrollToElement(targetElement, headerHeight ? headerHeight : 0);
                         return targetElement;
                     }
                     default: {
@@ -65,15 +87,26 @@ export default function ScrollTargetContextProvider({children}) {
                     }
                 }
             }
-            case "navigate": {
+            case "navigateByID": {
                 const target = scrollTargets.get(action.id);
                 if (target) {
                     currentScrollTargetIndex = [...scrollTargets.keys()].indexOf(action.id);
-                    scrollToElement(target.element);
+                    scrollToElement(target.element, headerHeight ? headerHeight : 0);
                     return target.element;
                 }
                 else {
                     throw new Error("Unknown scroll target " + action.id);
+                }
+            }
+            case "navigateByValue": {
+                const target = [...scrollTargets.values()].find(target => target.element === action.value);
+                if (target) {
+                    currentScrollTargetIndex = [...scrollTargets.keys()].indexOf(target.id);
+                    scrollToElement(target.element, headerHeight ? headerHeight : 0);
+                    return target.element;
+                }
+                else {
+                    throw new Error("Unknown scroll target " + action.value);
                 }
             }
             default: {

@@ -3,14 +3,31 @@
 import GithubIcon from "@/components/GithubIcon";
 import {sectionIDToName} from "@/utils/customIDHelper";
 import {CurrentScrollTargetContext, sectionIDsInCurrentPageContext} from "@/context/ScrollTargetContext";
-import {useContext} from "react";
+import {useContext, useLayoutEffect, useRef} from "react";
+import {HeaderHeightDispatchContext} from "@/context/HeaderContext";
 
 export default function Header() {
     const scrollSectionTargets = useContext(sectionIDsInCurrentPageContext);
     const {currentScrollTarget, dispatchCurrentScrollTarget} = useContext(CurrentScrollTargetContext);
+    const setHeaderHeight = useContext(HeaderHeightDispatchContext);
+    const headerRef = useRef(null);
+
+    useLayoutEffect(() =>{
+        if (headerRef.current) {
+            // setHeaderHeight(headerRef.current.getBoundingClientRect().height);
+
+            const resizeObserver = new ResizeObserver(() => {
+                const currentHeaderHeight = headerRef.current.getBoundingClientRect().height;
+                setHeaderHeight(currentHeaderHeight);
+            });
+
+            resizeObserver.observe(headerRef.current);
+            return () => resizeObserver.disconnect();
+        }
+    }, [])
 
     return (
-        <header className="bg-background p-6 flex gap-4 items-center justify-between justify-self-stretch flex-wrap">
+        <header ref={headerRef} className="sticky z-50 top-0 bg-background p-6 flex gap-4 items-center justify-between justify-self-stretch flex-wrap">
             <div className="flex items-center shrink-0 mr-6 cursor-default">
                 <span className="font-bold text-3xl tracking-tight">HelloWorld-er</span>
             </div>
@@ -18,7 +35,7 @@ export default function Header() {
                 {scrollSectionTargets.map(id => {
                     return (
                         <button key={id} onClick={() => {
-                            dispatchCurrentScrollTarget({type: "navigate", id: id});
+                            dispatchCurrentScrollTarget({type: "navigateByID", id: id});
                         }}>
                             <div className="hover:underline hover:underline-offset-2 hover:decoration-dotted hover:decoration-2">{sectionIDToName(id)}</div>
                         </button>

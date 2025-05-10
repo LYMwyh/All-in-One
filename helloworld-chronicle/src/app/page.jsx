@@ -1,13 +1,14 @@
 'use client';
 
 import Typist from "@/components/Typist";
-import React, {memo, useContext, useEffect, useRef, useState} from "react";
+import React, {memo, useContext, useEffect, useLayoutEffect, useState} from "react";
 import Section from "@/components/Section";
 import GithubIcon from "@/components/GithubIcon";
 import PetProjectCard from "@/components/PetProjectCard";
 import {CurrentScrollTargetContext} from "@/context/ScrollTargetContext";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import {HeaderHeightContext} from "@/context/HeaderContext";
 
 // Isolated Typist Component for the Heading
 const HomeHeading = memo(() => {
@@ -38,31 +39,38 @@ const HomeHeading = memo(() => {
 
 export default function Home() {
     const {currentScrollTarget, dispatchCurrentScrollTarget} = useContext(CurrentScrollTargetContext);
+    const headerHeight = useContext(HeaderHeightContext);
 
-    const headerContainerRef = useRef(null);
     const [mainHeightStyle, setMainHeightStyle] = useState({});
-
-    useEffect(() => {
-        if (headerContainerRef.current) {
-            const resizeObserver = new ResizeObserver(() => {
-                const headerHeight = headerContainerRef.current.getBoundingClientRect().height;
-                setMainHeightStyle({ minHeight: `calc(100vh - ${headerHeight}px)` });
-            });
-
-            resizeObserver.observe(headerContainerRef.current);
-
-            return () => resizeObserver.disconnect();
+    useLayoutEffect(() => {
+        if (headerHeight) {
+            setMainHeightStyle({ minHeight: `calc(100vh - ${headerHeight}px)` });
         }
-    }, []);
+    }, [headerHeight]);
 
     function updateScrollTop() {
         dispatchCurrentScrollTarget({type: "update"});
     }
 
+    useEffect(() => {
+        window.addEventListener("scroll", updateScrollTop);
+
+        return () => {
+            window.removeEventListener("scroll", updateScrollTop);
+        };
+    }, []);
+
+    if (!headerHeight) {
+        return (
+            <div className="h-fit px-10 lg:px-30 flex flex-col flex-nowrap">
+                <Header />
+            </div>
+        );
+    }
     return (
-        <div className="h-fit flex flex-col flex-nowrap">
-            <div ref={headerContainerRef} className="sticky top-0"><Header /></div>
-            <main className="h-fit" onScroll={(evt) => updateScrollTop(evt)}>
+        <div className="h-fit px-10 lg:px-30 flex flex-col flex-nowrap">
+            <Header />
+            <main className="h-fit">
                 <Section sectionID="hello-world" className="h-full flex flex-col items-center text-center" style={mainHeightStyle ? mainHeightStyle : null}>
                     <HomeHeading/>
                     <Typist rootKey="typist-2">
@@ -74,7 +82,7 @@ export default function Home() {
                         </p>
                     </Typist>
                     <button className="px-4 py-2 border border-dotted rounded-4xl" onClick={() => {
-                        dispatchCurrentScrollTarget({type: "navigate", id: "sectionID-about-me"});
+                        dispatchCurrentScrollTarget({type: "navigateByID", id: "sectionID-about-me"});
                     }}>Scroll To see More
                     </button>
                 </Section>
