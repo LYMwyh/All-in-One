@@ -77,7 +77,7 @@ export default function Header() {
                     </svg>
                 </button>
             </div>
-            <div ref={menuRef} className={(showMenu ? "translate-x-0" : "-translate-x-full") + " " + "transform transition-all fixed top-0 left-0 min-w-2/3 h-full px-4 py-8 sm:p-12 flex flex-col gap-8 flex-nowrap bg-darkest-shadow"}>
+            <div ref={menuRef} className={(showMenu ? "translate-x-0" : "-translate-x-full") + " " + "transform transition-all fixed top-0 left-0 min-w-2/3 h-full px-4 py-8 sm:p-12 flex flex-col gap-8 flex-nowrap bg-darker-shadow"}>
                 <div className="self-stretch flex flex-nowrap justify-between gap-10 items-center shrink-0 cursor-default">
                     <span className="font-bold text-4xl sm:text-5xl tracking-tight">HelloWorld-er</span>
                     <span className="w-fit h-fit cursor-pointer text-bright" onClick={() => setShowMenu(false)}><CloseIcon /></span>
